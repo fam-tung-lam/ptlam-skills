@@ -1,19 +1,17 @@
-# PTLam Skills
+# Pham Tung Lam's Agent Skill Catalog
 
-PTLam Skills is a curated collection of portable agent skills.
+This repository is the personal catalog of agent skills used and maintained by
+[Pham Tung Lam](https://github.com/fam-tung-lam).
 
-The project is intentionally similar in scope to the local `skills` reference:
-it authors, documents, validates, and distributes skills while delegating
-installation and updates to existing agent and plugin ecosystems.
+It provides one centralized place to manage:
 
-## Product boundary
+- Available skills.
+- Skill organization and categories.
+- Published catalog versions.
+- Additions, updates, and retirements over time.
 
-- Skills are the product.
-- Keep repository tooling small and collection-focused.
-- Prefer established installers and native plugin managers.
-- Do not build a custom transactional installer, package manager, target
-  registry, or installation-state engine without a separate explicit product
-  decision.
+Keeping this state in one version-controlled repository makes changes visible
+and repeatable across the agents and projects that Lam uses.
 
 ## Layout
 
@@ -23,22 +21,22 @@ Skills live at:
 skills/<category>/<skill-name>/SKILL.md
 ```
 
-## Initial test collection
+## Current test collection
 
 <!-- markdownlint-disable MD013 -->
 
-| Category | Skill | Purpose |
+| Skill | Category | Purpose |
 | --- | --- | --- |
-| Engineering | `test-review-change` | Review a small change and return risks, checks, and a verdict. |
-| Productivity | `test-plan-task` | Turn one goal into a 3–5 step actionable plan. |
-| Utilities | `test-format-text` | Reformat text without adding or changing facts. |
+| `test-review-change` | Engineering | Review a small change and return risks, checks, and a verdict. |
+| `test-plan-task` | Productivity | Turn one goal into a 3–5 step actionable plan. |
+| `test-format-text` | Utilities | Reformat text without adding or changing facts. |
 
 <!-- markdownlint-enable MD013 -->
 
 These skills are intentionally simple. They prove collection discovery,
 installation, metadata, and invocation before real skills are introduced.
 
-## Installation
+## Using the catalog
 
 Choose one installation route per agent. Installing the Claude Code plugin and
 also copying the same skills into Claude Code with the `skills` CLI would expose
@@ -93,30 +91,4 @@ installations later with:
 
 ```bash
 npx skills@latest update
-```
-
-### Local development
-
-List the available skills:
-
-```bash
-DISABLE_TELEMETRY=1 npx skills@latest add /absolute/path/to/ptlam-skills --list
-```
-
-From a target project, install all three for Codex:
-
-```bash
-DISABLE_TELEMETRY=1 npx skills@latest add /absolute/path/to/ptlam-skills \
-  --skill '*' --agent codex --copy --yes
-```
-
-Install one skill by replacing `'*'` with its name. The external `skills` CLI
-owns discovery and installation; this repository does not implement an
-installer.
-
-Validate or try the Claude Code plugin directly from this checkout:
-
-```bash
-claude plugin validate . --strict
-claude --plugin-dir .
 ```
