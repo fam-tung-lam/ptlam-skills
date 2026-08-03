@@ -1,6 +1,9 @@
 ---
 name: ptlam-skills-git
-description: Use for any Git operation in ptlam-skills, including commits, pushes, pulls, rebases, branches, pull requests, and cherry-picks. Provides commit message format and project conventions.
+description:
+  Use for any Git operation in ptlam-skills, including commits, pushes, pulls,
+  rebases, branches, pull requests, and cherry-picks. Provides commit message
+  format and project conventions.
 ---
 
 # Git Operations for PTLam Skills
@@ -78,8 +81,8 @@ The same skill was exposed through two plugin paths, producing duplicate menu
 entries. Keep one canonical path so Claude discovers each skill once.
 ```
 
-Before committing, ask: "Does the subject explain why this change exists?" If
-it only describes what changed, rewrite it.
+Before committing, ask: "Does the subject explain why this change exists?" If it
+only describes what changed, rewrite it.
 
 ### Rules
 

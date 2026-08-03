@@ -23,15 +23,11 @@ skills/<category>/<skill-name>/SKILL.md
 
 ## Current test collection
 
-<!-- markdownlint-disable MD013 -->
-
-| Skill | Category | Purpose |
-| --- | --- | --- |
-| `test-review-change` | Engineering | Review a small change and return risks, checks, and a verdict. |
-| `test-plan-task` | Productivity | Turn one goal into a 3–5 step actionable plan. |
-| `test-format-text` | Utilities | Reformat text without adding or changing facts. |
-
-<!-- markdownlint-enable MD013 -->
+| Skill                | Category     | Purpose                                                        |
+| -------------------- | ------------ | -------------------------------------------------------------- |
+| `test-review-change` | Engineering  | Review a small change and return risks, checks, and a verdict. |
+| `test-plan-task`     | Productivity | Turn one goal into a 3–5 step actionable plan.                 |
+| `test-format-text`   | Utilities    | Reformat text without adding or changing facts.                |
 
 These skills are intentionally simple. They prove collection discovery,
 installation, metadata, and invocation before real skills are introduced.
@@ -92,3 +88,26 @@ installations later with:
 ```bash
 npx skills@latest update
 ```
+
+## Markdown quality
+
+Install the pinned development tools:
+
+```bash
+npm ci
+```
+
+Format all project Markdown, including skill files:
+
+```bash
+npm run markdown:format
+```
+
+Run the same formatting and lint checks used in continuous integration:
+
+```bash
+npm run markdown:check
+```
+
+The ignored `local/` directory contains reference material and is intentionally
+outside the project-wide formatting scope.
