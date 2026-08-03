@@ -54,10 +54,19 @@ Or run the equivalent commands inside a Claude Code session:
 ```text
 /plugin marketplace add fam-tung-lam/ptlam-skills
 /plugin install ptlam-skills
+/reload-plugins
 ```
 
 Unlike a plugin in Claude Code's official marketplace, this self-hosted plugin
 needs the one-time marketplace command first.
+
+Update the installed plugin with Claude Code's plugin manager:
+
+```bash
+claude plugin update ptlam-skills
+```
+
+Restart Claude Code to apply the update.
 
 ### Codex and other agents
 
