@@ -9,15 +9,11 @@
   },
   "homepage": "https://github.com/fam-tung-lam/ptlam-skills#readme",
   "repository": "https://github.com/fam-tung-lam/ptlam-skills",
-  "keywords": [
-    "agent-skills",
-    "engineering",
-    "productivity",
-    "utilities"
-  ],
+  "keywords": ["agent-skills", "engineering", "productivity", "utilities"],
   "skills": [
     "./skills/engineering/test-review-change",
     "./skills/productivity/test-plan-task",
+    "./skills/productivity/ptlam-visualization-with-html",
     "./skills/utilities/test-format-text"
   ]
 }

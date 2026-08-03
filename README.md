@@ -21,7 +21,13 @@ Skills live at:
 skills/<category>/<skill-name>/SKILL.md
 ```
 
-## Current test collection
+## Available skills
+
+| Skill                           | Category     | Purpose                                            |
+| ------------------------------- | ------------ | -------------------------------------------------- |
+| `ptlam-visualization-with-html` | Productivity | Create polished, interactive local HTML artifacts. |
+
+## Test collection
 
 | Skill                | Category     | Purpose                                                        |
 | -------------------- | ------------ | -------------------------------------------------------------- |
@@ -29,7 +35,7 @@ skills/<category>/<skill-name>/SKILL.md
 | `test-plan-task`     | Productivity | Turn one goal into a 3–5 step actionable plan.                 |
 | `test-format-text`   | Utilities    | Reformat text without adding or changing facts.                |
 
-These skills are intentionally simple. They prove collection discovery,
+The test skills are intentionally simple. They prove collection discovery,
 installation, metadata, and invocation before real skills are introduced.
 
 ## Using the catalog
