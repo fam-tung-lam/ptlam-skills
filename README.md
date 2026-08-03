@@ -23,5 +23,32 @@ Skills live at:
 skills/<category>/<skill-name>/SKILL.md
 ```
 
-This repository is a fresh start. Its first skills and supported distribution
-formats will be added deliberately.
+## Initial test collection
+
+| Category | Skill | Purpose |
+| --- | --- | --- |
+| Engineering | `test-review-change` | Review a small change and return risks, checks, and a verdict. |
+| Productivity | `test-plan-task` | Turn one goal into a 3–5 step actionable plan. |
+| Utilities | `test-format-text` | Reformat text without adding or changing facts. |
+
+These skills are intentionally simple. They prove collection discovery,
+installation, metadata, and invocation before real skills are introduced.
+
+## Install locally
+
+List the available skills:
+
+```bash
+DISABLE_TELEMETRY=1 npx skills@latest add /absolute/path/to/ptlam-skills --list
+```
+
+From a target project, install all three for Codex:
+
+```bash
+DISABLE_TELEMETRY=1 npx skills@latest add /absolute/path/to/ptlam-skills \
+  --skill '*' --agent codex --copy --yes
+```
+
+Install one skill by replacing `'*'` with its name. The external `skills` CLI
+owns discovery and installation; this repository does not implement an
+installer.

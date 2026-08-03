@@ -1,0 +1,4 @@
+interface:
+  display_name: "Test Plan Task"
+  short_description: "Turn one goal into a concrete action plan"
+  default_prompt: "Use $test-plan-task to turn my goal into a short actionable plan."
