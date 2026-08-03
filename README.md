@@ -25,11 +25,15 @@ skills/<category>/<skill-name>/SKILL.md
 
 ## Initial test collection
 
+<!-- markdownlint-disable MD013 -->
+
 | Category | Skill | Purpose |
 | --- | --- | --- |
 | Engineering | `test-review-change` | Review a small change and return risks, checks, and a verdict. |
 | Productivity | `test-plan-task` | Turn one goal into a 3–5 step actionable plan. |
 | Utilities | `test-format-text` | Reformat text without adding or changing facts. |
+
+<!-- markdownlint-enable MD013 -->
 
 These skills are intentionally simple. They prove collection discovery,
 installation, metadata, and invocation before real skills are introduced.
@@ -63,7 +67,7 @@ needs the one-time marketplace command first.
 Update the installed plugin with Claude Code's plugin manager:
 
 ```bash
-claude plugin update ptlam-skills
+claude plugin update ptlam-skills@ptlam
 ```
 
 Restart Claude Code to apply the update.
