@@ -1,0 +1,21 @@
+{
+  "name": "ptlam",
+  "owner": {
+    "name": "Pham Tung Lam",
+    "url": "https://github.com/fam-tung-lam"
+  },
+  "description": "PTLam's portable agent skills as an installable Claude Code plugin.",
+  "plugins": [
+    {
+      "name": "ptlam-skills",
+      "source": "./",
+      "description": "Portable agent skills for engineering, productivity, and utility workflows.",
+      "category": "development",
+      "keywords": [
+        "agent-skills",
+        "engineering",
+        "productivity"
+      ]
+    }
+  ]
+}

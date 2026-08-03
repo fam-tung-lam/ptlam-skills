@@ -34,7 +34,55 @@ skills/<category>/<skill-name>/SKILL.md
 These skills are intentionally simple. They prove collection discovery,
 installation, metadata, and invocation before real skills are introduced.
 
-## Install locally
+## Installation
+
+Choose one installation route per agent. Installing the Claude Code plugin and
+also copying the same skills into Claude Code with the `skills` CLI would expose
+duplicates.
+
+### Claude Code
+
+Add this repository as a marketplace, then install its plugin:
+
+```bash
+claude plugin marketplace add fam-tung-lam/ptlam-skills
+claude plugin install ptlam-skills
+```
+
+Or run the equivalent commands inside a Claude Code session:
+
+```text
+/plugin marketplace add fam-tung-lam/ptlam-skills
+/plugin install ptlam-skills
+```
+
+Unlike a plugin in Claude Code's official marketplace, this self-hosted plugin
+needs the one-time marketplace command first.
+
+### Codex and other agents
+
+Use the standard Agent Skills installer:
+
+```bash
+npx skills@latest add fam-tung-lam/ptlam-skills
+```
+
+Choose the skills and target agents interactively. For a non-interactive Codex
+project install of the whole collection:
+
+```bash
+npx skills@latest add fam-tung-lam/ptlam-skills \
+  --skill '*' --agent codex --copy --yes
+```
+
+The `skills` CLI owns the project installation and its source tracking. Refresh
+installations later with:
+
+```bash
+npx skills@latest update
+```
+
+### Local development
 
 List the available skills:
 
@@ -52,3 +100,10 @@ DISABLE_TELEMETRY=1 npx skills@latest add /absolute/path/to/ptlam-skills \
 Install one skill by replacing `'*'` with its name. The external `skills` CLI
 owns discovery and installation; this repository does not implement an
 installer.
+
+Validate or try the Claude Code plugin directly from this checkout:
+
+```bash
+claude plugin validate . --strict
+claude --plugin-dir .
+```

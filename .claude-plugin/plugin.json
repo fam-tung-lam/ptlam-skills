@@ -1,0 +1,23 @@
+{
+  "name": "ptlam-skills",
+  "version": "0.1.0",
+  "description": "A curated collection of portable agent skills for engineering, productivity, and utility workflows.",
+  "author": {
+    "name": "Pham Tung Lam",
+    "email": "fam.tung.lam@gmail.com",
+    "url": "https://github.com/fam-tung-lam"
+  },
+  "homepage": "https://github.com/fam-tung-lam/ptlam-skills#readme",
+  "repository": "https://github.com/fam-tung-lam/ptlam-skills",
+  "keywords": [
+    "agent-skills",
+    "engineering",
+    "productivity",
+    "utilities"
+  ],
+  "skills": [
+    "./skills/engineering/test-review-change",
+    "./skills/productivity/test-plan-task",
+    "./skills/utilities/test-format-text"
+  ]
+}
