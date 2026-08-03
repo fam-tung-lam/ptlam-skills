@@ -1,0 +1,47 @@
+name: Skill tests
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+    paths: &skill_test_paths
+      - ".claude-plugin/plugin.json"
+      - "README.md"
+      - "skills/**"
+      - "tests/**"
+      - "package-lock.json"
+      - "package.json"
+      - ".github/workflows/skill-tests.yml"
+  push:
+    branches:
+      - main
+    paths: *skill_test_paths
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: skill-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  skill-tests:
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Run skill tests
+        run: npm test
