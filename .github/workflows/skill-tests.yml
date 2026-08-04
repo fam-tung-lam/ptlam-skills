@@ -8,10 +8,12 @@ on:
       - synchronize
       - ready_for_review
     paths: &skill_test_paths
-      - ".claude-plugin/plugin.json"
+      - ".claude-plugin/**"
       - "README.md"
+      - "plugin.yml"
       - "skills/**"
       - "tests/**"
+      - "tools/plugin-compiler/**"
       - "package-lock.json"
       - "package.json"
       - ".github/workflows/skill-tests.yml"
@@ -43,5 +45,7 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
+      - name: Check generated catalog artifacts
+        run: npm run catalog:check
       - name: Run skill tests
         run: npm test

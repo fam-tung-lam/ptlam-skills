@@ -21,6 +21,8 @@ Skills live at:
 skills/<category>/<skill-name>/SKILL.md
 ```
 
+<!-- BEGIN GENERATED:PLUGIN-CATALOG:SKILLS -->
+
 ## Available skills
 
 | Skill                           | Category     | Purpose                                                           |
@@ -38,6 +40,8 @@ skills/<category>/<skill-name>/SKILL.md
 
 The test skills are intentionally simple. They verify collection discovery,
 installation, metadata, and invocation independently from the available skills.
+
+<!-- END GENERATED:PLUGIN-CATALOG:SKILLS -->
 
 ## Using the catalog
 
@@ -95,6 +99,68 @@ installations later with:
 ```bash
 npx skills@latest update
 ```
+
+## Maintaining the catalog
+
+The root [`plugin.yml`](plugin.yml) is the authored source for the plugin
+version, marketplace listing, ordered categories, skill membership, display
+summaries, and required-skill IDs. Each `SKILL.md` remains authoritative for
+that skill's name, description, and instructions.
+
+| Source               | Owns                                                                                                                 |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `plugin.yml`         | Plugin/release metadata, marketplace listing, categories, membership, order, summaries, kind, and required skill IDs |
+| `SKILL.md`           | Skill name, description, standard metadata, and runtime instructions                                                 |
+| `agents/openai.yaml` | OpenAI-specific display and tool dependency metadata for one skill                                                   |
+| Generated files      | Host-native and documentation projections of the authored sources                                                    |
+
+To add or move a skill:
+
+1. Create or move `skills/<category>/<skill-id>/` and keep the `SKILL.md` name
+   equal to `<skill-id>`.
+2. Add or update the matching `skills` entry in `plugin.yml`; its category
+   determines the directory path. Add a category record first when needed.
+3. Add any hard prerequisites to `required_skill_ids`.
+4. Run `npm run catalog:generate`, then the checks below, and review all
+   generated diffs.
+
+Validate the authored catalog and all referenced skill files:
+
+```bash
+npm run catalog:validate
+```
+
+Regenerate the Claude plugin files and the marker-bounded catalog sections in
+both README files:
+
+```bash
+npm run catalog:generate
+```
+
+CI uses the non-mutating drift check:
+
+```bash
+npm run catalog:check
+```
+
+`required_skill_ids` contains hard prerequisites within the same plugin release.
+Every referenced ID must exist, self-dependencies are invalid, and the graph
+must remain acyclic. Required-skill IDs do not become Claude plugin
+dependencies.
+
+Generated files are projections for specific consumers, not another authored
+catalog or an aggregate source of truth. Edit their source fields in
+`plugin.yml` or `SKILL.md` and regenerate instead of hand-editing a projection.
+
+The compiler architecture, model contracts, data flows, safety rules, and
+extension guidance live in
+[`tools/plugin-compiler/README.md`](tools/plugin-compiler/README.md).
+
+For a release, change `plugin.version` in `plugin.yml`, regenerate, and review
+the committed projections. `package.json.version` belongs to repository tooling
+and is intentionally independent. Version 1 has no `plugin.lock.yml`: the
+catalog does not resolve external version ranges, commits, or integrity hashes,
+so a lockfile would claim guarantees that do not exist.
 
 ## Markdown quality
 
