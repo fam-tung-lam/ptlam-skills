@@ -631,7 +631,7 @@
       "maturity": "beta",
       "externalRegistration": false,
       "referencePath": "syntax/architecture.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/architecture.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/architecture.mmd",
       "fixtureSha256": "5e0cfef36db0bb4a713682880832a5d707552a6b517660794ccb5125653e9450",
       "upstream": {
         "repository": "mermaid",
@@ -649,7 +649,7 @@
       "maturity": "stable",
       "externalRegistration": false,
       "referencePath": "syntax/block.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/block.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/block.mmd",
       "fixtureSha256": "633058c462fa517ef540dc0c5fb8c1cb884fe975df96f643b6f99db9633d0c0b",
       "upstream": {
         "repository": "mermaid",
@@ -671,7 +671,7 @@
       "maturity": "experimental",
       "externalRegistration": false,
       "referencePath": "syntax/c4.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/c4.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/c4.mmd",
       "fixtureSha256": "979ecc284b2f7f62470ab4944f01aa7f30eaddf6c822d7023172a5a5400dddbb",
       "upstream": {
         "repository": "mermaid",
@@ -689,7 +689,7 @@
       "maturity": "stable",
       "externalRegistration": false,
       "referencePath": "syntax/class.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/class.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/class.mmd",
       "fixtureSha256": "254f2e85a79762a53d81a312069af260dd2de8a309886a2f1f893f5adba6bc3a",
       "upstream": {
         "repository": "mermaid",
@@ -707,7 +707,7 @@
       "maturity": "beta",
       "externalRegistration": false,
       "referencePath": "syntax/cynefin.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/cynefin.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/cynefin.mmd",
       "fixtureSha256": "7d474b7278599b81e5c55e01f1266e397b434aaa5da03505acc86986495cb481",
       "upstream": {
         "repository": "mermaid",
@@ -725,7 +725,7 @@
       "maturity": "stable",
       "externalRegistration": false,
       "referencePath": "syntax/entity-relationship.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/entity-relationship.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/entity-relationship.mmd",
       "fixtureSha256": "a996794231fb830e1838da491eb97332a10ea4bb13e656445d58cf70cf3f7772",
       "upstream": {
         "repository": "mermaid",
@@ -743,7 +743,7 @@
       "maturity": "stable",
       "externalRegistration": false,
       "referencePath": "syntax/event-modeling.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/event-modeling.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/event-modeling.mmd",
       "fixtureSha256": "bda4c22ec6851588ae011a38905adfd77b8ca9686f44845841712d1445a26eb3",
       "upstream": {
         "repository": "mermaid",
@@ -761,7 +761,7 @@
       "maturity": "stable",
       "externalRegistration": false,
       "referencePath": "syntax/flowchart.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/flowchart.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/flowchart.mmd",
       "fixtureSha256": "002da324209f904da359defe8e7e70e6eee94775b6009715dc805a2a31f65f2c",
       "upstream": {
         "repository": "mermaid",
@@ -779,7 +779,7 @@
       "maturity": "stable",
       "externalRegistration": false,
       "referencePath": "syntax/gantt.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/gantt.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/gantt.mmd",
       "fixtureSha256": "96241dec9a4db8594a1a60fe7d65e9080b3ae3a5e39e93055660580a4c464def",
       "upstream": {
         "repository": "mermaid",
@@ -797,7 +797,7 @@
       "maturity": "stable",
       "externalRegistration": false,
       "referencePath": "syntax/git-graph.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/git-graph.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/git-graph.mmd",
       "fixtureSha256": "d7489134b63cec027db0ca394d97ead987c6d6d04c82d811bdeda73c1bb64c49",
       "upstream": {
         "repository": "mermaid",
@@ -815,7 +815,7 @@
       "maturity": "beta",
       "externalRegistration": false,
       "referencePath": "syntax/ishikawa.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/ishikawa.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/ishikawa.mmd",
       "fixtureSha256": "d42b3103bdf83b2d97e27f687f41a50b53fc74921897c37271a3bf456f08fcd0",
       "upstream": {
         "repository": "mermaid",
@@ -833,7 +833,7 @@
       "maturity": "stable",
       "externalRegistration": false,
       "referencePath": "syntax/kanban.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/kanban.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/kanban.mmd",
       "fixtureSha256": "53befc2d58e89664f31dee54503d9b493802d829577d5b2ae13ca97ba142aa2c",
       "upstream": {
         "repository": "mermaid",
@@ -851,7 +851,7 @@
       "maturity": "stable",
       "externalRegistration": false,
       "referencePath": "syntax/mindmap.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/mindmap.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/mindmap.mmd",
       "fixtureSha256": "267737ba41003855369596e8b3bc96d018bad942684e8119ca1fe3152ed8999f",
       "upstream": {
         "repository": "mermaid",
@@ -869,7 +869,7 @@
       "maturity": "stable",
       "externalRegistration": false,
       "referencePath": "syntax/packet.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/packet.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/packet.mmd",
       "fixtureSha256": "a3fdcd551fb93383500b9124b4685b72df3978b2bd29caf2e408f66b58006e96",
       "upstream": {
         "repository": "mermaid",
@@ -887,7 +887,7 @@
       "maturity": "stable",
       "externalRegistration": false,
       "referencePath": "syntax/pie.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/pie.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/pie.mmd",
       "fixtureSha256": "a276bc291dff16389e245125836a64234c0ea4314fe23d7c9ecfbfd1be5d1744",
       "upstream": {
         "repository": "mermaid",
@@ -905,7 +905,7 @@
       "maturity": "stable",
       "externalRegistration": false,
       "referencePath": "syntax/quadrant-chart.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/quadrant-chart.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/quadrant-chart.mmd",
       "fixtureSha256": "8712d8343c83556b8d22e2a1a2523c1bb7432ff66d733da43eebe0b510290f16",
       "upstream": {
         "repository": "mermaid",
@@ -923,7 +923,7 @@
       "maturity": "beta",
       "externalRegistration": false,
       "referencePath": "syntax/radar.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/radar.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/radar.mmd",
       "fixtureSha256": "a64c76bb95010be6c66a66348db7756f63ae94e856d9a67d06fd7d61fc178130",
       "upstream": {
         "repository": "mermaid",
@@ -944,7 +944,7 @@
       "maturity": "beta",
       "externalRegistration": false,
       "referencePath": "syntax/railroad.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/railroad.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/railroad.mmd",
       "fixtureSha256": "56f54e8bbb551799cdd48329ec8af431d1721c2ee44ecafa29c2287b4ddecee1",
       "upstream": {
         "repository": "mermaid",
@@ -962,7 +962,7 @@
       "maturity": "stable",
       "externalRegistration": false,
       "referencePath": "syntax/requirement.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/requirement.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/requirement.mmd",
       "fixtureSha256": "91732ca7ddb56ac35ac71d65fc4da405e496c7f0c78c826bdd893a8ccfc4bd79",
       "upstream": {
         "repository": "mermaid",
@@ -980,7 +980,7 @@
       "maturity": "stable",
       "externalRegistration": false,
       "referencePath": "syntax/sankey.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/sankey.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/sankey.mmd",
       "fixtureSha256": "82b50e4969a3f9d91bc928728434e09cd6379027e54caa6f745417f28fe9d63f",
       "upstream": {
         "repository": "mermaid",
@@ -998,7 +998,7 @@
       "maturity": "stable",
       "externalRegistration": false,
       "referencePath": "syntax/sequence.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/sequence.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/sequence.mmd",
       "fixtureSha256": "6d3fb9748a583cf5be209cd89ed93ca08d220cd92d94efdb088a2be21318c417",
       "upstream": {
         "repository": "mermaid",
@@ -1016,7 +1016,7 @@
       "maturity": "stable",
       "externalRegistration": false,
       "referencePath": "syntax/state.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/state.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/state.mmd",
       "fixtureSha256": "d2ebfc3f6db24692d7863cbcc698d6a47c9234942e353b7ff7582aeb5a882ba6",
       "upstream": {
         "repository": "mermaid",
@@ -1034,7 +1034,7 @@
       "maturity": "beta",
       "externalRegistration": false,
       "referencePath": "syntax/swimlanes.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/swimlanes.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/swimlanes.mmd",
       "fixtureSha256": "604d2ce062205f226913dc10005e4e194a0284147f2e7f9f1aa77c1e77d9709f",
       "upstream": {
         "repository": "mermaid",
@@ -1052,7 +1052,7 @@
       "maturity": "stable",
       "externalRegistration": false,
       "referencePath": "syntax/timeline.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/timeline.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/timeline.mmd",
       "fixtureSha256": "a9f822bbecee2c5713f04d84a171722ab6bc218a1312760bf78dd1572d3d82ca",
       "upstream": {
         "repository": "mermaid",
@@ -1070,7 +1070,7 @@
       "maturity": "beta",
       "externalRegistration": false,
       "referencePath": "syntax/tree-view.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/tree-view.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/tree-view.mmd",
       "fixtureSha256": "aa12770db602c8059030f38af453e63db5fbec23c69e9fcc0e27817791112610",
       "upstream": {
         "repository": "mermaid",
@@ -1088,7 +1088,7 @@
       "maturity": "beta",
       "externalRegistration": false,
       "referencePath": "syntax/treemap.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/treemap.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/treemap.mmd",
       "fixtureSha256": "b779680c616264ee324817abce4a2dd932336fb6439326691706e58ba068e806",
       "upstream": {
         "repository": "mermaid",
@@ -1106,7 +1106,7 @@
       "maturity": "stable",
       "externalRegistration": false,
       "referencePath": "syntax/user-journey.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/user-journey.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/user-journey.mmd",
       "fixtureSha256": "1a3de01eb7f7eeb616554b03a43bb4bdb14902e710e7f12f19648c4ddfc0eff4",
       "upstream": {
         "repository": "mermaid",
@@ -1124,7 +1124,7 @@
       "maturity": "beta",
       "externalRegistration": false,
       "referencePath": "syntax/venn.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/venn.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/venn.mmd",
       "fixtureSha256": "4f01b9da8e64accc8b6580aaa42592ab36705b2418fbab485cbe093e6f80536f",
       "upstream": {
         "repository": "mermaid",
@@ -1142,7 +1142,7 @@
       "maturity": "beta",
       "externalRegistration": false,
       "referencePath": "syntax/wardley.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/wardley.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/wardley.mmd",
       "fixtureSha256": "2e675c2c67d6e28161cf32d8f24b0e7cda154cc0b3f1f290672de12c59037b9a",
       "upstream": {
         "repository": "mermaid",
@@ -1160,7 +1160,7 @@
       "maturity": "stable",
       "externalRegistration": false,
       "referencePath": "syntax/xy-chart.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/xy-chart.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/xy-chart.mmd",
       "fixtureSha256": "a97629de7e802d0832bc8ced223ec3de997ab27465fd45eb8d2cbfca3a408eea",
       "upstream": {
         "repository": "mermaid",
@@ -1178,7 +1178,7 @@
       "maturity": "stable",
       "externalRegistration": true,
       "referencePath": "syntax/zenuml.md",
-      "fixturePath": "tests/skills/productivity/ptlam-visualization/mermaid/fixtures/zenuml.mmd",
+      "fixturePath": "tests/skills/productivity/ptlam-visualization/integration-tests/mermaid/fixtures/zenuml.mmd",
       "fixtureSha256": "cbe380ef9582159c5de945e11386be8f4582287012e6eb07efe857e9504ee139",
       "upstream": {
         "repository": "mermaid",
@@ -1218,6 +1218,6 @@
       "unified skill version",
       "HTML and shared capability files"
     ],
-    "value": "7e9e2e4f7e1de7c1fa4adb5610e20bd940830d22a530638489f52a63f711d581"
+    "value": "bfd13f4e06c49f05ba139cb83aafb0a1a4e4eb6a14d465a24195f57482d74cb8"
   }
 }

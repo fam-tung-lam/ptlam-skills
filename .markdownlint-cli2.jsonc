@@ -6,7 +6,7 @@
     ".ptlam/**",
     "local/**",
     "node_modules/**",
-    "tests/**/integration-results/**",
+    "tests/**/integration-tests/results/**",
   ],
   "config": {
     "default": true,
