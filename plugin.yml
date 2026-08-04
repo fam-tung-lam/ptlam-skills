@@ -48,23 +48,8 @@ skills:
     kind: product
     summary: Run universal test workflows with durable project-local profiles.
     required_skill_ids: []
-  - id: test-review-change
-    category: engineering
-    kind: test
-    summary: Review a small change and return risks, checks, and a verdict.
-    required_skill_ids: []
-  - id: test-plan-task
-    category: productivity
-    kind: test
-    summary: Turn one goal into a 3–5 step actionable plan.
-    required_skill_ids: []
   - id: ptlam-visualization-with-html
     category: productivity
     kind: product
     summary: Create polished, interactive local HTML artifacts.
-    required_skill_ids: []
-  - id: test-format-text
-    category: utilities
-    kind: test
-    summary: Reformat text without adding or changing facts.
     required_skill_ids: []

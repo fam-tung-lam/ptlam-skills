@@ -18,9 +18,6 @@
   ],
   "skills": [
     "./skills/engineering/ptlam-testing",
-    "./skills/engineering/test-review-change",
-    "./skills/productivity/test-plan-task",
-    "./skills/productivity/ptlam-visualization-with-html",
-    "./skills/utilities/test-format-text"
+    "./skills/productivity/ptlam-visualization-with-html"
   ]
 }

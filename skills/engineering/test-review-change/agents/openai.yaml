@@ -1,4 +1,0 @@
-interface:
-  display_name: "Test Review Change"
-  short_description: "Review small change descriptions safely"
-  default_prompt: "Use $test-review-change to review this small change description."

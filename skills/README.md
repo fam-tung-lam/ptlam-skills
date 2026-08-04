@@ -10,11 +10,11 @@ skills/<category>/<skill-name>/SKILL.md
 
 ## Initial categories
 
-| Category       | Skills                                            |
-| -------------- | ------------------------------------------------- |
-| `engineering`  | `ptlam-testing`, `test-review-change`             |
-| `productivity` | `ptlam-visualization-with-html`, `test-plan-task` |
-| `utilities`    | `test-format-text`                                |
+| Category       | Skills                          |
+| -------------- | ------------------------------- |
+| `engineering`  | `ptlam-testing`                 |
+| `productivity` | `ptlam-visualization-with-html` |
+| `utilities`    | —                               |
 
 <!-- END GENERATED:PLUGIN-CATALOG:CATEGORIES -->
 

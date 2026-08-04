@@ -57,14 +57,14 @@ export function makeOutputPlugin() {
     ],
     skills: [
       {
-        id: "test-review-change",
+        id: "review-code-change",
         category_id: "engineering",
         kind: "test",
         summary: "Review a small change.",
         required_skill_ids: [],
-        path: "skills/engineering/test-review-change",
+        path: "skills/engineering/review-code-change",
         frontmatter: {
-          name: "test-review-change",
+          name: "review-code-change",
           description: "Review changes safely.",
         },
       },
@@ -85,7 +85,7 @@ export function makeOutputPlugin() {
         category_id: "productivity",
         kind: "product",
         summary: "Create a polished HTML artifact.",
-        required_skill_ids: ["test-review-change"],
+        required_skill_ids: ["review-code-change"],
         path: "skills/productivity/visualize-html",
         frontmatter: {
           name: "visualize-html",

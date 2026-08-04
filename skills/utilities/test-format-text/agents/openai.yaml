@@ -1,4 +1,0 @@
-interface:
-  display_name: "Test Format Text"
-  short_description: "Reformat text without changing its facts"
-  default_prompt: "Use $test-format-text to normalize this text as a checklist without adding facts."
