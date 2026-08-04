@@ -1,12 +1,5 @@
 import assert from "node:assert/strict";
-import {
-  copyFile,
-  mkdir,
-  mkdtemp,
-  readFile,
-  rm,
-  writeFile,
-} from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -22,18 +15,57 @@ import {
 const testDirectory = path.dirname(fileURLToPath(import.meta.url));
 const repositoryRoot = path.resolve(testDirectory, "../../../..");
 
-const sourcePaths = [
-  "plugin.yml",
-  "skills/engineering/ptlam-testing/SKILL.md",
-  "skills/productivity/ptlam-visualization/SKILL.md",
-];
-
 const outputPaths = [
   ".claude-plugin/plugin.json",
   ".claude-plugin/marketplace.json",
   "README.md",
   "skills/README.md",
 ];
+
+const fixtureManifest = `schema_version: 1
+
+plugin:
+  name: fixture-skills
+  version: "0.1.0"
+  description: Fixture plugin description.
+  author:
+    name: Fixture Owner
+    email: owner@example.test
+    url: https://example.test
+  homepage: https://example.test/readme
+  repository: https://example.test/repository
+  license: MIT
+  keywords:
+    - agent-skills
+
+marketplace:
+  name: fixture
+  description: Fixture marketplace.
+  plugin_description: Fixture listing description.
+  category: development
+  keywords:
+    - agent-skills
+
+categories:
+  - id: engineering
+    title: Engineering
+    description: Engineering skills.
+
+skills:
+  - id: fixture-skill
+    category: engineering
+    kind: product
+    summary: Exercise compiler workflows.
+    required_skill_ids: []
+`;
+
+const fixtureSkill = `---
+name: fixture-skill
+description: Exercise plugin compiler workflows.
+---
+
+# Fixture skill
+`;
 
 const rootReadme = `# Fixture plugin
 
@@ -61,18 +93,22 @@ stale category catalog
 Human skills content after the generated region.
 `;
 
-async function createRepository(t) {
+async function createFixtureRepository(t) {
   const rootDir = await mkdtemp(
     path.join(tmpdir(), "ptlam-plugin-compiler-integration-"),
   );
   t.after(() => rm(rootDir, { force: true, recursive: true }));
 
-  for (const relativePath of sourcePaths) {
-    const destination = path.join(rootDir, relativePath);
-    await mkdir(path.dirname(destination), { recursive: true });
-    await copyFile(path.join(repositoryRoot, relativePath), destination);
-  }
-
+  const skillPath = path.join(
+    rootDir,
+    "skills",
+    "engineering",
+    "fixture-skill",
+    "SKILL.md",
+  );
+  await mkdir(path.dirname(skillPath), { recursive: true });
+  await writeFile(path.join(rootDir, "plugin.yml"), fixtureManifest, "utf8");
+  await writeFile(skillPath, fixtureSkill, "utf8");
   await writeFile(path.join(rootDir, "README.md"), rootReadme, "utf8");
   await writeFile(
     path.join(rootDir, "skills", "README.md"),
@@ -100,9 +136,29 @@ async function readOutputs(rootDir, paths = outputPaths) {
   );
 }
 
-test("a real repository validates, generates four outputs, and checks current", async (t) => {
+test("the repository catalog validates and generated outputs are current", async () => {
   // Given
-  const rootDir = await createRepository(t);
+  const { validator, checker } = createCompiler();
+
+  // When
+  const validation = await validator.validatePlugin({
+    rootDir: repositoryRoot,
+  });
+
+  // Then
+  assert.deepEqual(validation.diagnostics, []);
+
+  // When
+  const current = await checker.checkPlugin({ rootDir: repositoryRoot });
+
+  // Then
+  assert.equal(current.isCurrent, true);
+  assert.deepEqual(current.drift, []);
+});
+
+test("a fixture repository generates all outputs and checks current", async (t) => {
+  // Given
+  const rootDir = await createFixtureRepository(t);
   const { validator, generator, checker } = createCompiler();
 
   // When
@@ -112,7 +168,7 @@ test("a real repository validates, generates four outputs, and checks current", 
   assert.deepEqual(validation.diagnostics, []);
   assert.deepEqual(
     validation.plugin.skills.map((skill) => skill.id),
-    ["ptlam-testing", "ptlam-visualization"],
+    ["fixture-skill"],
   );
 
   // When
@@ -127,9 +183,9 @@ test("a real repository validates, generates four outputs, and checks current", 
   const claudePlugin = JSON.parse(generated[".claude-plugin/plugin.json"]);
 
   // Then
-  assert.equal(claudePlugin.name, "ptlam-skills");
-  assert.equal(claudePlugin.skills.length, 2);
-  assert.match(generated["README.md"], /`ptlam-testing`/u);
+  assert.equal(claudePlugin.name, "fixture-skills");
+  assert.deepEqual(claudePlugin.skills, ["./skills/engineering/fixture-skill"]);
+  assert.match(generated["README.md"], /`fixture-skill`/u);
   assert.match(generated["skills/README.md"], /`engineering`/u);
 
   // When
@@ -142,7 +198,7 @@ test("a real repository validates, generates four outputs, and checks current", 
 
 test("a source change creates drift and check never mutates outputs", async (t) => {
   // Given
-  const rootDir = await createRepository(t);
+  const rootDir = await createFixtureRepository(t);
   const { generator, checker } = createCompiler();
   await generator.generatePlugin({ rootDir });
 
@@ -152,8 +208,8 @@ test("a source change creates drift and check never mutates outputs", async (t) 
   await writeFile(
     manifestPath,
     manifest.replace(
-      "Create polished HTML and pinned Mermaid visual artifacts.",
-      "Create polished HTML and pinned Mermaid review artifacts.",
+      "Exercise compiler workflows.",
+      "Exercise changed compiler workflows.",
     ),
     "utf8",
   );
@@ -171,7 +227,7 @@ test("a source change creates drift and check never mutates outputs", async (t) 
 
 test("invalid source prevents generation from changing existing outputs", async (t) => {
   // Given
-  const rootDir = await createRepository(t);
+  const rootDir = await createFixtureRepository(t);
   const { generator } = createCompiler();
   await generator.generatePlugin({ rootDir });
   const beforeFailure = await readOutputs(rootDir);
@@ -200,7 +256,7 @@ test("invalid source prevents generation from changing existing outputs", async 
 
 test("a missing README prevents partial regeneration", async (t) => {
   // Given
-  const rootDir = await createRepository(t);
+  const rootDir = await createFixtureRepository(t);
   const { generator } = createCompiler();
   await generator.generatePlugin({ rootDir });
 
