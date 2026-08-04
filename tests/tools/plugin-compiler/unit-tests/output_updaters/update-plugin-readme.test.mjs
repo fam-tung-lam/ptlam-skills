@@ -9,8 +9,8 @@ import {
   SKILLS_README_END_MARKER,
   SKILLS_README_START_MARKER,
   updatePluginReadme,
-} from "../../../../../tools/plugin-compiler/output_updaters/update_plugin_readme.mjs";
-import { makePluginCatalogFixture } from "./test-fixtures/plugin_catalog_fixture.mjs";
+} from "../../../../../tools/plugin-compiler/output_updaters/update-plugin-readme.mjs";
+import { makePluginCatalogFixture } from "./test-fixtures/plugin-catalog-fixture.mjs";
 
 test("README updater replaces only ordered managed regions", () => {
   // Given

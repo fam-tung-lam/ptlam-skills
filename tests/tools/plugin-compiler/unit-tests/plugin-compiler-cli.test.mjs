@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { PluginCompilerCLI } from "../../../../tools/plugin-compiler/plugin_compiler_cli.mjs";
+import { PluginCompilerCLI } from "../../../../tools/plugin-compiler/plugin-compiler-cli.mjs";
 
 function createOutput() {
   const stdout = [];

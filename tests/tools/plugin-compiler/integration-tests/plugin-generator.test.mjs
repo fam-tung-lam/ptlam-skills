@@ -14,13 +14,13 @@ import test from "node:test";
 import {
   MANAGED_OUTPUT_PATHS,
   PluginGenerator,
-} from "../../../../tools/plugin-compiler/plugin_generator.mjs";
+} from "../../../../tools/plugin-compiler/plugin-generator.mjs";
 import {
   createOutputRoot,
   makeOutputPlugin,
   readManagedState,
-} from "./test-fixtures/output_repository_fixture.mjs";
-import { createPluginValidatorFake } from "./test-doubles/plugin_validator_fake.mjs";
+} from "./test-fixtures/output-repository-fixture.mjs";
+import { createPluginValidatorFake } from "./test-doubles/plugin-validator-fake.mjs";
 
 test("generate validates once and writes only changed complete outputs", async (t) => {
   // Given

@@ -1,4 +1,4 @@
-import { SkillFrontmatter } from "./skill_frontmatter.mjs";
+import { SkillFrontmatter } from "./skill-frontmatter.mjs";
 
 /**
  * Immutable normalized skill entry used by output updaters.

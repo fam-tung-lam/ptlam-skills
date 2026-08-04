@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { updateClaudePlugin } from "../../../../../tools/plugin-compiler/output_updaters/update_claude_plugin.mjs";
-import { makePluginCatalogFixture } from "./test-fixtures/plugin_catalog_fixture.mjs";
+import { updateClaudePlugin } from "../../../../../tools/plugin-compiler/output_updaters/update-claude-plugin.mjs";
+import { makePluginCatalogFixture } from "./test-fixtures/plugin-catalog-fixture.mjs";
 
 test("Claude updater renders exact host manifests without internal dependency metadata", () => {
   // Given

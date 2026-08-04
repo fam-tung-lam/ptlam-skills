@@ -9,6 +9,7 @@ const repositoryRoot = path.resolve(
   "../../../..",
 );
 const toolRoot = path.join(repositoryRoot, "tools/plugin-compiler");
+const testRoot = path.join(repositoryRoot, "tests/tools/plugin-compiler");
 
 async function moduleNames(directory) {
   return (await readdir(directory))
@@ -16,13 +17,35 @@ async function moduleNames(directory) {
     .sort();
 }
 
+async function modulePaths(directory) {
+  return (await readdir(directory, { recursive: true }))
+    .filter((name) => name.endsWith(".mjs"))
+    .sort();
+}
+
+test("keeps every plugin compiler module filename in kebab-case", async () => {
+  // Given
+  const moduleRoots = [toolRoot, testRoot];
+  const kebabCaseModule = /^[a-z0-9]+(?:-[a-z0-9]+)*(?:\.test)?\.mjs$/u;
+
+  // When
+  const modulePathsByRoot = await Promise.all(moduleRoots.map(modulePaths));
+
+  // Then
+  for (const modulePathsForRoot of modulePathsByRoot) {
+    for (const modulePath of modulePathsForRoot) {
+      assert.match(path.basename(modulePath), kebabCaseModule, modulePath);
+    }
+  }
+});
+
 test("keeps only the four command components at the tool root", async () => {
   // Given
   const expectedModules = [
-    "plugin_checker.mjs",
-    "plugin_compiler_cli.mjs",
-    "plugin_generator.mjs",
-    "plugin_validator.mjs",
+    "plugin-checker.mjs",
+    "plugin-compiler-cli.mjs",
+    "plugin-generator.mjs",
+    "plugin-validator.mjs",
   ];
 
   // When
@@ -36,10 +59,10 @@ test("keeps one explicit file per approved domain model", async () => {
   // Given
   const expectedModels = [
     "category.mjs",
+    "plugin-metadata.mjs",
     "plugin.mjs",
-    "plugin_metadata.mjs",
+    "skill-frontmatter.mjs",
     "skill.mjs",
-    "skill_frontmatter.mjs",
   ];
 
   // When
@@ -52,8 +75,8 @@ test("keeps one explicit file per approved domain model", async () => {
 test("keeps Claude and README content updaters in their own folder", async () => {
   // Given
   const expectedUpdaters = [
-    "update_claude_plugin.mjs",
-    "update_plugin_readme.mjs",
+    "update-claude-plugin.mjs",
+    "update-plugin-readme.mjs",
   ];
 
   // When
@@ -87,7 +110,7 @@ test("keeps pure updaters free of filesystem imports", async () => {
 
 test("keeps Checker free of filesystem mutation APIs", async () => {
   // Given
-  const checkerPath = path.join(toolRoot, "plugin_checker.mjs");
+  const checkerPath = path.join(toolRoot, "plugin-checker.mjs");
 
   // When
   const source = await readFile(checkerPath, "utf8");

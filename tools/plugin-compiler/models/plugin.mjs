@@ -1,5 +1,5 @@
 import { Category } from "./category.mjs";
-import { PluginMetadata } from "./plugin_metadata.mjs";
+import { PluginMetadata } from "./plugin-metadata.mjs";
 import { Skill } from "./skill.mjs";
 
 /**

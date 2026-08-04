@@ -5,13 +5,13 @@ import path from "node:path";
 import test from "node:test";
 
 import { Plugin } from "../../../../tools/plugin-compiler/models/plugin.mjs";
-import { PluginMetadata } from "../../../../tools/plugin-compiler/models/plugin_metadata.mjs";
+import { PluginMetadata } from "../../../../tools/plugin-compiler/models/plugin-metadata.mjs";
 import { Skill } from "../../../../tools/plugin-compiler/models/skill.mjs";
-import { SkillFrontmatter } from "../../../../tools/plugin-compiler/models/skill_frontmatter.mjs";
+import { SkillFrontmatter } from "../../../../tools/plugin-compiler/models/skill-frontmatter.mjs";
 import {
   PluginValidationError,
   PluginValidator,
-} from "../../../../tools/plugin-compiler/plugin_validator.mjs";
+} from "../../../../tools/plugin-compiler/plugin-validator.mjs";
 
 const validator = new PluginValidator();
 

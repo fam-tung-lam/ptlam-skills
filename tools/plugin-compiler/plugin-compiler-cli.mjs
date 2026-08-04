@@ -3,9 +3,9 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { PluginChecker } from "./plugin_checker.mjs";
-import { PluginGenerator } from "./plugin_generator.mjs";
-import { PluginValidationError, PluginValidator } from "./plugin_validator.mjs";
+import { PluginChecker } from "./plugin-checker.mjs";
+import { PluginGenerator } from "./plugin-generator.mjs";
+import { PluginValidationError, PluginValidator } from "./plugin-validator.mjs";
 
 const COMMANDS = new Set(["validate", "generate", "check"]);
 const DEFAULT_ROOT = path.resolve(
@@ -62,7 +62,7 @@ export class PluginCompilerCLI {
   ) {
     if (!COMMANDS.has(command)) {
       stderr(
-        "Usage: node tools/plugin-compiler/plugin_compiler_cli.mjs <validate|generate|check>",
+        "Usage: node tools/plugin-compiler/plugin-compiler-cli.mjs <validate|generate|check>",
       );
       return 2;
     }

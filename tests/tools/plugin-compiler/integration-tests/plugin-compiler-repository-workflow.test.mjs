@@ -12,12 +12,12 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 
-import { PluginChecker } from "../../../../tools/plugin-compiler/plugin_checker.mjs";
-import { PluginGenerator } from "../../../../tools/plugin-compiler/plugin_generator.mjs";
+import { PluginChecker } from "../../../../tools/plugin-compiler/plugin-checker.mjs";
+import { PluginGenerator } from "../../../../tools/plugin-compiler/plugin-generator.mjs";
 import {
   PluginValidationError,
   PluginValidator,
-} from "../../../../tools/plugin-compiler/plugin_validator.mjs";
+} from "../../../../tools/plugin-compiler/plugin-validator.mjs";
 
 const testDirectory = path.dirname(fileURLToPath(import.meta.url));
 const repositoryRoot = path.resolve(testDirectory, "../../../..");
