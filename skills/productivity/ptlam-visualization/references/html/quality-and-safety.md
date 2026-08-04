@@ -73,7 +73,7 @@ For a new HTML-only artifact, require each unified metadata field exactly once:
 <meta name="generator" content="ptlam-visualization" />
 <meta name="ptlam-visualization-version" content="1" />
 <meta name="ptlam-visualization-capability" content="html" />
-<meta name="ptlam-visualization-design-system-version" content="1" />
+<meta name="ptlam-visualization-design-system-version" content="2" />
 ```
 
 For a combined artifact, change only capability metadata to

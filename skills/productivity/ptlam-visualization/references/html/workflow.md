@@ -29,7 +29,7 @@ actual structure. Never force it into the nearest familiar family.
 
 | Natural structure              | Reader operation                   | Possible treatment                             |
 | ------------------------------ | ---------------------------------- | ---------------------------------------------- |
-| Relationships or dependencies  | Trace connection and impact        | Labeled graph, matrix, or linked cards         |
+| Relationships or dependencies  | Trace connection and impact        | Connected labeled graph or relationship matrix |
 | Sequence or change over time   | Follow order and turning points    | Steps, timeline, or state flow                 |
 | Hierarchy or containment       | Find ownership and depth           | Nested outline or tree                         |
 | Comparable quantities          | Compare magnitude or composition   | Aligned values, bars, or table                 |
@@ -96,3 +96,9 @@ Apply the presentation priority and assembly contracts in
 [design-system.md](design-system.md). Apply evidence labeling, accessibility,
 privacy, and verification rules in
 [quality-and-safety.md](quality-and-safety.md).
+
+When relationships, semantic zoom, process state, or animated transitions are
+part of the answer, also apply [diagrams-and-flows.md](diagrams-and-flows.md).
+It defines when cards are insufficient, how abstraction levels replace one
+another, and how one state model must synchronize the diagram, explanation, and
+controls.
