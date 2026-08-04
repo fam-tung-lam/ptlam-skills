@@ -1,4 +1,4 @@
-import { makeOutputPlugin } from "../test_fixtures/output_repository_fixture.mjs";
+import { makeOutputPlugin } from "../test-fixtures/output_repository_fixture.mjs";
 
 export function createPluginValidatorFake(plugin = makeOutputPlugin()) {
   const calls = [];

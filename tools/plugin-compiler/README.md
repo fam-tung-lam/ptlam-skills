@@ -291,26 +291,27 @@ Tests mirror the tool beneath level-specific roots:
 
 ```text
 tests/
-├── unit/tools/plugin-compiler/
-│   ├── models/
-│   ├── output_updaters/
-│   │   └── test_fixtures/
-│   └── plugin_compiler_cli.test.mjs
-└── integration/tools/plugin-compiler/
-    ├── test_doubles/
-    ├── test_fixtures/
-    ├── plugin_validator.test.mjs
-    ├── plugin_generator.test.mjs
-    ├── plugin_checker.test.mjs
-    ├── plugin_compiler_architecture.test.mjs
-    └── plugin_compiler_repository_workflow.test.mjs
+└── tools/plugin-compiler/
+    ├── unit-tests/
+    │   ├── models/
+    │   ├── output_updaters/
+    │   │   └── test-fixtures/
+    │   └── plugin_compiler_cli.test.mjs
+    └── integration-tests/
+        ├── test-doubles/
+        ├── test-fixtures/
+        ├── plugin_validator.test.mjs
+        ├── plugin_generator.test.mjs
+        ├── plugin_checker.test.mjs
+        ├── plugin_compiler_architecture.test.mjs
+        └── plugin_compiler_repository_workflow.test.mjs
 ```
 
 Unit tests cover in-process public behavior without filesystem access.
 Integration tests use isolated temporary repositories for the real filesystem,
 parser, schema, Validator, Generator, and Checker collaborations. Every test is
-written as Given–When–Then, and reusable doubles live at their nearest common
-test scope.
+written as Given–When–Then. The production or capability scope comes before the
+test level, and reusable doubles live at their nearest common test scope.
 
 Together they cover:
 
