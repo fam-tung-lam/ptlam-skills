@@ -5,6 +5,8 @@ behavior whose risk can be established without a real multi-component runtime.
 
 ## Rules
 
+- Place the repository-named unit-test directory inside the mirrored production
+  or capability scope, never before that scope.
 - Exercise the unit through its public interface.
 - Keep the environment in-process, fast, deterministic, and isolated.
 - Use real values and controlled in-memory collaborators where practical.

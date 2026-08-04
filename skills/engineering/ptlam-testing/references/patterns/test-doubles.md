@@ -38,7 +38,10 @@ the observable contract.
 ## Place a double at the nearest common test scope
 
 Place a double in the smallest scope containing every test that uses it. Move it
-up only after real reuse appears.
+up only after real reuse appears. Resolve the mirrored production or capability
+scope before considering the test level: level-specific doubles remain inside
+that level, while a genuinely shared cross-level double belongs directly in the
+capability's test scope.
 
 ```text
 One test
@@ -57,6 +60,25 @@ Several nested directories
 -> move test_doubles/ only to their nearest common parent
 ```
 
+Apply the same algorithm across test levels:
+
+```text
+<test-root>/
+└── <mirrored-production-or-capability-scope>/
+    ├── <test-doubles>/
+    │   └── <double-shared-by-multiple-levels>
+    ├── <unit-level>/
+    │   └── <test-doubles>/
+    │       └── <unit-only-double>
+    └── <integration-level>/
+        └── <test-doubles>/
+            └── <integration-only-double>
+```
+
+Use the repository's established directory names, such as `test-doubles` or
+`test_doubles`, and its names for each test level. The diagram fixes scope
+ownership and nesting, not spelling.
+
 For reusable doubles:
 
 ```text
@@ -69,7 +91,9 @@ For reusable doubles:
 - Keep one reusable semantic double or generation declaration per file unless a
   tool explicitly requires another layout.
 - Do not create suite-root `test_doubles/` speculatively.
-- Keep doubles for different suites, such as unit and integration, separate.
+- Keep doubles for different test levels separate unless the exact same semantic
+  double is already reused by tests at those levels. Put that shared definition
+  at their nearest common capability scope, not at a repository-wide level root.
 - Let a fixture or lifecycle hook construct and clean up a reusable double, but
   keep its definition in the nearest `test_doubles/` location.
 - Keep one-off mock, patch, or expectation configuration inside the test.
