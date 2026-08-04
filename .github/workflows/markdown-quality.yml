@@ -18,6 +18,8 @@ on:
       - "package.json"
       - ".github/workflows/markdown-quality.yml"
   push:
+    branches:
+      - main
     paths: *markdown_quality_paths
 
 permissions:
