@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 import test from "node:test";
 
-const repoRoot = new URL("../../../../", import.meta.url);
+const repoRoot = new URL("../../../../../", import.meta.url);
 const skillRoot = new URL("skills/engineering/ptlam-testing/", repoRoot);
 
 const readRepoFile = (path) => readFile(new URL(path, repoRoot), "utf8");
@@ -44,7 +44,10 @@ test("mandatory testing invariants outrank repository mechanics", async () => {
   // Then
   assert.ok(invariants);
   assert.match(invariants, /Given-When-Then in every test/);
-  assert.match(invariants, /mirror corresponding source placement/);
+  assert.match(
+    invariants,
+    /preserve the mirrored production or capability scope before the test-level/,
+  );
   assert.match(invariants, /nearest common test scope/);
   assert.match(invariants, /keep audit mode read-only/);
   assert.match(invariants, /activate TDD only/);
@@ -133,7 +136,7 @@ test("universal level, placement, doubles, audit, and TDD rules remain reusable"
   // Then
   assert.match(
     skill,
-    /mirror the source file's\n  relative directory and filename/,
+    /preserve the corresponding production or capability scope before adding/,
   );
   assert.match(skill, /request to check, audit, or review tests as read-only/);
   assert.match(guidance, /public interface/);
@@ -145,6 +148,76 @@ test("universal level, placement, doubles, audit, and TDD rules remain reusable"
   assert.match(
     tdd,
     /\*\*Red\*\*:[\s\S]*\*\*Green\*\*:[\s\S]*\*\*Refactor\*\*:/,
+  );
+});
+
+test("test placement keeps production scope before the test level", async () => {
+  // Given
+  const [skill, unit, integration] = await Promise.all([
+    readFile(new URL("SKILL.md", skillRoot), "utf8"),
+    readFile(new URL("references/test-levels/unit.md", skillRoot), "utf8"),
+    readFile(
+      new URL("references/test-levels/integration.md", skillRoot),
+      "utf8",
+    ),
+  ]);
+
+  // When
+  const placement = skill.match(
+    /## Place tests[\s\S]*?## Control production changes/,
+  )?.[0];
+
+  // Then
+  assert.ok(placement);
+  assert.match(
+    placement,
+    /<test-root>\/<capability-scope>\/<test-level>\/<test-file>/,
+  );
+  assert.match(
+    placement,
+    /Do not invert that hierarchy into a repository-wide/,
+  );
+  assert.match(
+    placement,
+    /`unit-tests` and\n  `integration-tests` are examples, not mandatory vocabulary/,
+  );
+  assert.match(unit, /unit-test directory inside the mirrored production/);
+  assert.match(
+    integration,
+    /integration-test directory inside the mirrored\n  production/,
+  );
+});
+
+test("test doubles stay at the nearest common capability and level scope", async () => {
+  // Given
+  const doubles = await readFile(
+    new URL("references/patterns/test-doubles.md", skillRoot),
+    "utf8",
+  );
+
+  // When
+  const crossLevelPlacement = doubles.match(
+    /Apply the same algorithm across test levels:[\s\S]*?For reusable doubles:/,
+  )?.[0];
+
+  // Then
+  assert.ok(crossLevelPlacement);
+  assert.match(
+    crossLevelPlacement,
+    /<mirrored-production-or-capability-scope>\/[\s\S]*<test-doubles>\/[\s\S]*<unit-level>\/[\s\S]*<integration-level>\//,
+  );
+  assert.match(doubles, /level-specific doubles remain inside\nthat level/);
+  assert.match(
+    doubles,
+    /shared cross-level double belongs directly in the\ncapability's test scope/,
+  );
+  assert.match(
+    doubles,
+    /repository's established directory names, such as `test-doubles` or\n`test_doubles`/,
+  );
+  assert.match(
+    doubles,
+    /shared definition\s+at their nearest common capability scope/,
   );
 });
 

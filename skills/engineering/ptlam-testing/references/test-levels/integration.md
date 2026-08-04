@@ -6,6 +6,8 @@ boundary.
 
 ## Rules
 
+- Place the repository-named integration-test directory inside the mirrored
+  production or capability scope, never before that scope.
 - Define the integration boundary and the behavior visible through its public
   entry point.
 - Run the real collaborators whose compatibility is the subject of the test.
@@ -25,7 +27,9 @@ boundary.
 
 Keep integration doubles separate from unit doubles even when they represent a
 similar external dependency. A unit double isolates the unit; an integration
-double excludes something outside the integration boundary.
+double excludes something outside the integration boundary. Share one definition
+above both level directories only when the same semantic double is actually
+reused at both levels, not merely because the doubles have similar names.
 
 ## Exit criteria
 

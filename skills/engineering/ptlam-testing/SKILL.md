@@ -47,7 +47,8 @@ test level, pattern, or workflow.
    tool conflict and keep the invariant. If an explicit user instruction
    conflicts, surface the conflict and obtain direction before proceeding:
    - use Given-When-Then in every test;
-   - mirror corresponding source placement under the appropriate test root;
+   - preserve the mirrored production or capability scope before the test-level
+     segment;
    - place reusable test doubles at their nearest common test scope;
    - keep audit mode read-only unless the user explicitly requests fixes;
    - activate TDD only when the user explicitly requests it.
@@ -111,10 +112,26 @@ test level, pattern, or workflow.
 
 - Use the test root and naming convention required by the repository, detected
   execution environment, selected tool, and test level.
-- When a test corresponds to production source code, mirror the source file's
-  relative directory and filename under the appropriate test root.
+- Resolve the production-root-to-test-root mapping first. Under the test root,
+  preserve the corresponding production or capability scope before adding the
+  selected test-level directory. The structural order is:
+
+  ```text
+  <production-root>/<capability-scope>/<source-file>
+  -> <test-root>/<capability-scope>/<test-level>/<test-file>
+  ```
+
+- Use the repository's names for the test root, capability directories, level
+  directories, and test files. Names such as `unit-tests` and
+  `integration-tests` are examples, not mandatory vocabulary.
+- Do not invert that hierarchy into a repository-wide
+  `<test-root>/<test-level>/<capability-scope>` layout. Keeping the capability
+  scope first makes all tests for one production area discoverable together.
+- When a test corresponds to production source code, mirror the remaining
+  relative directory and filename inside that capability's test-level directory.
 - When a test covers a capability or user journey without one corresponding
-  source file, organize it by that capability or journey.
+  source file, organize it inside that capability or journey scope and then its
+  selected test-level directory.
 - Do not apply source mirroring to test doubles. Follow
   [the test-double placement algorithm](references/patterns/test-doubles.md).
 - Apply the placement rules to new tests. Do not reorganize unrelated legacy
