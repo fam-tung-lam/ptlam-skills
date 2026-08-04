@@ -104,12 +104,17 @@
               <div
                 class="ptv-diagram-region"
                 role="group"
+                data-ptv-label-clearance-root
                 aria-label="Customer uses frontend, frontend calls backend, and backend emits telemetry to operations"
               >
-                <div class="ptv-diagram-canvas">
+                <div
+                  class="ptv-diagram-canvas"
+                  data-ptv-label-clearance-container
+                >
                   <svg
                     class="ptv-diagram-connections"
                     viewBox="0 0 768 448"
+                    preserveAspectRatio="none"
                     aria-hidden="true"
                   >
                     <defs>
@@ -129,26 +134,62 @@
                       class="ptv-diagram-edge"
                       d="M152 226H246"
                       marker-end="url(#ptv-platform-arrow)"
+                      data-ptv-relationship="platform-uses"
                     />
-                    <text class="ptv-diagram-edge-label" x="185" y="214">
-                      uses
-                    </text>
                     <path
                       class="ptv-diagram-edge"
                       d="M378 226H466"
                       marker-end="url(#ptv-platform-arrow)"
+                      data-ptv-relationship="platform-calls"
                     />
-                    <text class="ptv-diagram-edge-label" x="405" y="214">
-                      calls
-                    </text>
                     <path
                       class="ptv-diagram-edge"
                       d="M575 274V334H438"
                       marker-end="url(#ptv-platform-arrow)"
+                      data-ptv-relationship="platform-telemetry"
                     />
-                    <text class="ptv-diagram-edge-label" x="485" y="326">
-                      emits telemetry
-                    </text>
+                  </svg>
+                  <svg
+                    class="ptv-diagram-labels"
+                    viewBox="0 0 768 448"
+                    preserveAspectRatio="none"
+                    aria-hidden="true"
+                  >
+                    <foreignObject
+                      class="ptv-diagram-edge-label-slot"
+                      x="164"
+                      y="200"
+                      width="72"
+                      height="52"
+                      data-ptv-edge-label-slot="uses"
+                      data-ptv-relationship="platform-uses"
+                    >
+                      <div class="ptv-edge-label-box">uses the interface</div>
+                    </foreignObject>
+                    <foreignObject
+                      class="ptv-diagram-edge-label-slot"
+                      x="394"
+                      y="200"
+                      width="64"
+                      height="52"
+                      data-ptv-edge-label-slot="calls"
+                      data-ptv-relationship="platform-calls"
+                    >
+                      <div class="ptv-edge-label-box">calls backend APIs</div>
+                    </foreignObject>
+                    <foreignObject
+                      class="ptv-diagram-edge-label-slot"
+                      x="582"
+                      y="302"
+                      width="150"
+                      height="48"
+                      data-ptv-edge-label-slot="telemetry"
+                      data-ptv-relationship="platform-telemetry"
+                    >
+                      <div class="ptv-edge-label-box">
+                        emits operational telemetry
+                      </div>
+                    </foreignObject>
                   </svg>
                   <div
                     class="ptv-diagram-boundary"
@@ -160,14 +201,16 @@
                   </div>
                   <div
                     class="ptv-diagram-node"
-                    style="left: 4%; top: 40%; width: 16%"
+                    style="left: 4%; top: 40%; width: 16%; height: 22%"
+                    data-ptv-edge-obstacle
                   >
                     <span class="ptv-diagram-node-label">Customer</span>
                     <span class="ptv-diagram-node-kind">person</span>
                   </div>
                   <div
                     class="ptv-diagram-node"
-                    style="left: 32%; top: 40%; width: 18%"
+                    style="left: 32%; top: 40%; width: 18%; height: 22%"
+                    data-ptv-edge-obstacle
                   >
                     <span class="ptv-diagram-node-label">Frontend</span>
                     <span class="ptv-diagram-node-kind">web + mobile</span>
@@ -175,8 +218,9 @@
                   <button
                     class="ptv-diagram-boundary-button"
                     type="button"
-                    style="left: 61%; top: 38%; width: 22%"
+                    style="left: 61%; top: 38%; width: 22%; height: 27%"
                     data-ptv-semantic-zoom-in="backend"
+                    data-ptv-edge-obstacle
                   >
                     <span class="ptv-diagram-boundary-label">Backend</span>
                     <span class="ptv-diagram-node-kind">service landscape</span>
@@ -184,7 +228,8 @@
                   </button>
                   <div
                     class="ptv-diagram-node"
-                    style="left: 42%; top: 74%; width: 20%"
+                    style="left: 42%; top: 74%; width: 20%; height: 22%"
+                    data-ptv-edge-obstacle
                   >
                     <span class="ptv-diagram-node-label">Operations</span>
                     <span class="ptv-diagram-node-kind">observability</span>
@@ -208,12 +253,17 @@
               <div
                 class="ptv-diagram-region"
                 role="group"
+                data-ptv-label-clearance-root
                 aria-label="API gateway routes requests to core commerce, and core commerce publishes to data and events"
               >
-                <div class="ptv-diagram-canvas">
+                <div
+                  class="ptv-diagram-canvas"
+                  data-ptv-label-clearance-container
+                >
                   <svg
                     class="ptv-diagram-connections"
                     viewBox="0 0 768 448"
+                    preserveAspectRatio="none"
                     aria-hidden="true"
                   >
                     <defs>
@@ -233,26 +283,62 @@
                       class="ptv-diagram-edge"
                       d="M164 220H276"
                       marker-end="url(#ptv-backend-arrow)"
+                      data-ptv-relationship="backend-requests"
                     />
-                    <text class="ptv-diagram-edge-label" x="200" y="208">
-                      requests
-                    </text>
                     <path
                       class="ptv-diagram-edge"
                       d="M402 220H492"
                       marker-end="url(#ptv-backend-arrow)"
+                      data-ptv-relationship="backend-routes"
                     />
-                    <text class="ptv-diagram-edge-label" x="430" y="208">
-                      routes
-                    </text>
                     <path
                       class="ptv-diagram-edge"
                       d="M598 266V338H420"
                       marker-end="url(#ptv-backend-arrow)"
+                      data-ptv-relationship="backend-publishes"
                     />
-                    <text class="ptv-diagram-edge-label" x="472" y="326">
-                      publishes
-                    </text>
+                  </svg>
+                  <svg
+                    class="ptv-diagram-labels"
+                    viewBox="0 0 768 448"
+                    preserveAspectRatio="none"
+                    aria-hidden="true"
+                  >
+                    <foreignObject
+                      class="ptv-diagram-edge-label-slot"
+                      x="210"
+                      y="200"
+                      width="56"
+                      height="52"
+                      data-ptv-edge-label-slot="requests"
+                      data-ptv-relationship="backend-requests"
+                    >
+                      <div class="ptv-edge-label-box">sends API request</div>
+                    </foreignObject>
+                    <foreignObject
+                      class="ptv-diagram-edge-label-slot"
+                      x="425"
+                      y="200"
+                      width="56"
+                      height="52"
+                      data-ptv-edge-label-slot="routes"
+                      data-ptv-relationship="backend-routes"
+                    >
+                      <div class="ptv-edge-label-box">routes to service</div>
+                    </foreignObject>
+                    <foreignObject
+                      class="ptv-diagram-edge-label-slot"
+                      x="604"
+                      y="302"
+                      width="132"
+                      height="48"
+                      data-ptv-edge-label-slot="publishes"
+                      data-ptv-relationship="backend-publishes"
+                    >
+                      <div class="ptv-edge-label-box">
+                        publishes durable domain events
+                      </div>
+                    </foreignObject>
                   </svg>
                   <div
                     class="ptv-diagram-boundary"
@@ -264,14 +350,16 @@
                   </div>
                   <div
                     class="ptv-diagram-node"
-                    style="left: 8%; top: 40%; width: 18%"
+                    style="left: 8%; top: 40%; width: 18%; height: 22%"
+                    data-ptv-edge-obstacle
                   >
                     <span class="ptv-diagram-node-label">Frontend</span>
                     <span class="ptv-diagram-node-kind">caller</span>
                   </div>
                   <div
                     class="ptv-diagram-node"
-                    style="left: 36%; top: 40%; width: 18%"
+                    style="left: 36%; top: 40%; width: 18%; height: 22%"
+                    data-ptv-edge-obstacle
                   >
                     <span class="ptv-diagram-node-label">API gateway</span>
                     <span class="ptv-diagram-node-kind">entry point</span>
@@ -279,8 +367,9 @@
                   <button
                     class="ptv-diagram-boundary-button"
                     type="button"
-                    style="left: 64%; top: 38%; width: 22%"
+                    style="left: 64%; top: 38%; width: 22%; height: 27%"
                     data-ptv-semantic-zoom-in="orders"
+                    data-ptv-edge-obstacle
                   >
                     <span class="ptv-diagram-boundary-label"
                       >Orders service</span
@@ -290,7 +379,8 @@
                   </button>
                   <div
                     class="ptv-diagram-node"
-                    style="left: 38%; top: 74%; width: 22%"
+                    style="left: 38%; top: 74%; width: 22%; height: 22%"
+                    data-ptv-edge-obstacle
                   >
                     <span class="ptv-diagram-node-label"
                       >Data &amp; events</span
@@ -316,12 +406,17 @@
               <div
                 class="ptv-diagram-region"
                 role="group"
+                data-ptv-label-clearance-root
                 aria-label="API handler calls order core, order core writes PostgreSQL and records an event"
               >
-                <div class="ptv-diagram-canvas">
+                <div
+                  class="ptv-diagram-canvas"
+                  data-ptv-label-clearance-container
+                >
                   <svg
                     class="ptv-diagram-connections"
                     viewBox="0 0 768 448"
+                    preserveAspectRatio="none"
                     aria-hidden="true"
                   >
                     <defs>
@@ -341,26 +436,66 @@
                       class="ptv-diagram-edge"
                       d="M204 216H314"
                       marker-end="url(#ptv-orders-arrow)"
+                      data-ptv-relationship="orders-calls"
                     />
-                    <text class="ptv-diagram-edge-label" x="244" y="204">
-                      calls
-                    </text>
                     <path
                       class="ptv-diagram-edge"
                       d="M448 216H568"
                       marker-end="url(#ptv-orders-arrow)"
+                      data-ptv-relationship="orders-writes"
                     />
-                    <text class="ptv-diagram-edge-label" x="484" y="204">
-                      writes
-                    </text>
                     <path
                       class="ptv-diagram-edge"
                       d="M386 258V334"
                       marker-end="url(#ptv-orders-arrow)"
+                      data-ptv-relationship="orders-event"
                     />
-                    <text class="ptv-diagram-edge-label" x="398" y="303">
-                      records event
-                    </text>
+                  </svg>
+                  <svg
+                    class="ptv-diagram-labels"
+                    viewBox="0 0 768 448"
+                    preserveAspectRatio="none"
+                    aria-hidden="true"
+                  >
+                    <foreignObject
+                      class="ptv-diagram-edge-label-slot"
+                      x="249"
+                      y="178"
+                      width="63"
+                      height="100"
+                      data-ptv-edge-label-slot="calls"
+                      data-ptv-relationship="orders-calls"
+                    >
+                      <div class="ptv-edge-label-box">
+                        передаёт проверенный запрос
+                      </div>
+                    </foreignObject>
+                    <foreignObject
+                      class="ptv-diagram-edge-label-slot"
+                      x="486"
+                      y="178"
+                      width="64"
+                      height="100"
+                      data-ptv-edge-label-slot="writes"
+                      data-ptv-relationship="orders-writes"
+                    >
+                      <div class="ptv-edge-label-box">
+                        сохраняет заказ одной транзакцией
+                      </div>
+                    </foreignObject>
+                    <foreignObject
+                      class="ptv-diagram-edge-label-slot"
+                      x="486"
+                      y="278"
+                      width="64"
+                      height="92"
+                      data-ptv-edge-label-slot="event"
+                      data-ptv-relationship="orders-event"
+                    >
+                      <div class="ptv-edge-label-box">
+                        записывает событие для доставки
+                      </div>
+                    </foreignObject>
                   </svg>
                   <div
                     class="ptv-diagram-boundary"
@@ -372,28 +507,32 @@
                   </div>
                   <div
                     class="ptv-diagram-node"
-                    style="left: 13%; top: 40%; width: 18%"
+                    style="left: 13%; top: 40%; width: 18%; height: 22%"
+                    data-ptv-edge-obstacle
                   >
                     <span class="ptv-diagram-node-label">API handler</span>
                     <span class="ptv-diagram-node-kind">HTTP boundary</span>
                   </div>
                   <div
                     class="ptv-diagram-node"
-                    style="left: 42%; top: 40%; width: 20%"
+                    style="left: 42%; top: 40%; width: 20%; height: 22%"
+                    data-ptv-edge-obstacle
                   >
                     <span class="ptv-diagram-node-label">Order core</span>
                     <span class="ptv-diagram-node-kind">business logic</span>
                   </div>
                   <div
                     class="ptv-diagram-node"
-                    style="left: 73%; top: 40%; width: 18%"
+                    style="left: 73%; top: 40%; width: 18%; height: 22%"
+                    data-ptv-edge-obstacle
                   >
                     <span class="ptv-diagram-node-label">PostgreSQL</span>
                     <span class="ptv-diagram-node-kind">order data</span>
                   </div>
                   <div
                     class="ptv-diagram-node"
-                    style="left: 42%; top: 74%; width: 20%"
+                    style="left: 42%; top: 74%; width: 20%; height: 22%"
+                    data-ptv-edge-obstacle
                   >
                     <span class="ptv-diagram-node-label">Event outbox</span>
                     <span class="ptv-diagram-node-kind">reliable events</span>
@@ -425,9 +564,9 @@
           data-ptv-flow-interval="1500"
           data-ptv-flow-progress-template="Step {current} of {total}"
         >
-          <div class="ptv-flow-diagram">
+          <div class="ptv-flow-diagram" data-ptv-label-clearance-root>
             <svg
-              viewBox="0 0 380 540"
+              viewBox="0 0 380 620"
               role="img"
               aria-labelledby="ptv-flow-title ptv-flow-description"
             >
@@ -449,37 +588,11 @@
                   <path d="M0 0 10 5 0 10z" fill="currentColor" />
                 </marker>
               </defs>
-              <line
-                class="ptv-flow-edge"
-                x1="190"
-                y1="98"
-                x2="190"
-                y2="142"
-                marker-end="url(#ptv-flow-arrow)"
-                data-ptv-flow-edge="accept"
-              />
-              <line
-                class="ptv-flow-edge"
-                x1="190"
-                y1="224"
-                x2="190"
-                y2="268"
-                marker-end="url(#ptv-flow-arrow)"
-                data-ptv-flow-edge="persist"
-              />
-              <line
-                class="ptv-flow-edge"
-                x1="190"
-                y1="350"
-                x2="190"
-                y2="394"
-                marker-end="url(#ptv-flow-arrow)"
-                data-ptv-flow-edge="publish"
-              />
-              <text class="ptv-flow-edge-label" x="202" y="126">calls</text>
-              <text class="ptv-flow-edge-label" x="202" y="252">writes</text>
-              <text class="ptv-flow-edge-label" x="202" y="378">releases</text>
-              <g class="ptv-flow-node" data-ptv-flow-node="api">
+              <g
+                class="ptv-flow-node"
+                data-ptv-flow-node="api"
+                data-ptv-edge-obstacle
+              >
                 <rect x="78" y="28" width="224" height="70" rx="9" />
                 <text x="190" y="57" text-anchor="middle">API handler</text>
                 <text
@@ -491,41 +604,131 @@
                   accepts request
                 </text>
               </g>
-              <g class="ptv-flow-node" data-ptv-flow-node="core">
-                <rect x="78" y="154" width="224" height="70" rx="9" />
-                <text x="190" y="183" text-anchor="middle">Order core</text>
+              <g
+                class="ptv-flow-node"
+                data-ptv-flow-node="core"
+                data-ptv-edge-obstacle
+              >
+                <rect x="78" y="190" width="224" height="70" rx="9" />
+                <text x="190" y="219" text-anchor="middle">Order core</text>
                 <text
                   class="ptv-flow-node-detail"
                   x="190"
-                  y="203"
+                  y="239"
                   text-anchor="middle"
                 >
                   validates business rules
                 </text>
               </g>
-              <g class="ptv-flow-node" data-ptv-flow-node="database">
-                <rect x="78" y="280" width="224" height="70" rx="9" />
-                <text x="190" y="309" text-anchor="middle">PostgreSQL</text>
+              <g
+                class="ptv-flow-node"
+                data-ptv-flow-node="database"
+                data-ptv-edge-obstacle
+              >
+                <rect x="78" y="352" width="224" height="70" rx="9" />
+                <text x="190" y="381" text-anchor="middle">PostgreSQL</text>
                 <text
                   class="ptv-flow-node-detail"
                   x="190"
-                  y="329"
+                  y="401"
                   text-anchor="middle"
                 >
                   commits order row
                 </text>
               </g>
-              <g class="ptv-flow-node" data-ptv-flow-node="outbox">
-                <rect x="78" y="406" width="224" height="70" rx="9" />
-                <text x="190" y="435" text-anchor="middle">Event outbox</text>
+              <g
+                class="ptv-flow-node"
+                data-ptv-flow-node="outbox"
+                data-ptv-edge-obstacle
+              >
+                <rect x="78" y="514" width="224" height="70" rx="9" />
+                <text x="190" y="543" text-anchor="middle">Event outbox</text>
                 <text
                   class="ptv-flow-node-detail"
                   x="190"
-                  y="455"
+                  y="563"
                   text-anchor="middle"
                 >
                   makes event deliverable
                 </text>
+              </g>
+              <g
+                class="ptv-flow-relationship"
+                data-ptv-flow-edge="accept"
+                data-ptv-relationship="flow-accept"
+              >
+                <line
+                  class="ptv-flow-edge"
+                  x1="190"
+                  y1="98"
+                  x2="190"
+                  y2="178"
+                  marker-end="url(#ptv-flow-arrow)"
+                />
+                <foreignObject
+                  class="ptv-flow-edge-label-slot"
+                  x="205"
+                  y="110"
+                  width="155"
+                  height="68"
+                  data-ptv-edge-label-slot="accept"
+                >
+                  <div class="ptv-edge-label-box">
+                    передаёт запрос после проверки входных данных
+                  </div>
+                </foreignObject>
+              </g>
+              <g
+                class="ptv-flow-relationship"
+                data-ptv-flow-edge="persist"
+                data-ptv-relationship="flow-persist"
+              >
+                <line
+                  class="ptv-flow-edge"
+                  x1="190"
+                  y1="260"
+                  x2="190"
+                  y2="340"
+                  marker-end="url(#ptv-flow-arrow)"
+                />
+                <foreignObject
+                  class="ptv-flow-edge-label-slot"
+                  x="205"
+                  y="272"
+                  width="155"
+                  height="68"
+                  data-ptv-edge-label-slot="persist"
+                >
+                  <div class="ptv-edge-label-box">
+                    сохраняет заказ одной транзакцией
+                  </div>
+                </foreignObject>
+              </g>
+              <g
+                class="ptv-flow-relationship"
+                data-ptv-flow-edge="publish"
+                data-ptv-relationship="flow-publish"
+              >
+                <line
+                  class="ptv-flow-edge"
+                  x1="190"
+                  y1="422"
+                  x2="190"
+                  y2="502"
+                  marker-end="url(#ptv-flow-arrow)"
+                />
+                <foreignObject
+                  class="ptv-flow-edge-label-slot"
+                  x="205"
+                  y="434"
+                  width="155"
+                  height="68"
+                  data-ptv-edge-label-slot="publish"
+                >
+                  <div class="ptv-edge-label-box">
+                    публикует событие только после фиксации заказа
+                  </div>
+                </foreignObject>
               </g>
             </svg>
           </div>
@@ -649,5 +852,6 @@
 
     <script type="module" src="../behaviors/semantic-zoom.js"></script>
     <script type="module" src="../behaviors/flow-stepper.js"></script>
+    <script type="module" src="../behaviors/edge-label-clearance.js"></script>
   </body>
 </html>

@@ -187,15 +187,28 @@
   background-size: 2rem 2rem;
 }
 
-.ptv-diagram-connections {
+.ptv-diagram-connections,
+.ptv-diagram-labels {
   position: absolute;
-  z-index: 1;
   inset: 0;
   inline-size: 100%;
   block-size: 100%;
   overflow: visible;
-  color: var(--ptv-color-text-muted);
   pointer-events: none;
+}
+
+.ptv-diagram-connections {
+  z-index: 1;
+  color: var(--ptv-color-text-muted);
+}
+
+/*
+ * Labels use their own top layer, while authored label slots reserve real
+ * space between node obstacles. The higher layer prevents an HTML node from
+ * painting over a clear label; it does not replace the clearance requirement.
+ */
+.ptv-diagram-labels {
+  z-index: 3;
 }
 
 .ptv-diagram-edge {
@@ -212,6 +225,31 @@
   font-family: var(--ptv-font-sans);
   font-size: var(--ptv-text-xs);
   font-weight: var(--ptv-weight-regular);
+}
+
+.ptv-diagram-edge-label-slot {
+  overflow: hidden;
+}
+
+.ptv-edge-label-box {
+  box-sizing: border-box;
+  display: flex;
+  inline-size: 100%;
+  block-size: 100%;
+  min-inline-size: 0;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ptv-space-2xs) var(--ptv-space-xs);
+  overflow: hidden;
+  border-radius: var(--ptv-radius-sm);
+  background: var(--ptv-color-surface-muted);
+  color: var(--ptv-color-text-muted);
+  font-family: var(--ptv-font-sans);
+  font-size: var(--ptv-text-xs);
+  font-weight: var(--ptv-weight-regular);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+  text-align: center;
 }
 
 .ptv-diagram-boundary,
@@ -323,6 +361,10 @@
     outline: 0.15rem solid currentcolor;
     outline-offset: -0.15rem;
   }
+
+  .ptv-edge-label-box {
+    border: 1px solid CanvasText;
+  }
 }
 
 @media print {
@@ -355,5 +397,10 @@
   .ptv-diagram-canvas {
     inline-size: 100%;
     min-inline-size: 0;
+  }
+
+  .ptv-edge-label-box {
+    background: transparent;
+    color: currentcolor;
   }
 }
