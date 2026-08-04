@@ -15,9 +15,9 @@ import {
   SKILLS_README_END_MARKER,
   SKILLS_README_START_MARKER,
   updatePluginReadme,
-} from "./output_updaters/update_plugin_readme.mjs";
-import { updateClaudePlugin } from "./output_updaters/update_claude_plugin.mjs";
-import { PluginValidator } from "./plugin_validator.mjs";
+} from "./output_updaters/update-plugin-readme.mjs";
+import { updateClaudePlugin } from "./output_updaters/update-claude-plugin.mjs";
+import { PluginValidator } from "./plugin-validator.mjs";
 
 /**
  * Repository-relative artifacts exclusively maintained by the plugin compiler.
@@ -200,7 +200,7 @@ export class PluginGenerator {
    * @param {{ rootDir: string }} request Generation options.
    * @param {string} request.rootDir Repository root whose managed outputs should be updated.
    * @returns {Promise<{plugin: object, changedPaths: string[], unchangedPaths: string[]}>} Validated model and repository-relative output paths grouped by whether they changed.
-   * @throws {import("./plugin_validator.mjs").PluginValidationError} If canonical plugin sources are invalid.
+   * @throws {import("./plugin-validator.mjs").PluginValidationError} If canonical plugin sources are invalid.
    * @throws {Error} If managed output paths are unsafe, README markers are invalid, or filesystem writes fail.
    */
   async generatePlugin({ rootDir }) {

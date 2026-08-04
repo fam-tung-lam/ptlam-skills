@@ -37,22 +37,25 @@ replace managed files.
 ```text
 tools/plugin-compiler/
 ├── README.md
-├── plugin_compiler_cli.mjs
-├── plugin_validator.mjs
-├── plugin_generator.mjs
-├── plugin_checker.mjs
+├── plugin-compiler-cli.mjs
+├── plugin-validator.mjs
+├── plugin-generator.mjs
+├── plugin-checker.mjs
 ├── models/
 │   ├── plugin.mjs
-│   ├── plugin_metadata.mjs
+│   ├── plugin-metadata.mjs
 │   ├── category.mjs
 │   ├── skill.mjs
-│   └── skill_frontmatter.mjs
+│   └── skill-frontmatter.mjs
 ├── output_updaters/
-│   ├── update_claude_plugin.mjs
-│   └── update_plugin_readme.mjs
+│   ├── update-claude-plugin.mjs
+│   └── update-plugin-readme.mjs
 └── schemas/
     └── plugin.schema.json
 ```
+
+Every JavaScript module filename uses kebab-case. Exported JavaScript symbols
+retain the language's normal PascalCase and camelCase conventions.
 
 Only the four command-layer files live at the tool root. Models, the source
 schema, and pure output helpers are grouped by responsibility.
@@ -239,12 +242,12 @@ evidence rather than being created.
 
 ## Output updaters
 
-`output_updaters/update_claude_plugin.mjs` computes complete contents for:
+`output_updaters/update-claude-plugin.mjs` computes complete contents for:
 
 - `.claude-plugin/plugin.json`
 - `.claude-plugin/marketplace.json`
 
-`output_updaters/update_plugin_readme.mjs` replaces only marker-bounded regions
+`output_updaters/update-plugin-readme.mjs` replaces only marker-bounded regions
 in:
 
 - `README.md`
@@ -296,15 +299,15 @@ tests/
     │   ├── models/
     │   ├── output_updaters/
     │   │   └── test-fixtures/
-    │   └── plugin_compiler_cli.test.mjs
+    │   └── plugin-compiler-cli.test.mjs
     └── integration-tests/
         ├── test-doubles/
         ├── test-fixtures/
-        ├── plugin_validator.test.mjs
-        ├── plugin_generator.test.mjs
-        ├── plugin_checker.test.mjs
-        ├── plugin_compiler_architecture.test.mjs
-        └── plugin_compiler_repository_workflow.test.mjs
+        ├── plugin-validator.test.mjs
+        ├── plugin-generator.test.mjs
+        ├── plugin-checker.test.mjs
+        ├── plugin-compiler-architecture.test.mjs
+        └── plugin-compiler-repository-workflow.test.mjs
 ```
 
 Unit tests cover in-process public behavior without filesystem access.
@@ -315,6 +318,7 @@ test level, and reusable doubles live at their nearest common test scope.
 
 Together they cover:
 
+- kebab-case module naming across production and test scopes;
 - strict YAML and schema failures;
 - repository discovery, symlink, and relation invariants;
 - domain-model construction and immutability;

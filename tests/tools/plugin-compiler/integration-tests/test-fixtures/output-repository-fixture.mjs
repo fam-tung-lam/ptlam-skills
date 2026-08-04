@@ -7,8 +7,8 @@ import {
   ROOT_README_START_MARKER,
   SKILLS_README_END_MARKER,
   SKILLS_README_START_MARKER,
-} from "../../../../../tools/plugin-compiler/output_updaters/update_plugin_readme.mjs";
-import { MANAGED_OUTPUT_PATHS } from "../../../../../tools/plugin-compiler/plugin_generator.mjs";
+} from "../../../../../tools/plugin-compiler/output_updaters/update-plugin-readme.mjs";
+import { MANAGED_OUTPUT_PATHS } from "../../../../../tools/plugin-compiler/plugin-generator.mjs";
 
 export const staleRootReadme =
   `# Fixture catalog\n\nHuman introduction.\n\n${ROOT_README_START_MARKER}\n` +

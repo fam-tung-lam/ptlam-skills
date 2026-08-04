@@ -14,9 +14,9 @@ import {
 
 import { Category } from "./models/category.mjs";
 import { Plugin } from "./models/plugin.mjs";
-import { PluginMetadata } from "./models/plugin_metadata.mjs";
+import { PluginMetadata } from "./models/plugin-metadata.mjs";
 import { Skill } from "./models/skill.mjs";
-import { SkillFrontmatter } from "./models/skill_frontmatter.mjs";
+import { SkillFrontmatter } from "./models/skill-frontmatter.mjs";
 
 const validatorDirectory = path.dirname(fileURLToPath(import.meta.url));
 const schemaPath = path.join(

@@ -1,5 +1,5 @@
-import { PluginGenerator } from "./plugin_generator.mjs";
-import { PluginValidator } from "./plugin_validator.mjs";
+import { PluginGenerator } from "./plugin-generator.mjs";
+import { PluginValidator } from "./plugin-validator.mjs";
 
 /**
  * Performs a read-only comparison between generated expectations and repository outputs.
@@ -27,7 +27,7 @@ export class PluginChecker {
    * @param {{ rootDir: string }} request Check options.
    * @param {string} request.rootDir Repository root whose managed outputs should be checked.
    * @returns {Promise<{plugin: object, isCurrent: boolean, drift: Array<{path: string, reason: string}>}>} Validated model, aggregate freshness, and one entry per stale or missing output.
-   * @throws {import("./plugin_validator.mjs").PluginValidationError} If canonical plugin sources are invalid.
+   * @throws {import("./plugin-validator.mjs").PluginValidationError} If canonical plugin sources are invalid.
    * @throws {Error} If output paths are unsafe, README rendering fails, or managed files cannot be read.
    */
   async checkPlugin({ rootDir }) {

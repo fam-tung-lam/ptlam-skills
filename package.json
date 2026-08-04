@@ -4,9 +4,9 @@
   "private": true,
   "description": "Pham Tung Lam's portable agent skill catalog.",
   "scripts": {
-    "catalog:check": "node tools/plugin-compiler/plugin_compiler_cli.mjs check",
-    "catalog:generate": "node tools/plugin-compiler/plugin_compiler_cli.mjs generate",
-    "catalog:validate": "node tools/plugin-compiler/plugin_compiler_cli.mjs validate",
+    "catalog:check": "node tools/plugin-compiler/plugin-compiler-cli.mjs check",
+    "catalog:generate": "node tools/plugin-compiler/plugin-compiler-cli.mjs generate",
+    "catalog:validate": "node tools/plugin-compiler/plugin-compiler-cli.mjs validate",
     "test": "node --test \"tests/**/*.test.mjs\"",
     "markdown:check": "npm run markdown:format:check && npm run markdown:lint",
     "markdown:format": "prettier --write \"**/*.{md,mdx}\"",
