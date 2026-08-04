@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "skills": {
+    "ptlam-git": {
+      "source": "fam-tung-lam/ptlam-skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/ptlam-git/SKILL.md",
+      "computedHash": "3fe3d1e3415e5fed0f1b7cbbb9b156aa6091dd2ae864d49ee7ab0618c41d24a1"
+    },
+    "ptlam-testing": {
+      "source": "fam-tung-lam/ptlam-skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/ptlam-testing/SKILL.md",
+      "computedHash": "3f67b01be540e88d76f2da50016e0b1acf1e4a045bd5c8cd6f0be60ea276a34d"
+    },
+    "ptlam-visualization": {
+      "source": "fam-tung-lam/ptlam-skills",
+      "sourceType": "github",
+      "skillPath": "skills/productivity/ptlam-visualization/SKILL.md",
+      "computedHash": "827a03004b237b54eb9992a9cf9d3bf2a56d930c55d17db1ca2d667ca432b79c"
+    }
+  }
+}

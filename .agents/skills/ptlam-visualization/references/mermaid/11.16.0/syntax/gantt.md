@@ -1,0 +1,38 @@
+# Gantt
+
+- Declaration: `gantt`
+- Maturity: `stable`
+- External registration: `false`
+- Tagged authority: `packages/mermaid/src/docs/syntax/gantt.md` at
+  `mermaid@11.16.0`
+
+## Use
+
+Tasks, dates, durations, and dependencies.
+
+## Configuration and limits
+
+Use frontmatter for per-diagram configuration. Keep site configuration at
+`securityLevel: strict`, reject unknown schema keys, keep remote icon/resource
+loading disabled, and respect the runtime text/edge/time bounds.
+
+Use the pinned 11.16.0 behavior; verify the target host version before source
+delivery.
+
+## Minimal accessible example
+
+```mermaid
+---
+config:
+  deterministicIds: true
+  deterministicIDSeed: ptlam-mermaid-11.16.0-gantt
+---
+gantt
+  accTitle: Delivery plan
+  accDescr: Design finishes before implementation begins.
+  title Delivery plan
+  dateFormat YYYY-MM-DD
+  section Build
+    Design :done, d1, 2026-08-01, 2d
+    Implement :i1, after d1, 3d
+```

@@ -1,0 +1,71 @@
+/* Keyboard, high-contrast, and reduced-motion foundations. Original work. */
+
+.ptv-skip-link {
+  position: fixed;
+  z-index: 1000;
+  inset-block-start: var(--ptv-space-sm);
+  inset-inline-start: var(--ptv-space-sm);
+  max-inline-size: calc(100% - (2 * var(--ptv-space-sm)));
+  padding: var(--ptv-space-sm) var(--ptv-space-md);
+  transform: translateY(calc(-100% - var(--ptv-space-xl)));
+  border-radius: var(--ptv-radius-sm);
+  background: var(--ptv-color-accent);
+  box-shadow: var(--ptv-shadow-md);
+  color: var(--ptv-color-on-accent);
+  font-weight: var(--ptv-weight-medium);
+}
+
+.ptv-skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+.ptv-visually-hidden {
+  position: absolute !important;
+  inline-size: 1px !important;
+  block-size: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip-path: inset(50%) !important;
+  border: 0 !important;
+  white-space: nowrap !important;
+}
+
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 0.2rem solid var(--ptv-color-focus);
+  outline-offset: 0.2rem;
+}
+
+:where(h1, h2, h3, h4, section, article, aside)[id] {
+  scroll-margin-block-start: var(--ptv-space-xl);
+}
+
+@media (forced-colors: active) {
+  :where(
+    a,
+    button,
+    input,
+    select,
+    textarea,
+    summary,
+    [tabindex]
+  ):focus-visible {
+    outline-color: Highlight;
+  }
+
+  .ptv-skip-link {
+    border: 2px solid ButtonText;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+}

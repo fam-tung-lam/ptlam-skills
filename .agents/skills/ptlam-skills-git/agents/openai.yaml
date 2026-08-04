@@ -1,4 +1,0 @@
-interface:
-  display_name: "PTLam Skills Git"
-  short_description: "Run safe Git operations with project conventions"
-  default_prompt: "Use $ptlam-skills-git to prepare and safely deliver this repository change."
