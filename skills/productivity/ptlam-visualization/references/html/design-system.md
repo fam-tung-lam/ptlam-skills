@@ -76,11 +76,12 @@ not duplicate component or controller source in authoring guidance.
 
 For interactive system explanations, compose only the matching v2 resources:
 
-| Reader operation                              | Presentation asset        | Optional behavior asset      |
-| --------------------------------------------- | ------------------------- | ---------------------------- |
-| Trace connected topology and group boundaries | `components/diagrams.css` | none for a static map        |
-| Move between semantic abstraction levels      | `components/diagrams.css` | `behaviors/semantic-zoom.js` |
-| Advance a process while observing state       | `components/flows.css`    | `behaviors/flow-stepper.js`  |
+| Reader operation                              | Presentation asset        | Optional behavior asset             |
+| --------------------------------------------- | ------------------------- | ----------------------------------- |
+| Trace connected topology and group boundaries | `components/diagrams.css` | none for a static map               |
+| Move between semantic abstraction levels      | `components/diagrams.css` | `behaviors/semantic-zoom.js`        |
+| Advance a process while observing state       | `components/flows.css`    | `behaviors/flow-stepper.js`         |
+| Verify node clearance for wrapped edge labels | diagram or flow component | `behaviors/edge-label-clearance.js` |
 
 Inline the selected sources into the final portable document. Treat the
 standalone behavior files as additive controllers: the readable panels,

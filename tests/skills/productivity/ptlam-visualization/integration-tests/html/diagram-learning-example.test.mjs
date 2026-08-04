@@ -21,8 +21,13 @@ test("golden example composes semantic zoom and synchronized flow", () => {
   assert.match(example, /data-ptv-semantic-zoom-out/);
   assert.match(example, /class="ptv-semantic-zoom-trail"/);
   assert.ok((example.match(/class="ptv-diagram-edge"/g) ?? []).length >= 9);
-  assert.ok(
-    (example.match(/class="ptv-diagram-edge-label"/g) ?? []).length >= 9,
+  assert.equal(
+    (example.match(/class="ptv-diagram-edge-label-slot"/g) ?? []).length,
+    9,
+  );
+  assert.equal(
+    (example.match(/data-ptv-label-clearance-root/g) ?? []).length,
+    4,
   );
 
   assert.equal((example.match(/data-ptv-flow-step(?:\s|>)/g) ?? []).length, 4);

@@ -9,6 +9,7 @@ map and flow steppers; reuse the patterns, not its C4 taxonomy or visual theme.
 
 - [Choose the visual model](#choose-the-visual-model)
 - [Build a connected topology](#build-a-connected-topology)
+- [Reserve edge-label clearance](#reserve-edge-label-clearance)
 - [Implement arbitrary semantic zoom](#implement-arbitrary-semantic-zoom)
 - [Synchronize a live flow](#synchronize-a-live-flow)
 - [Compose the page](#compose-the-page)
@@ -48,8 +49,9 @@ For every level:
 1. Define each node's role and owning group.
 2. Define directed edges as `subject -> verb -> object`.
 3. Draw every material relationship as a visible line or arrow.
-4. Put a concise verb near the edge, outside nodes. Use small, plain, non-bold
-   text without a pill or filled background.
+4. Put a concise verb phrase in a reserved label slot near the edge, outside
+   every node. Use small, plain, non-bold text on the design-system label
+   surface so an edge cannot reduce its contrast.
 5. Keep arrow direction and the sentence direction identical. For example,
    `daemon -> reads -> configuration`, not an arrow that contradicts the words.
 6. Show meaningful group boundaries as labeled containers. Nest only when the
@@ -61,6 +63,40 @@ For every level:
 Use color and emphasis to reinforce node kind, group, state, or selection, not
 as the only carrier of those meanings. Distinguish containment from runtime
 flow: boundaries show structure; arrows show relationships or movement.
+
+## Reserve edge-label clearance
+
+Treat each relationship as one owned unit: its stable relationship identifier
+must connect the directed edge and its label, or one relationship wrapper must
+contain both. In a live flow, put `data-ptv-flow-edge` on that wrapper so the
+stepper activates the route and label together. Animate only the edge stroke;
+the label must stay still while a dash travels.
+
+Give every label a dedicated `foreignObject[data-ptv-edge-label-slot]` corridor
+and use `.ptv-edge-label-box` inside it. Mark every node that can occlude a
+label with `data-ptv-edge-obstacle`, and mark the containing diagram with
+`data-ptv-label-clearance-root`. If that root is a contained horizontal
+scroller, mark its authored canvas with `data-ptv-label-clearance-container`;
+containment is measured against that canvas, not only the currently visible
+scrollport. Load `behaviors/edge-label-clearance.js` to measure the rendered
+result after layout and resize. It records `pass` only when the whole label
+stays inside its diagram and remains at least 8 CSS pixels from every node. It
+never moves content; layout remains deterministic and readable without
+JavaScript.
+
+Reserve the corridor before placing nodes. Wrap a long phrase inside a wider or
+taller slot instead of shrinking its text. If no corridor fits, reroute the
+edge, move the nodes, or enlarge the viewBox and contained scroller. Do not let
+text continue beneath a node, truncate the relationship, or depend on a higher
+paint layer to conceal a collision. Test the actual target language: a phrase
+that fits in English may need several lines in Russian or German.
+
+Keep connected-diagram edges in `.ptv-diagram-connections` and labels in the
+higher `.ptv-diagram-labels` layer, pairing them with the same
+`data-ptv-relationship` value. For a single SVG live flow, place each
+`.ptv-flow-relationship` after the node groups in source order and let it own
+both its edge and label slot. The label surface or forced-colors border keeps
+text readable, but the measured 8-pixel corridor is still the clearance proof.
 
 ## Implement arbitrary semantic zoom
 
@@ -186,7 +222,11 @@ applicable gates below.
 ### Topology gate
 
 - Every modeled material edge is visible, directed correctly, and plainly
-  labeled; labels do not collide with nodes or arrows.
+  labeled; every edge and label share relationship ownership.
+- Every rendered label remains inside its diagram and has at least 8 CSS pixels
+  of clearance from every node at desktop width, 320 CSS pixels, 200% zoom, and
+  in the longest supported language. Treat `data-ptv-label-clearance="fail"` as
+  blocking, not as a hint to hide or move the label at runtime.
 - Group boundaries match the model, remain distinguishable without color, and do
   not visually sever relationships that cross them.
 - No accidental orphan, clipped node, hidden arrowhead, or ambiguous crossing
