@@ -19,8 +19,8 @@ import {
   createOutputRoot,
   makeOutputPlugin,
   readManagedState,
-} from "./test_fixtures/output_repository_fixture.mjs";
-import { createPluginValidatorFake } from "./test_doubles/plugin_validator_fake.mjs";
+} from "./test-fixtures/output_repository_fixture.mjs";
+import { createPluginValidatorFake } from "./test-doubles/plugin_validator_fake.mjs";
 
 test("generate validates once and writes only changed complete outputs", async (t) => {
   // Given
