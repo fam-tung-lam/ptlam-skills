@@ -121,7 +121,7 @@ test("one unified skill is discoverable through every public registration", asyn
     1,
   );
   assert.equal(
-    (rootCatalog.match(/^\| `ptlam-visualization` \|/gmu) ?? []).length,
+    (rootCatalog.match(/^\| `ptlam-visualization`[ \t]+\|/gmu) ?? []).length,
     1,
   );
   assert.equal(
