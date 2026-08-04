@@ -23,9 +23,10 @@ skills/<category>/<skill-name>/SKILL.md
 
 ## Available skills
 
-| Skill                           | Category     | Purpose                                            |
-| ------------------------------- | ------------ | -------------------------------------------------- |
-| `ptlam-visualization-with-html` | Productivity | Create polished, interactive local HTML artifacts. |
+| Skill                           | Category     | Purpose                                                           |
+| ------------------------------- | ------------ | ----------------------------------------------------------------- |
+| `ptlam-testing`                 | Engineering  | Run universal test workflows with durable project-local profiles. |
+| `ptlam-visualization-with-html` | Productivity | Create polished, interactive local HTML artifacts.                |
 
 ## Test collection
 
@@ -35,8 +36,8 @@ skills/<category>/<skill-name>/SKILL.md
 | `test-plan-task`     | Productivity | Turn one goal into a 3–5 step actionable plan.                 |
 | `test-format-text`   | Utilities    | Reformat text without adding or changing facts.                |
 
-The test skills are intentionally simple. They prove collection discovery,
-installation, metadata, and invocation before real skills are introduced.
+The test skills are intentionally simple. They verify collection discovery,
+installation, metadata, and invocation independently from the available skills.
 
 ## Using the catalog
 

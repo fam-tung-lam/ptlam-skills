@@ -10,7 +10,7 @@ skills/<category>/<skill-name>/SKILL.md
 
 | Category       | Skills                                            |
 | -------------- | ------------------------------------------------- |
-| `engineering`  | `test-review-change`                              |
+| `engineering`  | `ptlam-testing`, `test-review-change`             |
 | `productivity` | `ptlam-visualization-with-html`, `test-plan-task` |
 | `utilities`    | `test-format-text`                                |
 

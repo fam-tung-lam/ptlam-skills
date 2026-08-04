@@ -11,6 +11,7 @@
   "repository": "https://github.com/fam-tung-lam/ptlam-skills",
   "keywords": ["agent-skills", "engineering", "productivity", "utilities"],
   "skills": [
+    "./skills/engineering/ptlam-testing",
     "./skills/engineering/test-review-change",
     "./skills/productivity/test-plan-task",
     "./skills/productivity/ptlam-visualization-with-html",
