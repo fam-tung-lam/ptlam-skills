@@ -1,0 +1,5 @@
+interface:
+  display_name: "PTLam Git"
+  short_description: "Run adaptable, safe Git workflows"
+  default_prompt:
+    "Use $ptlam-git to plan and complete this Git workflow safely."

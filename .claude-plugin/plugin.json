@@ -17,6 +17,7 @@
     "utilities"
   ],
   "skills": [
+    "./skills/engineering/ptlam-git",
     "./skills/engineering/ptlam-testing",
     "./skills/productivity/ptlam-visualization"
   ]
