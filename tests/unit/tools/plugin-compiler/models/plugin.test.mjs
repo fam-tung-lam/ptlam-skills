@@ -1,13 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { Category } from "../../../tools/plugin-compiler/models/category.mjs";
-import { Plugin } from "../../../tools/plugin-compiler/models/plugin.mjs";
-import { PluginMetadata } from "../../../tools/plugin-compiler/models/plugin_metadata.mjs";
-import { Skill } from "../../../tools/plugin-compiler/models/skill.mjs";
-import { SkillFrontmatter } from "../../../tools/plugin-compiler/models/skill_frontmatter.mjs";
+import { Category } from "../../../../../tools/plugin-compiler/models/category.mjs";
+import { Plugin } from "../../../../../tools/plugin-compiler/models/plugin.mjs";
+import { PluginMetadata } from "../../../../../tools/plugin-compiler/models/plugin_metadata.mjs";
+import { Skill } from "../../../../../tools/plugin-compiler/models/skill.mjs";
+import { SkillFrontmatter } from "../../../../../tools/plugin-compiler/models/skill_frontmatter.mjs";
 
-test("domain models expose the approved direct immutable shape", () => {
+test("Plugin exposes the complete catalog as immutable domain values", () => {
+  // Given
   const plugin = new Plugin({
     schema_version: 1,
     metadata: {
@@ -50,13 +51,17 @@ test("domain models expose the approved direct immutable shape", () => {
     ],
   });
 
+  // When
+  const skill = plugin.skills[0];
+
+  // Then
   assert.ok(plugin instanceof Plugin);
   assert.ok(plugin.metadata instanceof PluginMetadata);
   assert.ok(plugin.categories[0] instanceof Category);
-  assert.ok(plugin.skills[0] instanceof Skill);
-  assert.ok(plugin.skills[0].frontmatter instanceof SkillFrontmatter);
-  assert.equal(plugin.skills[0].category_id, "engineering");
-  assert.deepEqual(plugin.skills[0].required_skill_ids, []);
+  assert.ok(skill instanceof Skill);
+  assert.ok(skill.frontmatter instanceof SkillFrontmatter);
+  assert.equal(skill.category_id, "engineering");
+  assert.deepEqual(skill.required_skill_ids, []);
   assert.equal(plugin.marketplace.plugin_description, "Fixture listing.");
 
   for (const value of [
@@ -69,9 +74,9 @@ test("domain models expose the approved direct immutable shape", () => {
     plugin.categories,
     plugin.categories[0],
     plugin.skills,
-    plugin.skills[0],
-    plugin.skills[0].required_skill_ids,
-    plugin.skills[0].frontmatter,
+    skill,
+    skill.required_skill_ids,
+    skill.frontmatter,
   ]) {
     assert.equal(Object.isFrozen(value), true);
   }

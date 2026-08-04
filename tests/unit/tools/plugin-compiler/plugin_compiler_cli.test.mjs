@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { PluginCompilerCLI } from "../../../tools/plugin-compiler/plugin_compiler_cli.mjs";
+import { PluginCompilerCLI } from "../../../../tools/plugin-compiler/plugin_compiler_cli.mjs";
 
 function createOutput() {
   const stdout = [];
@@ -29,6 +29,7 @@ function unused(name) {
 }
 
 test("returns usage error for an unknown command without delegating", async () => {
+  // Given
   const output = createOutput();
   const cli = new PluginCompilerCLI({
     validator: unused("validator"),
@@ -36,12 +37,17 @@ test("returns usage error for an unknown command without delegating", async () =
     checker: unused("checker"),
   });
 
-  assert.equal(await cli.run("unknown", output.options), 2);
+  // When
+  const exitCode = await cli.run("unknown", output.options);
+
+  // Then
+  assert.equal(exitCode, 2);
   assert.deepEqual(output.stdout, []);
   assert.match(output.stderr[0], /<validate\|generate\|check>/u);
 });
 
 test("validate delegates only to PluginValidator", async () => {
+  // Given
   const output = createOutput();
   const requests = [];
   const cli = new PluginCompilerCLI({
@@ -58,7 +64,11 @@ test("validate delegates only to PluginValidator", async () => {
     checker: unused("checker"),
   });
 
-  assert.equal(await cli.run("validate", output.options), 0);
+  // When
+  const exitCode = await cli.run("validate", output.options);
+
+  // Then
+  assert.equal(exitCode, 0);
   assert.deepEqual(requests, [{ rootDir: "/repository" }]);
   assert.deepEqual(output.stderr, []);
   assert.deepEqual(output.stdout, [
@@ -67,6 +77,7 @@ test("validate delegates only to PluginValidator", async () => {
 });
 
 test("generate presents changed and unchanged paths from PluginGenerator", async () => {
+  // Given
   const output = createOutput();
   const requests = [];
   const cli = new PluginCompilerCLI({
@@ -84,7 +95,11 @@ test("generate presents changed and unchanged paths from PluginGenerator", async
     checker: unused("checker"),
   });
 
-  assert.equal(await cli.run("generate", output.options), 0);
+  // When
+  const exitCode = await cli.run("generate", output.options);
+
+  // Then
+  assert.equal(exitCode, 0);
   assert.deepEqual(requests, [{ rootDir: "/repository" }]);
   assert.deepEqual(output.stderr, []);
   assert.deepEqual(output.stdout, [
@@ -95,6 +110,7 @@ test("generate presents changed and unchanged paths from PluginGenerator", async
 });
 
 test("check returns success when PluginChecker reports current outputs", async () => {
+  // Given
   const output = createOutput();
   const cli = new PluginCompilerCLI({
     validator: unused("validator"),
@@ -106,12 +122,17 @@ test("check returns success when PluginChecker reports current outputs", async (
     },
   });
 
-  assert.equal(await cli.run("check", output.options), 0);
+  // When
+  const exitCode = await cli.run("check", output.options);
+
+  // Then
+  assert.equal(exitCode, 0);
   assert.deepEqual(output.stderr, []);
   assert.deepEqual(output.stdout, ["Plugin outputs are current."]);
 });
 
 test("check reports every drift item without invoking a write path", async () => {
+  // Given
   const output = createOutput();
   const cli = new PluginCompilerCLI({
     validator: unused("validator"),
@@ -130,7 +151,11 @@ test("check reports every drift item without invoking a write path", async () =>
     },
   });
 
-  assert.equal(await cli.run("check", output.options), 1);
+  // When
+  const exitCode = await cli.run("check", output.options);
+
+  // Then
+  assert.equal(exitCode, 1);
   assert.deepEqual(output.stdout, []);
   assert.deepEqual(output.stderr, [
     "Plugin outputs are stale:",
@@ -141,6 +166,7 @@ test("check reports every drift item without invoking a write path", async () =>
 });
 
 test("maps command failures to exit code one", async () => {
+  // Given
   const output = createOutput();
   const cli = new PluginCompilerCLI({
     validator: {
@@ -152,7 +178,11 @@ test("maps command failures to exit code one", async () => {
     checker: unused("checker"),
   });
 
-  assert.equal(await cli.run("validate", output.options), 1);
+  // When
+  const exitCode = await cli.run("validate", output.options);
+
+  // Then
+  assert.equal(exitCode, 1);
   assert.deepEqual(output.stdout, []);
   assert.deepEqual(output.stderr, ["Plugin command failed: boom"]);
 });

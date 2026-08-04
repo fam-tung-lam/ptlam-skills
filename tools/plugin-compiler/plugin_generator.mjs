@@ -19,6 +19,12 @@ import {
 import { updateClaudePlugin } from "./output_updaters/update_claude_plugin.mjs";
 import { PluginValidator } from "./plugin_validator.mjs";
 
+/**
+ * Repository-relative artifacts exclusively maintained by the plugin compiler.
+ * Consumers can use this frozen list to report or audit the compiler's write scope.
+ *
+ * @type {readonly string[]}
+ */
 export const MANAGED_OUTPUT_PATHS = Object.freeze([
   ".claude-plugin/plugin.json",
   ".claude-plugin/marketplace.json",
@@ -109,7 +115,20 @@ async function replaceFile(rootDir, relativePath, content) {
   }
 }
 
+/**
+ * Plans generated artifacts and replaces each changed file atomically.
+ *
+ * @property {PluginValidator} validator Validator used before generation.
+ *
+ * @example
+ * const result = await new PluginGenerator().generatePlugin({ rootDir });
+ * console.log(result.changedPaths);
+ */
 export class PluginGenerator {
+  /**
+   * @param {{ validator?: PluginValidator }} [dependencies={}] Injectable collaborators.
+   * @param {PluginValidator} [dependencies.validator] Validator shared with callers such as the checker.
+   */
   constructor({ validator = new PluginValidator() } = {}) {
     this.validator = validator;
   }
@@ -118,8 +137,12 @@ export class PluginGenerator {
    * Build the single expected-output plan shared by generation and checking.
    * This method reads current files but never writes them.
    *
-   * @param {{ rootDir: string, plugin: object, allowMissingReadmes?: boolean }} request
-   * @returns {Promise<{entries: Array<{path: string, expected: string, current: string|null, exists: boolean}>, missing: string[]}>}
+   * @param {object} request Planning inputs.
+   * @param {string} request.rootDir Repository root containing current managed outputs.
+   * @param {object} request.plugin Validated plugin domain model to render.
+   * @param {boolean} [request.allowMissingReadmes=false] Whether absent README source files should be represented as drift instead of rejected.
+   * @returns {Promise<{entries: Array<{path: string, expected: string, current: string|null, exists: boolean}>, missing: string[]}>} Expected/current content pairs and missing README paths.
+   * @throws {Error} If the repository or a managed path is unsafe, a required README is missing, rendering fails, or a file cannot be read.
    */
   async buildExpectedOutputPlan({
     rootDir,
@@ -174,8 +197,11 @@ export class PluginGenerator {
   /**
    * Validate and atomically replace each changed complete output file.
    *
-   * @param {{ rootDir: string }} request
-   * @returns {Promise<{plugin: object, changedPaths: string[], unchangedPaths: string[]}>}
+   * @param {{ rootDir: string }} request Generation options.
+   * @param {string} request.rootDir Repository root whose managed outputs should be updated.
+   * @returns {Promise<{plugin: object, changedPaths: string[], unchangedPaths: string[]}>} Validated model and repository-relative output paths grouped by whether they changed.
+   * @throws {import("./plugin_validator.mjs").PluginValidationError} If canonical plugin sources are invalid.
+   * @throws {Error} If managed output paths are unsafe, README markers are invalid, or filesystem writes fail.
    */
   async generatePlugin({ rootDir }) {
     const validation = await this.validator.validatePlugin({ rootDir });

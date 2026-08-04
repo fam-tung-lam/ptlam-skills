@@ -30,7 +30,20 @@ const validateManifestSchema = new Ajv2020({
   strict: true,
 }).compile(schema);
 
+/**
+ * Aggregates actionable diagnostics from plugin manifest and skill validation.
+ * Catch this error when callers need to present every validation problem in one
+ * pass instead of stopping at the first invalid field.
+ *
+ * @property {"PluginValidationError"} name Stable error type name.
+ * @property {string} message Formatted summary followed by every diagnostic.
+ * @property {readonly string[]} diagnostics Deduplicated, frozen diagnostics.
+ */
 export class PluginValidationError extends Error {
+  /**
+   * @param {Iterable<string>} diagnostics Validation messages to deduplicate and report.
+   * @throws {TypeError} If diagnostics is not iterable.
+   */
   constructor(diagnostics) {
     const normalizedDiagnostics = [...new Set(diagnostics)].filter(Boolean);
     super(
@@ -43,13 +56,23 @@ export class PluginValidationError extends Error {
   }
 }
 
+/**
+ * Loads a repository's canonical plugin sources and returns a normalized model.
+ *
+ * @example
+ * const { plugin } = await new PluginValidator().validatePlugin({
+ *   rootDir: "/path/to/repository",
+ * });
+ */
 export class PluginValidator {
   /**
    * Load and validate a repository plugin manifest and its skill frontmatter.
    *
-   * @param {{ rootDir?: string }} request
-   * @returns {Promise<{ plugin: Plugin, diagnostics: readonly string[] }>}
-   * @throws {PluginValidationError} when any source or invariant is invalid
+   * @param {{ rootDir?: string }} [request={}] Validation options.
+   * @param {string} [request.rootDir=process.cwd()] Repository root containing `plugin.yml` and `skills/`.
+   * @returns {Promise<{ plugin: Plugin, diagnostics: readonly string[] }>} Frozen validated model and an empty diagnostic list.
+   * @throws {PluginValidationError} If repository sources cannot be read safely or violate schema and catalog invariants.
+   * @throws {TypeError} If `rootDir` is not a valid path value.
    */
   async validatePlugin({ rootDir } = {}) {
     const repositoryRoot = path.resolve(rootDir ?? process.cwd());

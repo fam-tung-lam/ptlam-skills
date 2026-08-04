@@ -13,7 +13,22 @@ const DEFAULT_ROOT = path.resolve(
   "../..",
 );
 
+/**
+ * Command dispatcher for validating, generating, and checking plugin artifacts.
+ * Inject collaborators and output callbacks when embedding the CLI in tests or
+ * another Node.js process.
+ *
+ * @property {PluginValidator} validator Validator used by the command dispatcher.
+ * @property {PluginGenerator} generator Generator used by `generate` and shared with the checker.
+ * @property {PluginChecker} checker Read-only checker used by `check`.
+ */
 export class PluginCompilerCLI {
+  /**
+   * @param {{ validator?: PluginValidator, generator?: PluginGenerator, checker?: PluginChecker }} [dependencies={}] Injectable command collaborators.
+   * @param {PluginValidator} [dependencies.validator] Validator used by `validate` and default collaborators.
+   * @param {PluginGenerator} [dependencies.generator] Generator used by `generate`.
+   * @param {PluginChecker} [dependencies.checker] Checker used by `check`.
+   */
   constructor({ validator, generator, checker } = {}) {
     this.validator = validator ?? new PluginValidator();
     this.generator =
@@ -26,6 +41,17 @@ export class PluginCompilerCLI {
       });
   }
 
+  /**
+   * Execute one compiler command and translate expected failures into an exit code.
+   *
+   * @param {"validate"|"generate"|"check"|string} command Command name to dispatch.
+   * @param {object} [options={}] Runtime and output options.
+   * @param {string} [options.rootDir] Repository root; defaults to this package's repository.
+   * @param {(message: string) => void} [options.stdout] Success-output callback.
+   * @param {(message: string) => void} [options.stderr] Diagnostic-output callback.
+   * @returns {Promise<0|1|2>} Zero on success, one on validation/generation/drift failure, or two for an unknown command.
+   * @throws {Error} If an injected output callback throws while reporting a result.
+   */
   async run(
     command,
     {
@@ -85,6 +111,20 @@ export class PluginCompilerCLI {
   }
 }
 
+/**
+ * Run a plugin compiler command with default collaborators.
+ *
+ * @param {"validate"|"generate"|"check"|string} command Command name to dispatch.
+ * @param {object} [options={}] Options forwarded to {@link PluginCompilerCLI#run}.
+ * @param {string} [options.rootDir] Repository root to process.
+ * @param {(message: string) => void} [options.stdout] Success-output callback.
+ * @param {(message: string) => void} [options.stderr] Diagnostic-output callback.
+ * @returns {Promise<0|1|2>} Process-style exit code for the command.
+ * @throws {Error} If an injected output callback throws while reporting a result.
+ *
+ * @example
+ * const exitCode = await runPluginCompilerCommand("check", { rootDir });
+ */
 export async function runPluginCompilerCommand(command, options = {}) {
   return new PluginCompilerCLI().run(command, options);
 }

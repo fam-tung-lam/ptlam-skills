@@ -1,11 +1,15 @@
 import stringWidth from "string-width";
 
+/** @type {"<!-- BEGIN GENERATED:PLUGIN-CATALOG:SKILLS -->"} Start of the managed root README catalog region. */
 export const ROOT_README_START_MARKER =
   "<!-- BEGIN GENERATED:PLUGIN-CATALOG:SKILLS -->";
+/** @type {"<!-- END GENERATED:PLUGIN-CATALOG:SKILLS -->"} End of the managed root README catalog region. */
 export const ROOT_README_END_MARKER =
   "<!-- END GENERATED:PLUGIN-CATALOG:SKILLS -->";
+/** @type {"<!-- BEGIN GENERATED:PLUGIN-CATALOG:CATEGORIES -->"} Start of the managed skills README category region. */
 export const SKILLS_README_START_MARKER =
   "<!-- BEGIN GENERATED:PLUGIN-CATALOG:CATEGORIES -->";
+/** @type {"<!-- END GENERATED:PLUGIN-CATALOG:CATEGORIES -->"} End of the managed skills README category region. */
 export const SKILLS_README_END_MARKER =
   "<!-- END GENERATED:PLUGIN-CATALOG:CATEGORIES -->";
 
@@ -144,8 +148,15 @@ function renderCategorySection(plugin) {
  * Update only the two marker-bounded README regions.
  * This updater is pure: bytes outside each region are preserved exactly.
  *
- * @param {{ plugin: object, rootReadme: string, skillsReadme: string }} request
- * @returns {{ rootReadme: string, skillsReadme: string }}
+ * @param {object} request Render request.
+ * @param {object} request.plugin Validated plugin model containing categories and skills.
+ * @param {string} request.rootReadme Existing root README source with exactly one marker pair.
+ * @param {string} request.skillsReadme Existing skills README source with exactly one marker pair.
+ * @returns {{ rootReadme: string, skillsReadme: string }} Updated complete README sources ready to write.
+ * @throws {Error} If marker pairs are missing, duplicated, reversed, nested, or generated table values contain unsupported characters.
+ *
+ * @example
+ * const updated = updatePluginReadme({ plugin, rootReadme, skillsReadme });
  */
 export function updatePluginReadme({ plugin, rootReadme, skillsReadme }) {
   return {
