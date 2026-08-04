@@ -40,7 +40,7 @@ test("README updater replaces only ordered managed regions", () => {
 
 | Skill                | Category     | Purpose                    |
 | -------------------- | ------------ | -------------------------- |
-| \`test-review-change\` | Engineering  | Review a small change.     |
+| \`review-code-change\` | Engineering  | Review a small change.     |
 | \`plan-task\`          | Productivity | Turn one goal into a plan. |
 
 The test skills are intentionally simple. They verify collection discovery,
@@ -56,12 +56,28 @@ ${ROOT_README_END_MARKER}\r\nsuffix`,
 
 | Category       | Skills                        |
 | -------------- | ----------------------------- |
-| \`engineering\`  | \`test-review-change\`          |
+| \`engineering\`  | \`review-code-change\`          |
 | \`productivity\` | \`visualize-html\`, \`plan-task\` |
 | \`empty\`        | —                             |
 
 ${SKILLS_README_END_MARKER}\r\nskills suffix`,
   );
+});
+
+test("README updater omits the test collection when no test skills exist", () => {
+  // Given
+  const plugin = makePluginCatalogFixture();
+  plugin.skills = plugin.skills.filter((skill) => skill.kind === "product");
+  const rootReadme = `${ROOT_README_START_MARKER}\nold\n${ROOT_README_END_MARKER}`;
+  const skillsReadme = `${SKILLS_README_START_MARKER}\nold\n${SKILLS_README_END_MARKER}`;
+
+  // When
+  const result = updatePluginReadme({ plugin, rootReadme, skillsReadme });
+
+  // Then
+  assert.match(result.rootReadme, /## Available skills/u);
+  assert.doesNotMatch(result.rootReadme, /## Test collection/u);
+  assert.doesNotMatch(result.rootReadme, /The test skills are intentionally simple/u);
 });
 
 test("README updater emits pinned-Prettier-compatible Unicode tables", async () => {

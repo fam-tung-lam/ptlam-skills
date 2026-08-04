@@ -30,17 +30,6 @@ skills/<category>/<skill-name>/SKILL.md
 | `ptlam-testing`                 | Engineering  | Run universal test workflows with durable project-local profiles. |
 | `ptlam-visualization-with-html` | Productivity | Create polished, interactive local HTML artifacts.                |
 
-## Test collection
-
-| Skill                | Category     | Purpose                                                        |
-| -------------------- | ------------ | -------------------------------------------------------------- |
-| `test-review-change` | Engineering  | Review a small change and return risks, checks, and a verdict. |
-| `test-plan-task`     | Productivity | Turn one goal into a 3–5 step actionable plan.                 |
-| `test-format-text`   | Utilities    | Reformat text without adding or changing facts.                |
-
-The test skills are intentionally simple. They verify collection discovery,
-installation, metadata, and invocation independently from the available skills.
-
 <!-- END GENERATED:PLUGIN-CATALOG:SKILLS -->
 
 ## Using the catalog

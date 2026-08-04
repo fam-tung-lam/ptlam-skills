@@ -25,10 +25,7 @@ const repositoryRoot = path.resolve(testDirectory, "../../../..");
 const sourcePaths = [
   "plugin.yml",
   "skills/engineering/ptlam-testing/SKILL.md",
-  "skills/engineering/test-review-change/SKILL.md",
   "skills/productivity/ptlam-visualization-with-html/SKILL.md",
-  "skills/productivity/test-plan-task/SKILL.md",
-  "skills/utilities/test-format-text/SKILL.md",
 ];
 
 const outputPaths = [
@@ -115,13 +112,7 @@ test("a real repository validates, generates four outputs, and checks current", 
   assert.deepEqual(validation.diagnostics, []);
   assert.deepEqual(
     validation.plugin.skills.map((skill) => skill.id),
-    [
-      "ptlam-testing",
-      "test-review-change",
-      "test-plan-task",
-      "ptlam-visualization-with-html",
-      "test-format-text",
-    ],
+    ["ptlam-testing", "ptlam-visualization-with-html"],
   );
 
   // When
@@ -137,7 +128,7 @@ test("a real repository validates, generates four outputs, and checks current", 
 
   // Then
   assert.equal(claudePlugin.name, "ptlam-skills");
-  assert.equal(claudePlugin.skills.length, 5);
+  assert.equal(claudePlugin.skills.length, 2);
   assert.match(generated["README.md"], /`ptlam-testing`/u);
   assert.match(generated["skills/README.md"], /`engineering`/u);
 

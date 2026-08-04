@@ -111,17 +111,25 @@ function renderRootCatalogSection(plugin) {
         skill.summary,
       ]);
 
-  return [
+  const sections = [
     "## Available skills",
     "",
     renderMarkdownTable(["Skill", "Category", "Purpose"], skillRows("product")),
-    "",
-    "## Test collection",
-    "",
-    renderMarkdownTable(["Skill", "Category", "Purpose"], skillRows("test")),
-    "",
-    TEST_COLLECTION_EXPLANATION,
-  ].join("\n");
+  ];
+  const testRows = skillRows("test");
+
+  if (testRows.length > 0) {
+    sections.push(
+      "",
+      "## Test collection",
+      "",
+      renderMarkdownTable(["Skill", "Category", "Purpose"], testRows),
+      "",
+      TEST_COLLECTION_EXPLANATION,
+    );
+  }
+
+  return sections.join("\n");
 }
 
 function renderCategorySection(plugin) {

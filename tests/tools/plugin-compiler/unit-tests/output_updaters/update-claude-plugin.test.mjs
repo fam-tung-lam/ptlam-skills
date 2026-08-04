@@ -31,7 +31,7 @@ test("Claude updater renders exact host manifests without internal dependency me
     "fixtures"
   ],
   "skills": [
-    "./skills/engineering/test-review-change",
+    "./skills/engineering/review-code-change",
     "./skills/productivity/plan-task",
     "./skills/productivity/visualize-html"
   ]
