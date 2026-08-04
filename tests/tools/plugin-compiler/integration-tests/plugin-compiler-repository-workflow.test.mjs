@@ -25,7 +25,7 @@ const repositoryRoot = path.resolve(testDirectory, "../../../..");
 const sourcePaths = [
   "plugin.yml",
   "skills/engineering/ptlam-testing/SKILL.md",
-  "skills/productivity/ptlam-visualization-with-html/SKILL.md",
+  "skills/productivity/ptlam-visualization/SKILL.md",
 ];
 
 const outputPaths = [
@@ -112,7 +112,7 @@ test("a real repository validates, generates four outputs, and checks current", 
   assert.deepEqual(validation.diagnostics, []);
   assert.deepEqual(
     validation.plugin.skills.map((skill) => skill.id),
-    ["ptlam-testing", "ptlam-visualization-with-html"],
+    ["ptlam-testing", "ptlam-visualization"],
   );
 
   // When
@@ -152,8 +152,8 @@ test("a source change creates drift and check never mutates outputs", async (t) 
   await writeFile(
     manifestPath,
     manifest.replace(
-      "Create polished, interactive local HTML artifacts.",
-      "Create polished, interactive local HTML review artifacts.",
+      "Create polished HTML and pinned Mermaid visual artifacts.",
+      "Create polished HTML and pinned Mermaid review artifacts.",
     ),
     "utf8",
   );

@@ -1,0 +1,928 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="ptlam-visualization" />
+    <meta name="ptlam-visualization-version" content="1" />
+    <meta name="ptlam-visualization-capability" content="html" />
+    <meta name="ptlam-visualization-design-system-version" content="1" />
+    <title>Release Readiness Review — Atlas 2.4</title>
+    <style>
+      /*
+ * ptlam-visualization design tokens, version 1.
+ * Original work. System fonts and CSS platform features require no bundled assets.
+ */
+
+:root {
+  color-scheme: light dark;
+
+  /* Color */
+  --ptv-color-canvas: #f4f7f5;
+  --ptv-color-surface: #ffffff;
+  --ptv-color-surface-muted: #e9efec;
+  --ptv-color-surface-raised: #ffffff;
+  --ptv-color-text: #17211d;
+  --ptv-color-text-muted: #52625b;
+  --ptv-color-border: #cbd6d0;
+  --ptv-color-border-strong: #83938b;
+  --ptv-color-accent: #086b60;
+  --ptv-color-accent-emphasis: #07564e;
+  --ptv-color-on-accent: #ffffff;
+  --ptv-color-positive: #216b45;
+  --ptv-color-warning: #835400;
+  --ptv-color-danger: #a22f3d;
+  --ptv-color-focus: #006db6;
+  --ptv-color-selection: #c2f0e7;
+  --ptv-color-code: #e3ebe7;
+
+  /* Typography */
+  --ptv-font-sans:
+    ui-sans-serif, -apple-system, blinkmacsystemfont, "Segoe UI", sans-serif;
+  --ptv-font-mono:
+    ui-monospace, "SFMono-Regular", consolas, "Liberation Mono", monospace;
+  --ptv-text-xs: 0.8125rem;
+  --ptv-text-sm: 0.9375rem;
+  --ptv-text-md: 1rem;
+  --ptv-text-lg: clamp(1.125rem, 1.05rem + 0.25vw, 1.25rem);
+  --ptv-text-xl: clamp(1.375rem, 1.2rem + 0.65vw, 1.75rem);
+  --ptv-text-2xl: clamp(1.875rem, 1.5rem + 1.4vw, 2.75rem);
+  --ptv-text-3xl: clamp(2.25rem, 1.65rem + 2.2vw, 3.75rem);
+  --ptv-leading-tight: 1.16;
+  --ptv-leading-normal: 1.55;
+  --ptv-leading-relaxed: 1.72;
+  --ptv-weight-regular: 400;
+  --ptv-weight-medium: 600;
+  --ptv-weight-bold: 750;
+  --ptv-measure: 68ch;
+
+  /* Spacing */
+  --ptv-space-2xs: 0.25rem;
+  --ptv-space-xs: 0.5rem;
+  --ptv-space-sm: 0.75rem;
+  --ptv-space-md: 1rem;
+  --ptv-space-lg: 1.5rem;
+  --ptv-space-xl: 2rem;
+  --ptv-space-2xl: 3rem;
+  --ptv-space-3xl: 4.5rem;
+
+  /* Shape */
+  --ptv-radius-sm: 0.375rem;
+  --ptv-radius-md: 0.75rem;
+  --ptv-radius-lg: 1.25rem;
+  --ptv-radius-pill: 999rem;
+
+  /* Elevation */
+  --ptv-shadow-sm: 0 1px 2px rgb(15 35 27 / 10%);
+  --ptv-shadow-md: 0 0.75rem 2rem rgb(15 35 27 / 12%);
+  --ptv-shadow-lg: 0 1.5rem 4rem rgb(15 35 27 / 16%);
+
+  /* Motion */
+  --ptv-duration-instant: 0ms;
+  --ptv-duration-quick: 120ms;
+  --ptv-duration-standard: 200ms;
+  --ptv-duration-slow: 320ms;
+  --ptv-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ptv-ease-emphasized: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Breakpoint values document the public responsive contract. */
+  --ptv-breakpoint-compact: 30rem;
+  --ptv-breakpoint-medium: 48rem;
+  --ptv-breakpoint-wide: 72rem;
+
+  /* Reading widths */
+  --ptv-width-document: 76rem;
+  --ptv-width-prose: var(--ptv-measure);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-ptv-theme]) {
+    --ptv-color-canvas: #101714;
+    --ptv-color-surface: #18211d;
+    --ptv-color-surface-muted: #202c27;
+    --ptv-color-surface-raised: #26332d;
+    --ptv-color-text: #edf5f1;
+    --ptv-color-text-muted: #b4c3bb;
+    --ptv-color-border: #3b4c43;
+    --ptv-color-border-strong: #6d7f75;
+    --ptv-color-accent: #65d5c5;
+    --ptv-color-accent-emphasis: #9ce9de;
+    --ptv-color-on-accent: #0c302a;
+    --ptv-color-positive: #7bd7a0;
+    --ptv-color-warning: #f0c36b;
+    --ptv-color-danger: #ff9ba4;
+    --ptv-color-focus: #78c9ff;
+    --ptv-color-selection: #27584f;
+    --ptv-color-code: #0c1210;
+    --ptv-shadow-sm: 0 1px 2px rgb(0 0 0 / 28%);
+    --ptv-shadow-md: 0 0.75rem 2rem rgb(0 0 0 / 32%);
+    --ptv-shadow-lg: 0 1.5rem 4rem rgb(0 0 0 / 38%);
+  }
+}
+
+:root[data-ptv-theme="light"],
+[data-ptv-theme="light"] {
+  color-scheme: light;
+  --ptv-color-canvas: #f4f7f5;
+  --ptv-color-surface: #ffffff;
+  --ptv-color-surface-muted: #e9efec;
+  --ptv-color-surface-raised: #ffffff;
+  --ptv-color-text: #17211d;
+  --ptv-color-text-muted: #52625b;
+  --ptv-color-border: #cbd6d0;
+  --ptv-color-border-strong: #83938b;
+  --ptv-color-accent: #086b60;
+  --ptv-color-accent-emphasis: #07564e;
+  --ptv-color-on-accent: #ffffff;
+  --ptv-color-positive: #216b45;
+  --ptv-color-warning: #835400;
+  --ptv-color-danger: #a22f3d;
+  --ptv-color-focus: #006db6;
+  --ptv-color-selection: #c2f0e7;
+  --ptv-color-code: #e3ebe7;
+  --ptv-shadow-sm: 0 1px 2px rgb(15 35 27 / 10%);
+  --ptv-shadow-md: 0 0.75rem 2rem rgb(15 35 27 / 12%);
+  --ptv-shadow-lg: 0 1.5rem 4rem rgb(15 35 27 / 16%);
+}
+
+:root[data-ptv-theme="dark"],
+[data-ptv-theme="dark"] {
+  color-scheme: dark;
+  --ptv-color-canvas: #101714;
+  --ptv-color-surface: #18211d;
+  --ptv-color-surface-muted: #202c27;
+  --ptv-color-surface-raised: #26332d;
+  --ptv-color-text: #edf5f1;
+  --ptv-color-text-muted: #b4c3bb;
+  --ptv-color-border: #3b4c43;
+  --ptv-color-border-strong: #6d7f75;
+  --ptv-color-accent: #65d5c5;
+  --ptv-color-accent-emphasis: #9ce9de;
+  --ptv-color-on-accent: #0c302a;
+  --ptv-color-positive: #7bd7a0;
+  --ptv-color-warning: #f0c36b;
+  --ptv-color-danger: #ff9ba4;
+  --ptv-color-focus: #78c9ff;
+  --ptv-color-selection: #27584f;
+  --ptv-color-code: #0c1210;
+  --ptv-shadow-sm: 0 1px 2px rgb(0 0 0 / 28%);
+  --ptv-shadow-md: 0 0.75rem 2rem rgb(0 0 0 / 32%);
+  --ptv-shadow-lg: 0 1.5rem 4rem rgb(0 0 0 / 38%);
+}
+
+
+/* Semantic document defaults for ptlam-visualization. Original work. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  min-inline-size: 0;
+  background: var(--ptv-color-canvas);
+  color: var(--ptv-color-text);
+  font-family: var(--ptv-font-sans);
+  font-size: 100%;
+  line-height: var(--ptv-leading-normal);
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-block-size: 100vh;
+  min-inline-size: 0;
+  margin: 0;
+  background: var(--ptv-color-canvas);
+  color: var(--ptv-color-text);
+  overflow-wrap: break-word;
+}
+
+:where(header, main, footer, section, article, aside, nav, div) {
+  min-inline-size: 0;
+}
+
+:where(h1, h2, h3, h4) {
+  max-inline-size: var(--ptv-width-prose);
+  margin-block: 0;
+  color: var(--ptv-color-text);
+  font-weight: var(--ptv-weight-bold);
+  line-height: var(--ptv-leading-tight);
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--ptv-text-3xl);
+}
+
+h2 {
+  font-size: var(--ptv-text-2xl);
+}
+
+h3 {
+  font-size: var(--ptv-text-xl);
+}
+
+h4 {
+  font-size: var(--ptv-text-lg);
+}
+
+:where(p, ul, ol, dl, blockquote) {
+  max-inline-size: var(--ptv-width-prose);
+}
+
+:where(p, ul, ol, dl, blockquote, figure, pre) {
+  margin-block: 0;
+}
+
+:where(ul, ol) {
+  padding-inline-start: 1.4em;
+}
+
+li + li {
+  margin-block-start: var(--ptv-space-2xs);
+}
+
+a {
+  color: var(--ptv-color-accent);
+  text-decoration-thickness: 0.09em;
+  text-underline-offset: 0.16em;
+}
+
+a:hover {
+  color: var(--ptv-color-accent-emphasis);
+}
+
+abbr[title] {
+  text-decoration-style: dotted;
+  text-underline-offset: 0.16em;
+}
+
+:where(img, picture, video, canvas, svg) {
+  display: block;
+  max-inline-size: 100%;
+}
+
+:where(img, video, canvas) {
+  block-size: auto;
+}
+
+:where(button, input, select, textarea) {
+  max-inline-size: 100%;
+  color: inherit;
+  font: inherit;
+}
+
+textarea {
+  resize: vertical;
+}
+
+summary {
+  cursor: pointer;
+}
+
+code,
+kbd,
+samp,
+pre {
+  font-family: var(--ptv-font-mono);
+}
+
+:where(code, kbd, samp) {
+  font-size: 0.9em;
+}
+
+code {
+  overflow-wrap: anywhere;
+}
+
+pre {
+  max-inline-size: 100%;
+  padding: var(--ptv-space-md);
+  overflow: auto;
+  border: 1px solid var(--ptv-color-border);
+  border-radius: var(--ptv-radius-md);
+  background: var(--ptv-color-code);
+  font-size: var(--ptv-text-sm);
+  line-height: var(--ptv-leading-normal);
+  white-space: pre;
+}
+
+pre code {
+  overflow-wrap: normal;
+}
+
+hr {
+  margin-block: var(--ptv-space-xl);
+  border: 0;
+  border-block-start: 1px solid var(--ptv-color-border);
+}
+
+::selection {
+  background: var(--ptv-color-selection);
+  color: var(--ptv-color-text);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+
+/* Responsive layout primitives for ptlam-visualization. Original work. */
+
+.ptv-document {
+  inline-size: min(100%, var(--ptv-width-document));
+  min-inline-size: 0;
+  margin-inline: auto;
+  padding-inline: clamp(var(--ptv-space-md), 4vw, var(--ptv-space-2xl));
+}
+
+.ptv-stack {
+  display: flex;
+  min-inline-size: 0;
+  flex-direction: column;
+  gap: var(--ptv-stack-space, var(--ptv-space-lg));
+}
+
+.ptv-grid {
+  display: grid;
+  min-inline-size: 0;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(min(100%, var(--ptv-grid-min, 16rem)), 1fr)
+  );
+  gap: var(--ptv-grid-space, var(--ptv-space-lg));
+}
+
+.ptv-split {
+  display: grid;
+  min-inline-size: 0;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--ptv-split-space, var(--ptv-space-xl));
+  align-items: var(--ptv-split-align, start);
+}
+
+:where(.ptv-document, .ptv-stack, .ptv-grid, .ptv-split) > * {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
+/* Mirrors --ptv-breakpoint-medium; custom properties cannot drive media queries. */
+@media (min-width: 48rem) {
+  .ptv-split {
+    grid-template-columns:
+      minmax(0, var(--ptv-split-primary, 2fr))
+      minmax(0, var(--ptv-split-secondary, 1fr));
+  }
+}
+
+/* Mirrors --ptv-breakpoint-compact and preserves room at 320 CSS pixels. */
+@media (max-width: 30rem) {
+  .ptv-document {
+    padding-inline: var(--ptv-space-md);
+  }
+
+  .ptv-stack,
+  .ptv-grid,
+  .ptv-split {
+    gap: var(--ptv-compact-space, var(--ptv-space-md));
+  }
+}
+
+
+/* Keyboard, high-contrast, and reduced-motion foundations. Original work. */
+
+.ptv-skip-link {
+  position: fixed;
+  z-index: 1000;
+  inset-block-start: var(--ptv-space-sm);
+  inset-inline-start: var(--ptv-space-sm);
+  max-inline-size: calc(100% - (2 * var(--ptv-space-sm)));
+  padding: var(--ptv-space-sm) var(--ptv-space-md);
+  transform: translateY(calc(-100% - var(--ptv-space-xl)));
+  border-radius: var(--ptv-radius-sm);
+  background: var(--ptv-color-accent);
+  box-shadow: var(--ptv-shadow-md);
+  color: var(--ptv-color-on-accent);
+  font-weight: var(--ptv-weight-medium);
+}
+
+.ptv-skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+.ptv-visually-hidden {
+  position: absolute !important;
+  inline-size: 1px !important;
+  block-size: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip-path: inset(50%) !important;
+  border: 0 !important;
+  white-space: nowrap !important;
+}
+
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 0.2rem solid var(--ptv-color-focus);
+  outline-offset: 0.2rem;
+}
+
+:where(h1, h2, h3, h4, section, article, aside)[id] {
+  scroll-margin-block-start: var(--ptv-space-xl);
+}
+
+@media (forced-colors: active) {
+  :where(
+    a,
+    button,
+    input,
+    select,
+    textarea,
+    summary,
+    [tabindex]
+  ):focus-visible {
+    outline-color: Highlight;
+  }
+
+  .ptv-skip-link {
+    border: 2px solid ButtonText;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+}
+
+
+/* Print preservation rules for ptlam-visualization. Original work. */
+
+.ptv-print-only {
+  display: none;
+}
+
+@page {
+  margin: 16mm;
+}
+
+@media print {
+  :root {
+    color-scheme: light;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-shadow: none !important;
+    text-shadow: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  html,
+  body {
+    background: #ffffff;
+    color: #000000;
+    font-size: 11pt;
+  }
+
+  .ptv-document {
+    inline-size: 100%;
+    max-inline-size: none;
+    padding-inline: 0;
+  }
+
+  .ptv-grid,
+  .ptv-split {
+    display: block;
+  }
+
+  :where(.ptv-grid, .ptv-split) > * + * {
+    margin-block-start: var(--ptv-space-lg);
+  }
+
+  :where(h1, h2, h3, h4) {
+    color: #000000;
+    break-after: avoid-page;
+  }
+
+  :where(p, li, blockquote, figure, pre, table) {
+    orphans: 3;
+    widows: 3;
+  }
+
+  :where(article, section, figure, blockquote, pre, table) {
+    break-inside: avoid-page;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  pre {
+    overflow: visible;
+    border-color: #777777;
+    background: transparent;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  details:not([open]) > :not(summary) {
+    display: block !important;
+  }
+
+  .ptv-print-hidden,
+  .ptv-skip-link {
+    display: none !important;
+  }
+
+  .ptv-print-only {
+    display: block;
+  }
+}
+
+/* Artifact-specific components: release readiness review. */
+.ptv-eyebrow {
+  margin: 0;
+  color: var(--ptv-color-accent);
+  font-size: var(--ptv-text-xs);
+  font-weight: var(--ptv-weight-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ptv-hero {
+  padding-block: clamp(var(--ptv-space-xl), 7vw, var(--ptv-space-3xl));
+}
+
+.ptv-lede {
+  color: var(--ptv-color-text-muted);
+  font-size: var(--ptv-text-lg);
+}
+
+.ptv-badge {
+  display: inline-flex;
+  align-items: center;
+  inline-size: fit-content;
+  padding: 0.25rem 0.65rem;
+  border: 1px solid currentColor;
+  border-radius: var(--ptv-radius-pill);
+  font-size: var(--ptv-text-xs);
+  font-weight: var(--ptv-weight-bold);
+  line-height: 1.3;
+}
+
+.ptv-badge--block { color: var(--ptv-color-danger); }
+.ptv-badge--warn { color: var(--ptv-color-warning); }
+.ptv-badge--pass { color: var(--ptv-color-positive); }
+.ptv-badge--neutral { color: var(--ptv-color-text-muted); }
+
+.ptv-decision {
+  --ptv-stack-space: var(--ptv-space-md);
+  padding: clamp(var(--ptv-space-lg), 4vw, var(--ptv-space-xl));
+  border: 1px solid color-mix(in srgb, var(--ptv-color-danger) 55%, var(--ptv-color-border));
+  border-inline-start: 0.45rem solid var(--ptv-color-danger);
+  border-radius: var(--ptv-radius-lg);
+  background: var(--ptv-color-surface);
+  box-shadow: var(--ptv-shadow-md);
+}
+
+.ptv-metric {
+  --ptv-stack-space: var(--ptv-space-xs);
+  padding: var(--ptv-space-lg);
+  border: 1px solid var(--ptv-color-border);
+  border-radius: var(--ptv-radius-md);
+  background: var(--ptv-color-surface);
+  box-shadow: var(--ptv-shadow-sm);
+}
+
+.ptv-metric strong {
+  font-size: var(--ptv-text-2xl);
+  line-height: 1;
+}
+
+.ptv-metric p { color: var(--ptv-color-text-muted); }
+
+.ptv-section {
+  padding-block: var(--ptv-space-xl);
+  border-block-start: 1px solid var(--ptv-color-border);
+}
+
+.ptv-panel {
+  padding: clamp(var(--ptv-space-md), 3vw, var(--ptv-space-lg));
+  border: 1px solid var(--ptv-color-border);
+  border-radius: var(--ptv-radius-md);
+  background: var(--ptv-color-surface);
+}
+
+.ptv-panel--evidence { border-block-start: 0.3rem solid var(--ptv-color-accent); }
+.ptv-panel--recommendation { border-block-start: 0.3rem solid var(--ptv-color-warning); }
+
+.ptv-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+  gap: var(--ptv-space-md);
+  align-items: end;
+  padding: var(--ptv-space-lg);
+  border: 1px solid var(--ptv-color-border);
+  border-radius: var(--ptv-radius-md);
+  background: var(--ptv-color-surface-muted);
+}
+
+.ptv-control {
+  display: grid;
+  gap: var(--ptv-space-2xs);
+  min-inline-size: 0;
+}
+
+.ptv-control label,
+.ptv-controls legend {
+  font-size: var(--ptv-text-sm);
+  font-weight: var(--ptv-weight-bold);
+}
+
+.ptv-control input,
+.ptv-control select,
+.ptv-button {
+  min-block-size: 2.75rem;
+  max-inline-size: 100%;
+  padding: var(--ptv-space-sm) var(--ptv-space-md);
+  border: 1px solid var(--ptv-color-border-strong);
+  border-radius: var(--ptv-radius-sm);
+  background: var(--ptv-color-surface);
+  color: var(--ptv-color-text);
+  font: inherit;
+}
+
+.ptv-button {
+  cursor: pointer;
+  font-weight: var(--ptv-weight-bold);
+}
+
+.ptv-button:hover { border-color: var(--ptv-color-accent); }
+
+.ptv-theme-action {
+  position: absolute;
+  inset-block-start: var(--ptv-space-md);
+  inset-inline-end: var(--ptv-space-md);
+}
+
+.ptv-table-wrap {
+  max-inline-size: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--ptv-color-border);
+  border-radius: var(--ptv-radius-md);
+  background: var(--ptv-color-surface);
+}
+
+.ptv-table {
+  inline-size: 100%;
+  min-inline-size: 52rem;
+  border-collapse: collapse;
+  font-size: var(--ptv-text-sm);
+}
+
+.ptv-table :where(th, td) {
+  padding: var(--ptv-space-sm) var(--ptv-space-md);
+  border-block-end: 1px solid var(--ptv-color-border);
+  text-align: start;
+  vertical-align: top;
+}
+
+.ptv-table th {
+  background: var(--ptv-color-surface-muted);
+  font-weight: var(--ptv-weight-bold);
+}
+
+.ptv-table tbody tr:last-child td { border-block-end: 0; }
+.ptv-table tbody tr:hover { background: color-mix(in srgb, var(--ptv-color-accent) 7%, transparent); }
+.ptv-table [hidden] { display: none; }
+
+.ptv-record-title { font-weight: var(--ptv-weight-bold); }
+.ptv-muted { color: var(--ptv-color-text-muted); }
+
+.ptv-callout {
+  padding: var(--ptv-space-md);
+  border-inline-start: 0.3rem solid var(--ptv-color-warning);
+  background: var(--ptv-color-surface-muted);
+}
+
+.ptv-empty {
+  padding: var(--ptv-space-lg);
+  border: 1px dashed var(--ptv-color-border-strong);
+  border-radius: var(--ptv-radius-md);
+  text-align: center;
+}
+
+@media (max-width: 48rem) {
+  .ptv-controls { grid-template-columns: minmax(0, 1fr); }
+  .ptv-theme-action { position: static; margin: var(--ptv-space-md); }
+  .ptv-table-wrap { overflow: visible; border: 0; background: transparent; }
+  .ptv-table { min-inline-size: 0; }
+  .ptv-table thead { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); }
+  .ptv-table tbody { display: grid; gap: var(--ptv-space-md); }
+  .ptv-table tr {
+    display: grid;
+    gap: var(--ptv-space-xs);
+    padding: var(--ptv-space-md);
+    border: 1px solid var(--ptv-color-border);
+    border-radius: var(--ptv-radius-md);
+    background: var(--ptv-color-surface);
+  }
+  .ptv-table td {
+    display: grid;
+    grid-template-columns: minmax(5rem, 0.8fr) minmax(0, 1.5fr);
+    gap: var(--ptv-space-sm);
+    padding: 0;
+    border: 0;
+  }
+  .ptv-table td::before {
+    content: attr(data-label);
+    color: var(--ptv-color-text-muted);
+    font-weight: var(--ptv-weight-bold);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+}
+
+@media print {
+  .ptv-controls, .ptv-theme-action { display: none !important; }
+  .ptv-table { min-inline-size: 0; font-size: 9pt; }
+}
+    </style>
+  </head>
+  <body>
+    <a class="ptv-skip-link" href="#ptv-main">Skip to main content</a>
+
+    <header class="ptv-document">
+      <button class="ptv-button ptv-theme-action ptv-print-hidden" type="button" data-ptv-theme-toggle aria-label="Switch color theme">Theme: system</button>
+    </header>
+
+    <main id="ptv-main" class="ptv-document ptv-stack" tabindex="-1">
+      <header class="ptv-stack ptv-hero">
+        <p class="ptv-eyebrow">Scenario review · snapshot 14 March 2026</p>
+        <h1>Release Readiness Review — Atlas 2.4</h1>
+        <p class="ptv-lede">A fictional but realistic gate review for a web platform release. The page keeps observed evidence separate from the recommendation so reviewers can challenge either one.</p>
+      </header>
+
+      <section class="ptv-decision ptv-stack" aria-labelledby="ptv-decision-heading">
+        <span class="ptv-badge ptv-badge--block">Recommendation · hold</span>
+        <h2 id="ptv-decision-heading">Do not promote build 2.4.0-rc3 today</h2>
+        <p><strong>Why:</strong> checkout error-rate regression and an incomplete rollback rehearsal are release-blocking. All other warnings have bounded mitigations.</p>
+        <p class="ptv-muted">Decision owner: Release Manager · next gate: 15 March, 14:00 UTC</p>
+      </section>
+
+      <section class="ptv-grid" style="--ptv-grid-min: 12rem" aria-label="Release gate summary">
+        <article class="ptv-metric ptv-stack"><strong>12</strong><p>checks reviewed</p></article>
+        <article class="ptv-metric ptv-stack"><strong style="color: var(--ptv-color-positive)">7</strong><p>passed</p></article>
+        <article class="ptv-metric ptv-stack"><strong style="color: var(--ptv-color-warning)">3</strong><p>warnings</p></article>
+        <article class="ptv-metric ptv-stack"><strong style="color: var(--ptv-color-danger)">2</strong><p>blocking</p></article>
+      </section>
+
+      <section class="ptv-section ptv-stack" aria-labelledby="ptv-interpretation-heading">
+        <h2 id="ptv-interpretation-heading">Evidence and interpretation</h2>
+        <div class="ptv-grid" style="--ptv-grid-min: 18rem">
+          <article class="ptv-panel ptv-panel--evidence ptv-stack">
+            <p class="ptv-eyebrow">Observed evidence</p>
+            <h3>Two gate failures are confirmed</h3>
+            <ul>
+              <li>Checkout API errors reached <strong>1.8%</strong> in the 60-minute canary, above the <strong>0.5%</strong> release threshold.</li>
+              <li>The rollback rehearsal restored service in <strong>18 minutes</strong>, missing the <strong>10-minute</strong> recovery objective.</li>
+              <li>Core smoke tests, schema compatibility, and security scans passed.</li>
+            </ul>
+          </article>
+          <article class="ptv-panel ptv-panel--recommendation ptv-stack">
+            <p class="ptv-eyebrow">Recommendation</p>
+            <h3>Fix, rehearse, then re-run only affected gates</h3>
+            <ol>
+              <li>Correct the retry fan-out introduced in rc3 and repeat the one-hour canary.</li>
+              <li>Complete a timed rollback rehearsal with the on-call operator.</li>
+              <li>Keep passed evidence valid unless the patch changes its owning surface.</li>
+            </ol>
+          </article>
+        </div>
+        <aside class="ptv-callout"><strong>Uncertainty:</strong> The checkout regression has a strong correlation with rc3 retry changes, but root cause is not yet proven. Treat that link as an inference, not evidence.</aside>
+      </section>
+
+      <section class="ptv-section ptv-stack" aria-labelledby="ptv-register-heading">
+        <header class="ptv-stack" style="--ptv-stack-space: var(--ptv-space-xs)">
+          <h2 id="ptv-register-heading">Gate register</h2>
+          <p class="ptv-muted">Filter locally to inspect the 12 scenario records. With JavaScript disabled, all records remain visible.</p>
+        </header>
+
+        <fieldset class="ptv-controls ptv-print-hidden">
+          <legend class="ptv-visually-hidden">Filter release gate records</legend>
+          <div class="ptv-control">
+            <label for="ptv-search">Search evidence</label>
+            <input id="ptv-search" type="search" autocomplete="off" placeholder="Try checkout or security" data-ptv-search />
+          </div>
+          <div class="ptv-control">
+            <label for="ptv-status">Status</label>
+            <select id="ptv-status" data-ptv-status>
+              <option value="all">All statuses</option>
+              <option value="block">Blocking</option>
+              <option value="warn">Warning</option>
+              <option value="pass">Passed</option>
+            </select>
+          </div>
+          <button class="ptv-button" type="button" data-ptv-reset>Reset filters</button>
+        </fieldset>
+
+        <p class="ptv-muted" aria-live="polite" data-ptv-result-count>Showing all 12 checks.</p>
+        <div class="ptv-table-wrap">
+          <table class="ptv-table">
+            <caption class="ptv-visually-hidden">Atlas 2.4 release gate evidence records</caption>
+            <thead><tr><th scope="col">Gate</th><th scope="col">Owner</th><th scope="col">Observed evidence</th><th scope="col">Threshold</th><th scope="col">Status</th></tr></thead>
+            <tbody data-ptv-records>
+              <tr data-status="block"><td data-label="Gate" class="ptv-record-title">Checkout reliability</td><td data-label="Owner">Payments</td><td data-label="Evidence">1.8% API errors, 60-minute canary</td><td data-label="Threshold">≤ 0.5%</td><td data-label="Status"><span class="ptv-badge ptv-badge--block">Blocking</span></td></tr>
+              <tr data-status="block"><td data-label="Gate" class="ptv-record-title">Rollback recovery</td><td data-label="Owner">SRE</td><td data-label="Evidence">18 min timed rehearsal</td><td data-label="Threshold">≤ 10 min</td><td data-label="Status"><span class="ptv-badge ptv-badge--block">Blocking</span></td></tr>
+              <tr data-status="warn"><td data-label="Gate" class="ptv-record-title">Support readiness</td><td data-label="Owner">Support</td><td data-label="Evidence">17 of 19 agents briefed</td><td data-label="Threshold">19 of 19</td><td data-label="Status"><span class="ptv-badge ptv-badge--warn">Warning</span></td></tr>
+              <tr data-status="warn"><td data-label="Gate" class="ptv-record-title">Localization</td><td data-label="Owner">Product</td><td data-label="Evidence">2 low-impact strings pending in Polish</td><td data-label="Threshold">0 critical strings</td><td data-label="Status"><span class="ptv-badge ptv-badge--warn">Warning</span></td></tr>
+              <tr data-status="warn"><td data-label="Gate" class="ptv-record-title">Capacity headroom</td><td data-label="Owner">Platform</td><td data-label="Evidence">31% at projected peak</td><td data-label="Threshold">≥ 30%</td><td data-label="Status"><span class="ptv-badge ptv-badge--warn">Warning</span></td></tr>
+              <tr data-status="pass"><td data-label="Gate" class="ptv-record-title">Core smoke suite</td><td data-label="Owner">Quality</td><td data-label="Evidence">146 of 146 checks passed</td><td data-label="Threshold">100%</td><td data-label="Status"><span class="ptv-badge ptv-badge--pass">Passed</span></td></tr>
+              <tr data-status="pass"><td data-label="Gate" class="ptv-record-title">Schema compatibility</td><td data-label="Owner">Data</td><td data-label="Evidence">Forward/backward probes passed</td><td data-label="Threshold">No incompatibility</td><td data-label="Status"><span class="ptv-badge ptv-badge--pass">Passed</span></td></tr>
+              <tr data-status="pass"><td data-label="Gate" class="ptv-record-title">Security scan</td><td data-label="Owner">Security</td><td data-label="Evidence">0 critical, 0 high findings</td><td data-label="Threshold">0 critical/high</td><td data-label="Status"><span class="ptv-badge ptv-badge--pass">Passed</span></td></tr>
+              <tr data-status="pass"><td data-label="Gate" class="ptv-record-title">Accessibility smoke</td><td data-label="Owner">Web</td><td data-label="Evidence">12 key journeys passed</td><td data-label="Threshold">All key journeys</td><td data-label="Status"><span class="ptv-badge ptv-badge--pass">Passed</span></td></tr>
+              <tr data-status="pass"><td data-label="Gate" class="ptv-record-title">Audit logging</td><td data-label="Owner">Identity</td><td data-label="Evidence">100% sampled events complete</td><td data-label="Threshold">≥ 99.9%</td><td data-label="Status"><span class="ptv-badge ptv-badge--pass">Passed</span></td></tr>
+              <tr data-status="pass"><td data-label="Gate" class="ptv-record-title">Observability</td><td data-label="Owner">SRE</td><td data-label="Evidence">All launch dashboards and alerts linked</td><td data-label="Threshold">Complete runbook</td><td data-label="Status"><span class="ptv-badge ptv-badge--pass">Passed</span></td></tr>
+              <tr data-status="pass"><td data-label="Gate" class="ptv-record-title">Change approval</td><td data-label="Owner">Release</td><td data-label="Evidence">4 of 4 approvers recorded</td><td data-label="Threshold">4 of 4</td><td data-label="Status"><span class="ptv-badge ptv-badge--pass">Passed</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="ptv-empty" hidden data-ptv-empty>No checks match these filters.</p>
+      </section>
+
+      <section class="ptv-section ptv-stack" aria-labelledby="ptv-provenance-heading">
+        <h2 id="ptv-provenance-heading">Review notes</h2>
+        <details>
+          <summary>Evidence provenance and limitations</summary>
+          <div class="ptv-stack" style="--ptv-stack-space: var(--ptv-space-sm)">
+            <p><strong>Provenance:</strong> All values are invented scenario data created solely to exercise this visualization skill; they are not claims about a real product.</p>
+            <p><strong>Review boundary:</strong> This artifact tests comparison, dense-record filtering, responsive behavior, and evidence labeling. It does not submit, persist, upload, or publish a release decision.</p>
+          </div>
+        </details>
+      </section>
+    </main>
+
+    <footer class="ptv-document">
+      <p>Private, portable test artifact · no external assets or network requests.</p>
+    </footer>
+
+    <script>
+      (() => {
+        const search = document.querySelector("[data-ptv-search]");
+        const status = document.querySelector("[data-ptv-status]");
+        const reset = document.querySelector("[data-ptv-reset]");
+        const count = document.querySelector("[data-ptv-result-count]");
+        const empty = document.querySelector("[data-ptv-empty]");
+        const rows = [...document.querySelectorAll("[data-ptv-records] tr")];
+        const theme = document.querySelector("[data-ptv-theme-toggle]");
+
+        const applyFilters = () => {
+          const query = search.value.trim().toLocaleLowerCase();
+          const selectedStatus = status.value;
+          let shown = 0;
+          rows.forEach((row) => {
+            const matchesText = !query || row.textContent.toLocaleLowerCase().includes(query);
+            const matchesStatus = selectedStatus === "all" || row.dataset.status === selectedStatus;
+            row.hidden = !(matchesText && matchesStatus);
+            if (!row.hidden) shown += 1;
+          });
+          count.textContent = `Showing ${shown} of ${rows.length} checks.`;
+          empty.hidden = shown !== 0;
+        };
+
+        search.addEventListener("input", applyFilters);
+        status.addEventListener("change", applyFilters);
+        reset.addEventListener("click", () => {
+          search.value = "";
+          status.value = "all";
+          applyFilters();
+          search.focus();
+        });
+
+        const themes = ["system", "light", "dark"];
+        theme.addEventListener("click", () => {
+          const current = theme.textContent.replace("Theme: ", "");
+          const next = themes[(themes.indexOf(current) + 1) % themes.length];
+          if (next === "system") document.documentElement.removeAttribute("data-ptv-theme");
+          else document.documentElement.setAttribute("data-ptv-theme", next);
+          theme.textContent = `Theme: ${next}`;
+          theme.setAttribute("aria-label", `Switch color theme; current theme ${next}`);
+        });
+      })();
+    </script>
+  </body>
+</html>

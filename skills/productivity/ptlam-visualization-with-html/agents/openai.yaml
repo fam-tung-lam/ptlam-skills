@@ -1,4 +1,0 @@
-interface:
-  display_name: "PTLam Visualization with HTML"
-  short_description: "Create polished interactive HTML artifacts"
-  default_prompt: "Use $ptlam-visualization-with-html to turn this content into a clear interactive HTML artifact."
