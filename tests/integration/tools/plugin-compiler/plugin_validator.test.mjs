@@ -4,23 +4,26 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 
-import { Plugin } from "../../../tools/plugin-compiler/models/plugin.mjs";
-import { PluginMetadata } from "../../../tools/plugin-compiler/models/plugin_metadata.mjs";
-import { Skill } from "../../../tools/plugin-compiler/models/skill.mjs";
-import { SkillFrontmatter } from "../../../tools/plugin-compiler/models/skill_frontmatter.mjs";
+import { Plugin } from "../../../../tools/plugin-compiler/models/plugin.mjs";
+import { PluginMetadata } from "../../../../tools/plugin-compiler/models/plugin_metadata.mjs";
+import { Skill } from "../../../../tools/plugin-compiler/models/skill.mjs";
+import { SkillFrontmatter } from "../../../../tools/plugin-compiler/models/skill_frontmatter.mjs";
 import {
   PluginValidationError,
   PluginValidator,
-} from "../../../tools/plugin-compiler/plugin_validator.mjs";
+} from "../../../../tools/plugin-compiler/plugin_validator.mjs";
 
 const validator = new PluginValidator();
 
 test("validatePlugin returns the ordered immutable domain Plugin", async () => {
+  // Given
   const rootDir = await createFixture({ manifest: makeManifest() });
 
   try {
+    // When
     const result = await validator.validatePlugin({ rootDir });
 
+    // Then
     assert.ok(result.plugin instanceof Plugin);
     assert.ok(result.plugin.metadata instanceof PluginMetadata);
     assert.deepEqual(result.diagnostics, []);
@@ -63,6 +66,7 @@ test("validatePlugin returns the ordered immutable domain Plugin", async () => {
 });
 
 test("schema is closed and requires direct required_skill_ids", async () => {
+  // Given
   const manifest = makeManifest();
   manifest.unexpected = true;
   manifest.categories[0].title = "bad\ud800value";
@@ -72,7 +76,11 @@ test("schema is closed and requires direct required_skill_ids", async () => {
   const rootDir = await createFixture({ manifest });
 
   try {
-    await expectValidationError(rootDir, [
+    // When
+    const validation = validator.validatePlugin({ rootDir });
+
+    // Then
+    await expectValidationError(validation, [
       "plugin.yml#/unexpected: must NOT have additional properties",
       "plugin.yml/categories/0/title: must match pattern",
       "plugin.yml/skills/0/required_skill_ids: must have required property",
@@ -85,6 +93,7 @@ test("schema is closed and requires direct required_skill_ids", async () => {
 });
 
 test("strict YAML subset preserves actionable syntax diagnostics", async (t) => {
+  // Given
   const base = JSON.stringify(makeManifest(), null, 2);
   const cases = [
     {
@@ -134,22 +143,31 @@ test("strict YAML subset preserves actionable syntax diagnostics", async (t) => 
     },
   ];
 
+  // When
   for (const fixture of cases) {
     await t.test(fixture.name, async () => {
+      // Given
       const rootDir = await createFixture({
         manifest: makeManifest(),
         manifestSource: fixture.source,
       });
       try {
-        await expectValidationError(rootDir, fixture.diagnostics);
+        // When
+        const validation = validator.validatePlugin({ rootDir });
+
+        // Then
+        await expectValidationError(validation, fixture.diagnostics);
       } finally {
         await removeFixture(rootDir);
       }
     });
   }
+
+  // Then: each subtest verifies its own observable diagnostics.
 });
 
 test("filesystem completeness reports missing listed and unlisted discovered skills", async () => {
+  // Given
   const manifest = makeManifest();
   manifest.skills = [manifest.skills[0]];
   manifest.skills[0].required_skill_ids = [];
@@ -160,7 +178,11 @@ test("filesystem completeness reports missing listed and unlisted discovered ski
   });
 
   try {
-    await expectValidationError(rootDir, [
+    // When
+    const validation = validator.validatePlugin({ rootDir });
+
+    // Then
+    await expectValidationError(validation, [
       "skills/utilities/orphan-skill/SKILL.md: discovered skill is not listed",
       "expected skills/engineering/alpha-skill/SKILL.md",
     ]);
@@ -170,6 +192,7 @@ test("filesystem completeness reports missing listed and unlisted discovered ski
 });
 
 test("SKILL.md frontmatter is strictly parsed and cross-validated", async () => {
+  // Given
   const manifest = makeManifest();
   manifest.skills = [manifest.skills[0]];
   manifest.skills[0].required_skill_ids = [];
@@ -181,7 +204,11 @@ test("SKILL.md frontmatter is strictly parsed and cross-validated", async () => 
   });
 
   try {
-    await expectValidationError(rootDir, [
+    // When
+    const validation = validator.validatePlugin({ rootDir });
+
+    // Then
+    await expectValidationError(validation, [
       'expected "alpha-skill" from plugin.yml and directory name, found "wrong-name"',
       "#description: must be a non-empty string",
     ]);
@@ -191,13 +218,18 @@ test("SKILL.md frontmatter is strictly parsed and cross-validated", async () => 
 });
 
 test("category and required-skill diagnostics aggregate", async () => {
+  // Given
   const manifest = makeManifest();
   manifest.skills[0].category = "missing-category";
   manifest.skills[0].required_skill_ids = ["alpha-skill", "missing-skill"];
   const rootDir = await createFixture({ manifest });
 
   try {
-    await expectValidationError(rootDir, [
+    // When
+    const validation = validator.validatePlugin({ rootDir });
+
+    // Then
+    await expectValidationError(validation, [
       'unknown category "missing-category"',
       'references unknown skill "missing-skill"',
       'skill "alpha-skill" cannot require itself',
@@ -208,13 +240,18 @@ test("category and required-skill diagnostics aggregate", async () => {
 });
 
 test("required_skill_ids must form a DAG", async () => {
+  // Given
   const manifest = makeManifest();
   manifest.skills[0].required_skill_ids = ["beta-skill"];
   manifest.skills[1].required_skill_ids = ["alpha-skill"];
   const rootDir = await createFixture({ manifest });
 
   try {
-    await expectValidationError(rootDir, [
+    // When
+    const validation = validator.validatePlugin({ rootDir });
+
+    // Then
+    await expectValidationError(validation, [
       "required_skill_ids must form an acyclic graph; found alpha-skill -> beta-skill -> alpha-skill",
     ]);
   } finally {
@@ -223,6 +260,7 @@ test("required_skill_ids must form a DAG", async () => {
 });
 
 test("category, skill, and required-skill identifiers are unique", async () => {
+  // Given
   const manifest = makeManifest();
   manifest.categories.push({ ...manifest.categories[0] });
   manifest.skills.push({
@@ -234,7 +272,11 @@ test("category, skill, and required-skill identifiers are unique", async () => {
   const rootDir = await createFixture({ manifest });
 
   try {
-    await expectValidationError(rootDir, [
+    // When
+    const validation = validator.validatePlugin({ rootDir });
+
+    // Then
+    await expectValidationError(validation, [
       'duplicate category id "engineering"',
       'duplicate skill id "alpha-skill"',
     ]);
@@ -244,7 +286,11 @@ test("category, skill, and required-skill identifiers are unique", async () => {
 });
 
 test("plugin and skill source paths reject symbolic links", async (t) => {
+  // Given: plugin manifest and skill directory symlinks are both source risks.
+
+  // When
   await t.test("plugin manifest", async () => {
+    // Given
     const rootDir = await createFixture({ manifest: makeManifest() });
     const externalRoot = await mkdtemp(
       path.join(os.tmpdir(), "ptlam-plugin-validator-external-"),
@@ -260,7 +306,12 @@ test("plugin and skill source paths reject symbolic links", async (t) => {
         path.join(rootDir, "plugin.yml"),
         "file",
       );
-      await expectValidationError(rootDir, [
+
+      // When
+      const validation = validator.validatePlugin({ rootDir });
+
+      // Then
+      await expectValidationError(validation, [
         "plugin.yml: symbolic links are not supported in plugin paths",
       ]);
     } finally {
@@ -269,6 +320,7 @@ test("plugin and skill source paths reject symbolic links", async (t) => {
   });
 
   await t.test("skill directory", async () => {
+    // Given
     const manifest = makeManifest();
     manifest.skills = [manifest.skills[0]];
     manifest.skills[0].required_skill_ids = [];
@@ -291,13 +343,20 @@ test("plugin and skill source paths reject symbolic links", async (t) => {
         path.join(rootDir, "skills", "engineering", "alpha-skill"),
         "dir",
       );
-      await expectValidationError(rootDir, [
+
+      // When
+      const validation = validator.validatePlugin({ rootDir });
+
+      // Then
+      await expectValidationError(validation, [
         "skills/engineering/alpha-skill: symbolic links are not supported",
       ]);
     } finally {
       await Promise.all([removeFixture(rootDir), removeFixture(externalRoot)]);
     }
   });
+
+  // Then: each subtest verifies rejection at its public validation boundary.
 });
 
 function makeManifest() {
@@ -381,9 +440,9 @@ function skillDocument(id) {
   return `---\nname: ${id}\ndescription: Description for ${id}.\n---\n\n# ${id}\n`;
 }
 
-async function expectValidationError(rootDir, expectedDiagnostics) {
+async function expectValidationError(validation, expectedDiagnostics) {
   try {
-    await validator.validatePlugin({ rootDir });
+    await validation;
     assert.fail("Expected PluginValidator to reject the fixture");
   } catch (error) {
     assert.ok(

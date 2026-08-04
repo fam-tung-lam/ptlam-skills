@@ -12,15 +12,15 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 
-import { PluginChecker } from "../../../tools/plugin-compiler/plugin_checker.mjs";
-import { PluginGenerator } from "../../../tools/plugin-compiler/plugin_generator.mjs";
+import { PluginChecker } from "../../../../tools/plugin-compiler/plugin_checker.mjs";
+import { PluginGenerator } from "../../../../tools/plugin-compiler/plugin_generator.mjs";
 import {
   PluginValidationError,
   PluginValidator,
-} from "../../../tools/plugin-compiler/plugin_validator.mjs";
+} from "../../../../tools/plugin-compiler/plugin_validator.mjs";
 
 const testDirectory = path.dirname(fileURLToPath(import.meta.url));
-const repositoryRoot = path.resolve(testDirectory, "../../..");
+const repositoryRoot = path.resolve(testDirectory, "../../../..");
 
 const sourcePaths = [
   "plugin.yml",
@@ -104,10 +104,14 @@ async function readOutputs(rootDir, paths = outputPaths) {
 }
 
 test("a real repository validates, generates four outputs, and checks current", async (t) => {
+  // Given
   const rootDir = await createRepository(t);
   const { validator, generator, checker } = createCompiler();
 
+  // When
   const validation = await validator.validatePlugin({ rootDir });
+
+  // Then
   assert.deepEqual(validation.diagnostics, []);
   assert.deepEqual(
     validation.plugin.skills.map((skill) => skill.id),
@@ -120,23 +124,33 @@ test("a real repository validates, generates four outputs, and checks current", 
     ],
   );
 
+  // When
   const generation = await generator.generatePlugin({ rootDir });
+
+  // Then
   assert.deepEqual(generation.changedPaths, outputPaths);
   assert.deepEqual(generation.unchangedPaths, []);
 
+  // When
   const generated = await readOutputs(rootDir);
   const claudePlugin = JSON.parse(generated[".claude-plugin/plugin.json"]);
+
+  // Then
   assert.equal(claudePlugin.name, "ptlam-skills");
   assert.equal(claudePlugin.skills.length, 5);
   assert.match(generated["README.md"], /`ptlam-testing`/u);
   assert.match(generated["skills/README.md"], /`engineering`/u);
 
+  // When
   const current = await checker.checkPlugin({ rootDir });
+
+  // Then
   assert.equal(current.isCurrent, true);
   assert.deepEqual(current.drift, []);
 });
 
 test("a source change creates drift and check never mutates outputs", async (t) => {
+  // Given
   const rootDir = await createRepository(t);
   const { generator, checker } = createCompiler();
   await generator.generatePlugin({ rootDir });
@@ -153,7 +167,10 @@ test("a source change creates drift and check never mutates outputs", async (t) 
     "utf8",
   );
 
+  // When
   const stale = await checker.checkPlugin({ rootDir });
+
+  // Then
   assert.equal(stale.isCurrent, false);
   assert.deepEqual(stale.drift, [
     { path: "README.md", reason: "content differs" },
@@ -162,6 +179,7 @@ test("a source change creates drift and check never mutates outputs", async (t) 
 });
 
 test("invalid source prevents generation from changing existing outputs", async (t) => {
+  // Given
   const rootDir = await createRepository(t);
   const { generator } = createCompiler();
   await generator.generatePlugin({ rootDir });
@@ -178,14 +196,19 @@ test("invalid source prevents generation from changing existing outputs", async 
     "utf8",
   );
 
+  // When
+  const generation = generator.generatePlugin({ rootDir });
+
+  // Then
   await assert.rejects(
-    generator.generatePlugin({ rootDir }),
+    generation,
     (error) => error instanceof PluginValidationError,
   );
   assert.deepEqual(await readOutputs(rootDir), beforeFailure);
 });
 
 test("a missing README prevents partial regeneration", async (t) => {
+  // Given
   const rootDir = await createRepository(t);
   const { generator } = createCompiler();
   await generator.generatePlugin({ rootDir });
@@ -205,10 +228,11 @@ test("a missing README prevents partial regeneration", async (t) => {
     "utf8",
   );
 
-  await assert.rejects(
-    generator.generatePlugin({ rootDir }),
-    /skills\/README\.md|missing|ENOENT/iu,
-  );
+  // When
+  const generation = generator.generatePlugin({ rootDir });
+
+  // Then
+  await assert.rejects(generation, /skills\/README\.md|missing|ENOENT/iu);
   assert.deepEqual(await readOutputs(rootDir, preservedPaths), beforeFailure);
   await assert.rejects(readFile(skillsReadmePath, "utf8"), { code: "ENOENT" });
 });

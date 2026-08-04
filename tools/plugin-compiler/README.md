@@ -287,7 +287,32 @@ the message names each source and location. CLI exit codes are:
 
 ## Tests
 
-Tests live under `tests/tools/plugin-compiler/` and cover public behavior:
+Tests mirror the tool beneath level-specific roots:
+
+```text
+tests/
+├── unit/tools/plugin-compiler/
+│   ├── models/
+│   ├── output_updaters/
+│   │   └── test_fixtures/
+│   └── plugin_compiler_cli.test.mjs
+└── integration/tools/plugin-compiler/
+    ├── test_doubles/
+    ├── test_fixtures/
+    ├── plugin_validator.test.mjs
+    ├── plugin_generator.test.mjs
+    ├── plugin_checker.test.mjs
+    ├── plugin_compiler_architecture.test.mjs
+    └── plugin_compiler_repository_workflow.test.mjs
+```
+
+Unit tests cover in-process public behavior without filesystem access.
+Integration tests use isolated temporary repositories for the real filesystem,
+parser, schema, Validator, Generator, and Checker collaborations. Every test is
+written as Given–When–Then, and reusable doubles live at their nearest common
+test scope.
+
+Together they cover:
 
 - strict YAML and schema failures;
 - repository discovery, symlink, and relation invariants;

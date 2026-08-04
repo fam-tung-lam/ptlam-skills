@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 
 const repositoryRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
-  "../../..",
+  "../../../..",
 );
 const toolRoot = path.join(repositoryRoot, "tools/plugin-compiler");
 
@@ -17,48 +17,82 @@ async function moduleNames(directory) {
 }
 
 test("keeps only the four command components at the tool root", async () => {
-  assert.deepEqual(await moduleNames(toolRoot), [
+  // Given
+  const expectedModules = [
     "plugin_checker.mjs",
     "plugin_compiler_cli.mjs",
     "plugin_generator.mjs",
     "plugin_validator.mjs",
-  ]);
+  ];
+
+  // When
+  const actualModules = await moduleNames(toolRoot);
+
+  // Then
+  assert.deepEqual(actualModules, expectedModules);
 });
 
 test("keeps one explicit file per approved domain model", async () => {
-  assert.deepEqual(await moduleNames(path.join(toolRoot, "models")), [
+  // Given
+  const expectedModels = [
     "category.mjs",
     "plugin.mjs",
     "plugin_metadata.mjs",
     "skill.mjs",
     "skill_frontmatter.mjs",
-  ]);
+  ];
+
+  // When
+  const actualModels = await moduleNames(path.join(toolRoot, "models"));
+
+  // Then
+  assert.deepEqual(actualModels, expectedModels);
 });
 
 test("keeps Claude and README content updaters in their own folder", async () => {
-  assert.deepEqual(await moduleNames(path.join(toolRoot, "output_updaters")), [
+  // Given
+  const expectedUpdaters = [
     "update_claude_plugin.mjs",
     "update_plugin_readme.mjs",
-  ]);
+  ];
+
+  // When
+  const actualUpdaters = await moduleNames(
+    path.join(toolRoot, "output_updaters"),
+  );
+
+  // Then
+  assert.deepEqual(actualUpdaters, expectedUpdaters);
 });
 
 test("keeps pure updaters free of filesystem imports", async () => {
-  for (const name of await moduleNames(
+  // Given
+  const updaterNames = await moduleNames(
     path.join(toolRoot, "output_updaters"),
-  )) {
-    const source = await readFile(
-      path.join(toolRoot, "output_updaters", name),
-      "utf8",
-    );
+  );
+
+  // When
+  const updaterSources = await Promise.all(
+    updaterNames.map((name) =>
+      readFile(path.join(toolRoot, "output_updaters", name), "utf8"),
+    ),
+  );
+
+  // Then
+  for (const [index, source] of updaterSources.entries()) {
+    const name = updaterNames[index];
     assert.doesNotMatch(source, /(?:node:)?fs(?:\/promises)?/u, name);
   }
 });
 
 test("keeps Checker free of filesystem mutation APIs", async () => {
-  const source = await readFile(
-    path.join(toolRoot, "plugin_checker.mjs"),
-    "utf8",
-  );
+  // Given
+  const checkerPath = path.join(toolRoot, "plugin_checker.mjs");
+
+  // When
+  const source = await readFile(checkerPath, "utf8");
+
+  // Then
   assert.doesNotMatch(
     source,
     /\b(?:writeFile|rename|unlink|mkdir|rm|rmdir|truncate|appendFile)\b/u,

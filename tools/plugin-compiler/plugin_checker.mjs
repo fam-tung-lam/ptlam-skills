@@ -1,7 +1,21 @@
 import { PluginGenerator } from "./plugin_generator.mjs";
 import { PluginValidator } from "./plugin_validator.mjs";
 
+/**
+ * Performs a read-only comparison between generated expectations and repository outputs.
+ *
+ * @property {PluginValidator} validator Validator used to load canonical sources.
+ * @property {PluginGenerator} generator Generator used only to build the shared expected-output plan.
+ *
+ * @example
+ * const { isCurrent, drift } = await new PluginChecker().checkPlugin({ rootDir });
+ */
 export class PluginChecker {
+  /**
+   * @param {{ validator?: PluginValidator, generator?: PluginGenerator }} [dependencies={}] Injectable collaborators.
+   * @param {PluginValidator} [dependencies.validator] Validator used for the check.
+   * @param {PluginGenerator} [dependencies.generator] Planner; defaults to one sharing `validator`.
+   */
   constructor({ validator = new PluginValidator(), generator } = {}) {
     this.validator = validator;
     this.generator = generator ?? new PluginGenerator({ validator });
@@ -10,8 +24,11 @@ export class PluginChecker {
   /**
    * Validate and compare all managed outputs without writing any file.
    *
-   * @param {{ rootDir: string }} request
-   * @returns {Promise<{plugin: object, isCurrent: boolean, drift: Array<{path: string, reason: string}>}>}
+   * @param {{ rootDir: string }} request Check options.
+   * @param {string} request.rootDir Repository root whose managed outputs should be checked.
+   * @returns {Promise<{plugin: object, isCurrent: boolean, drift: Array<{path: string, reason: string}>}>} Validated model, aggregate freshness, and one entry per stale or missing output.
+   * @throws {import("./plugin_validator.mjs").PluginValidationError} If canonical plugin sources are invalid.
+   * @throws {Error} If output paths are unsafe, README rendering fails, or managed files cannot be read.
    */
   async checkPlugin({ rootDir }) {
     const validation = await this.validator.validatePlugin({ rootDir });
