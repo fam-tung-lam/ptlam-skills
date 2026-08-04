@@ -2,6 +2,7 @@
   "name": "ptlam",
   "owner": {
     "name": "Pham Tung Lam",
+    "email": "fam.tung.lam@gmail.com",
     "url": "https://github.com/fam-tung-lam"
   },
   "description": "PTLam's portable agent skills as an installable Claude Code plugin.",

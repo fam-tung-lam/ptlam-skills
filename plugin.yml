@@ -1,0 +1,70 @@
+schema_version: 1
+
+plugin:
+  name: ptlam-skills
+  version: "0.1.0"
+  description:
+    A curated collection of portable agent skills for engineering, productivity,
+    and utility workflows.
+  author:
+    name: Pham Tung Lam
+    email: fam.tung.lam@gmail.com
+    url: https://github.com/fam-tung-lam
+  homepage: https://github.com/fam-tung-lam/ptlam-skills#readme
+  repository: https://github.com/fam-tung-lam/ptlam-skills
+  license: MIT
+  keywords:
+    - agent-skills
+    - engineering
+    - productivity
+    - utilities
+
+marketplace:
+  name: ptlam
+  description:
+    PTLam's portable agent skills as an installable Claude Code plugin.
+  plugin_description:
+    Portable agent skills for engineering, productivity, and utility workflows.
+  category: development
+  keywords:
+    - agent-skills
+    - engineering
+    - productivity
+
+categories:
+  - id: engineering
+    title: Engineering
+    description: Skills for reviewing and delivering software changes.
+  - id: productivity
+    title: Productivity
+    description: Skills for planning work and communicating ideas clearly.
+  - id: utilities
+    title: Utilities
+    description: Focused helpers for small, repeatable transformations.
+
+skills:
+  - id: ptlam-testing
+    category: engineering
+    kind: product
+    summary: Run universal test workflows with durable project-local profiles.
+    required_skill_ids: []
+  - id: test-review-change
+    category: engineering
+    kind: test
+    summary: Review a small change and return risks, checks, and a verdict.
+    required_skill_ids: []
+  - id: test-plan-task
+    category: productivity
+    kind: test
+    summary: Turn one goal into a 3–5 step actionable plan.
+    required_skill_ids: []
+  - id: ptlam-visualization-with-html
+    category: productivity
+    kind: product
+    summary: Create polished, interactive local HTML artifacts.
+    required_skill_ids: []
+  - id: test-format-text
+    category: utilities
+    kind: test
+    summary: Reformat text without adding or changing facts.
+    required_skill_ids: []

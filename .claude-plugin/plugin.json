@@ -9,7 +9,13 @@
   },
   "homepage": "https://github.com/fam-tung-lam/ptlam-skills#readme",
   "repository": "https://github.com/fam-tung-lam/ptlam-skills",
-  "keywords": ["agent-skills", "engineering", "productivity", "utilities"],
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "engineering",
+    "productivity",
+    "utilities"
+  ],
   "skills": [
     "./skills/engineering/ptlam-testing",
     "./skills/engineering/test-review-change",
