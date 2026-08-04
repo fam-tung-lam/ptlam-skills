@@ -27,6 +27,7 @@ skills/<category>/<skill-name>/SKILL.md
 
 | Skill                 | Category     | Purpose                                                           |
 | --------------------- | ------------ | ----------------------------------------------------------------- |
+| `ptlam-git`           | Engineering  | Guide safe, adaptable Git workflows through evidence-first rules. |
 | `ptlam-testing`       | Engineering  | Run universal test workflows with durable project-local profiles. |
 | `ptlam-visualization` | Productivity | Create polished HTML and pinned Mermaid visual artifacts.         |
 

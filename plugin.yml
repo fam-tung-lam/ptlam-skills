@@ -43,6 +43,11 @@ categories:
     description: Focused helpers for small, repeatable transformations.
 
 skills:
+  - id: ptlam-git
+    category: engineering
+    kind: product
+    summary: Guide safe, adaptable Git workflows through evidence-first rules.
+    required_skill_ids: []
   - id: ptlam-testing
     category: engineering
     kind: product
