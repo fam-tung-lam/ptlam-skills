@@ -1,0 +1,11 @@
+---
+config:
+  deterministicIds: true
+  deterministicIDSeed: ptlam-mermaid-11.16.0-venn
+---
+venn-beta
+  %% ptlam-acc-title: Team overlap
+  %% ptlam-acc-description: Frontend and backend teams overlap on API work.
+  set Frontend
+  set Backend
+  union Frontend,Backend["APIs"]

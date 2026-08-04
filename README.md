@@ -25,10 +25,10 @@ skills/<category>/<skill-name>/SKILL.md
 
 ## Available skills
 
-| Skill                           | Category     | Purpose                                                           |
-| ------------------------------- | ------------ | ----------------------------------------------------------------- |
-| `ptlam-testing`                 | Engineering  | Run universal test workflows with durable project-local profiles. |
-| `ptlam-visualization-with-html` | Productivity | Create polished, interactive local HTML artifacts.                |
+| Skill                 | Category     | Purpose                                                           |
+| --------------------- | ------------ | ----------------------------------------------------------------- |
+| `ptlam-testing`       | Engineering  | Run universal test workflows with durable project-local profiles. |
+| `ptlam-visualization` | Productivity | Create polished HTML and pinned Mermaid visual artifacts.         |
 
 <!-- END GENERATED:PLUGIN-CATALOG:SKILLS -->
 

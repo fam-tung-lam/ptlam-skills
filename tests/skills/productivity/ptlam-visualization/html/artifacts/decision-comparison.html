@@ -1,0 +1,916 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="ptlam-visualization" />
+    <meta name="ptlam-visualization-version" content="1" />
+    <meta name="ptlam-visualization-capability" content="html" />
+    <meta name="ptlam-visualization-design-system-version" content="1" />
+    <title>Synthetic queue strategy decision</title>
+    <style>
+      /*
+ * ptlam-visualization design tokens, version 1.
+ * Original work. System fonts and CSS platform features require no bundled assets.
+ */
+
+      :root {
+        color-scheme: light dark;
+
+        /* Color */
+        --ptv-color-canvas: #f4f7f5;
+        --ptv-color-surface: #ffffff;
+        --ptv-color-surface-muted: #e9efec;
+        --ptv-color-surface-raised: #ffffff;
+        --ptv-color-text: #17211d;
+        --ptv-color-text-muted: #52625b;
+        --ptv-color-border: #cbd6d0;
+        --ptv-color-border-strong: #83938b;
+        --ptv-color-accent: #086b60;
+        --ptv-color-accent-emphasis: #07564e;
+        --ptv-color-on-accent: #ffffff;
+        --ptv-color-positive: #216b45;
+        --ptv-color-warning: #835400;
+        --ptv-color-danger: #a22f3d;
+        --ptv-color-focus: #006db6;
+        --ptv-color-selection: #c2f0e7;
+        --ptv-color-code: #e3ebe7;
+
+        /* Typography */
+        --ptv-font-sans:
+          ui-sans-serif, -apple-system, blinkmacsystemfont, "Segoe UI",
+          sans-serif;
+        --ptv-font-mono:
+          ui-monospace, "SFMono-Regular", consolas, "Liberation Mono", monospace;
+        --ptv-text-xs: 0.8125rem;
+        --ptv-text-sm: 0.9375rem;
+        --ptv-text-md: 1rem;
+        --ptv-text-lg: clamp(1.125rem, 1.05rem + 0.25vw, 1.25rem);
+        --ptv-text-xl: clamp(1.375rem, 1.2rem + 0.65vw, 1.75rem);
+        --ptv-text-2xl: clamp(1.875rem, 1.5rem + 1.4vw, 2.75rem);
+        --ptv-text-3xl: clamp(2.25rem, 1.65rem + 2.2vw, 3.75rem);
+        --ptv-leading-tight: 1.16;
+        --ptv-leading-normal: 1.55;
+        --ptv-leading-relaxed: 1.72;
+        --ptv-weight-regular: 400;
+        --ptv-weight-medium: 600;
+        --ptv-weight-bold: 750;
+        --ptv-measure: 68ch;
+
+        /* Spacing */
+        --ptv-space-2xs: 0.25rem;
+        --ptv-space-xs: 0.5rem;
+        --ptv-space-sm: 0.75rem;
+        --ptv-space-md: 1rem;
+        --ptv-space-lg: 1.5rem;
+        --ptv-space-xl: 2rem;
+        --ptv-space-2xl: 3rem;
+        --ptv-space-3xl: 4.5rem;
+
+        /* Shape */
+        --ptv-radius-sm: 0.375rem;
+        --ptv-radius-md: 0.75rem;
+        --ptv-radius-lg: 1.25rem;
+        --ptv-radius-pill: 999rem;
+
+        /* Elevation */
+        --ptv-shadow-sm: 0 1px 2px rgb(15 35 27 / 10%);
+        --ptv-shadow-md: 0 0.75rem 2rem rgb(15 35 27 / 12%);
+        --ptv-shadow-lg: 0 1.5rem 4rem rgb(15 35 27 / 16%);
+
+        /* Motion */
+        --ptv-duration-instant: 0ms;
+        --ptv-duration-quick: 120ms;
+        --ptv-duration-standard: 200ms;
+        --ptv-duration-slow: 320ms;
+        --ptv-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+        --ptv-ease-emphasized: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+        /* Breakpoint values document the public responsive contract. */
+        --ptv-breakpoint-compact: 30rem;
+        --ptv-breakpoint-medium: 48rem;
+        --ptv-breakpoint-wide: 72rem;
+
+        /* Reading widths */
+        --ptv-width-document: 76rem;
+        --ptv-width-prose: var(--ptv-measure);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-ptv-theme]) {
+          --ptv-color-canvas: #101714;
+          --ptv-color-surface: #18211d;
+          --ptv-color-surface-muted: #202c27;
+          --ptv-color-surface-raised: #26332d;
+          --ptv-color-text: #edf5f1;
+          --ptv-color-text-muted: #b4c3bb;
+          --ptv-color-border: #3b4c43;
+          --ptv-color-border-strong: #6d7f75;
+          --ptv-color-accent: #65d5c5;
+          --ptv-color-accent-emphasis: #9ce9de;
+          --ptv-color-on-accent: #0c302a;
+          --ptv-color-positive: #7bd7a0;
+          --ptv-color-warning: #f0c36b;
+          --ptv-color-danger: #ff9ba4;
+          --ptv-color-focus: #78c9ff;
+          --ptv-color-selection: #27584f;
+          --ptv-color-code: #0c1210;
+          --ptv-shadow-sm: 0 1px 2px rgb(0 0 0 / 28%);
+          --ptv-shadow-md: 0 0.75rem 2rem rgb(0 0 0 / 32%);
+          --ptv-shadow-lg: 0 1.5rem 4rem rgb(0 0 0 / 38%);
+        }
+      }
+
+      :root[data-ptv-theme="light"],
+      [data-ptv-theme="light"] {
+        color-scheme: light;
+        --ptv-color-canvas: #f4f7f5;
+        --ptv-color-surface: #ffffff;
+        --ptv-color-surface-muted: #e9efec;
+        --ptv-color-surface-raised: #ffffff;
+        --ptv-color-text: #17211d;
+        --ptv-color-text-muted: #52625b;
+        --ptv-color-border: #cbd6d0;
+        --ptv-color-border-strong: #83938b;
+        --ptv-color-accent: #086b60;
+        --ptv-color-accent-emphasis: #07564e;
+        --ptv-color-on-accent: #ffffff;
+        --ptv-color-positive: #216b45;
+        --ptv-color-warning: #835400;
+        --ptv-color-danger: #a22f3d;
+        --ptv-color-focus: #006db6;
+        --ptv-color-selection: #c2f0e7;
+        --ptv-color-code: #e3ebe7;
+        --ptv-shadow-sm: 0 1px 2px rgb(15 35 27 / 10%);
+        --ptv-shadow-md: 0 0.75rem 2rem rgb(15 35 27 / 12%);
+        --ptv-shadow-lg: 0 1.5rem 4rem rgb(15 35 27 / 16%);
+      }
+
+      :root[data-ptv-theme="dark"],
+      [data-ptv-theme="dark"] {
+        color-scheme: dark;
+        --ptv-color-canvas: #101714;
+        --ptv-color-surface: #18211d;
+        --ptv-color-surface-muted: #202c27;
+        --ptv-color-surface-raised: #26332d;
+        --ptv-color-text: #edf5f1;
+        --ptv-color-text-muted: #b4c3bb;
+        --ptv-color-border: #3b4c43;
+        --ptv-color-border-strong: #6d7f75;
+        --ptv-color-accent: #65d5c5;
+        --ptv-color-accent-emphasis: #9ce9de;
+        --ptv-color-on-accent: #0c302a;
+        --ptv-color-positive: #7bd7a0;
+        --ptv-color-warning: #f0c36b;
+        --ptv-color-danger: #ff9ba4;
+        --ptv-color-focus: #78c9ff;
+        --ptv-color-selection: #27584f;
+        --ptv-color-code: #0c1210;
+        --ptv-shadow-sm: 0 1px 2px rgb(0 0 0 / 28%);
+        --ptv-shadow-md: 0 0.75rem 2rem rgb(0 0 0 / 32%);
+        --ptv-shadow-lg: 0 1.5rem 4rem rgb(0 0 0 / 38%);
+      }
+
+      /* Semantic document defaults for ptlam-visualization. Original work. */
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html {
+        min-inline-size: 0;
+        background: var(--ptv-color-canvas);
+        color: var(--ptv-color-text);
+        font-family: var(--ptv-font-sans);
+        font-size: 100%;
+        line-height: var(--ptv-leading-normal);
+        text-size-adjust: 100%;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      body {
+        min-block-size: 100vh;
+        min-inline-size: 0;
+        margin: 0;
+        background: var(--ptv-color-canvas);
+        color: var(--ptv-color-text);
+        overflow-wrap: break-word;
+      }
+
+      :where(header, main, footer, section, article, aside, nav, div) {
+        min-inline-size: 0;
+      }
+
+      :where(h1, h2, h3, h4) {
+        max-inline-size: var(--ptv-width-prose);
+        margin-block: 0;
+        color: var(--ptv-color-text);
+        font-weight: var(--ptv-weight-bold);
+        line-height: var(--ptv-leading-tight);
+        overflow-wrap: anywhere;
+        text-wrap: balance;
+      }
+
+      h1 {
+        font-size: var(--ptv-text-3xl);
+      }
+
+      h2 {
+        font-size: var(--ptv-text-2xl);
+      }
+
+      h3 {
+        font-size: var(--ptv-text-xl);
+      }
+
+      h4 {
+        font-size: var(--ptv-text-lg);
+      }
+
+      :where(p, ul, ol, dl, blockquote) {
+        max-inline-size: var(--ptv-width-prose);
+      }
+
+      :where(p, ul, ol, dl, blockquote, figure, pre) {
+        margin-block: 0;
+      }
+
+      :where(ul, ol) {
+        padding-inline-start: 1.4em;
+      }
+
+      li + li {
+        margin-block-start: var(--ptv-space-2xs);
+      }
+
+      a {
+        color: var(--ptv-color-accent);
+        text-decoration-thickness: 0.09em;
+        text-underline-offset: 0.16em;
+      }
+
+      a:hover {
+        color: var(--ptv-color-accent-emphasis);
+      }
+
+      abbr[title] {
+        text-decoration-style: dotted;
+        text-underline-offset: 0.16em;
+      }
+
+      :where(img, picture, video, canvas, svg) {
+        display: block;
+        max-inline-size: 100%;
+      }
+
+      :where(img, video, canvas) {
+        block-size: auto;
+      }
+
+      :where(button, input, select, textarea) {
+        max-inline-size: 100%;
+        color: inherit;
+        font: inherit;
+      }
+
+      textarea {
+        resize: vertical;
+      }
+
+      summary {
+        cursor: pointer;
+      }
+
+      code,
+      kbd,
+      samp,
+      pre {
+        font-family: var(--ptv-font-mono);
+      }
+
+      :where(code, kbd, samp) {
+        font-size: 0.9em;
+      }
+
+      code {
+        overflow-wrap: anywhere;
+      }
+
+      pre {
+        max-inline-size: 100%;
+        padding: var(--ptv-space-md);
+        overflow: auto;
+        border: 1px solid var(--ptv-color-border);
+        border-radius: var(--ptv-radius-md);
+        background: var(--ptv-color-code);
+        font-size: var(--ptv-text-sm);
+        line-height: var(--ptv-leading-normal);
+        white-space: pre;
+      }
+
+      pre code {
+        overflow-wrap: normal;
+      }
+
+      hr {
+        margin-block: var(--ptv-space-xl);
+        border: 0;
+        border-block-start: 1px solid var(--ptv-color-border);
+      }
+
+      ::selection {
+        background: var(--ptv-color-selection);
+        color: var(--ptv-color-text);
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
+      /* Responsive layout primitives for ptlam-visualization. Original work. */
+
+      .ptv-document {
+        inline-size: min(100%, var(--ptv-width-document));
+        min-inline-size: 0;
+        margin-inline: auto;
+        padding-inline: clamp(var(--ptv-space-md), 4vw, var(--ptv-space-2xl));
+      }
+
+      .ptv-stack {
+        display: flex;
+        min-inline-size: 0;
+        flex-direction: column;
+        gap: var(--ptv-stack-space, var(--ptv-space-lg));
+      }
+
+      .ptv-grid {
+        display: grid;
+        min-inline-size: 0;
+        grid-template-columns: repeat(
+          auto-fit,
+          minmax(min(100%, var(--ptv-grid-min, 16rem)), 1fr)
+        );
+        gap: var(--ptv-grid-space, var(--ptv-space-lg));
+      }
+
+      .ptv-split {
+        display: grid;
+        min-inline-size: 0;
+        grid-template-columns: minmax(0, 1fr);
+        gap: var(--ptv-split-space, var(--ptv-space-xl));
+        align-items: var(--ptv-split-align, start);
+      }
+
+      :where(.ptv-document, .ptv-stack, .ptv-grid, .ptv-split) > * {
+        min-inline-size: 0;
+        max-inline-size: 100%;
+      }
+
+      /* Mirrors --ptv-breakpoint-medium; custom properties cannot drive media queries. */
+      @media (min-width: 48rem) {
+        .ptv-split {
+          grid-template-columns:
+            minmax(0, var(--ptv-split-primary, 2fr))
+            minmax(0, var(--ptv-split-secondary, 1fr));
+        }
+      }
+
+      /* Mirrors --ptv-breakpoint-compact and preserves room at 320 CSS pixels. */
+      @media (max-width: 30rem) {
+        .ptv-document {
+          padding-inline: var(--ptv-space-md);
+        }
+
+        .ptv-stack,
+        .ptv-grid,
+        .ptv-split {
+          gap: var(--ptv-compact-space, var(--ptv-space-md));
+        }
+      }
+
+      /* Keyboard, high-contrast, and reduced-motion foundations. Original work. */
+
+      .ptv-skip-link {
+        position: fixed;
+        z-index: 1000;
+        inset-block-start: var(--ptv-space-sm);
+        inset-inline-start: var(--ptv-space-sm);
+        max-inline-size: calc(100% - (2 * var(--ptv-space-sm)));
+        padding: var(--ptv-space-sm) var(--ptv-space-md);
+        transform: translateY(calc(-100% - var(--ptv-space-xl)));
+        border-radius: var(--ptv-radius-sm);
+        background: var(--ptv-color-accent);
+        box-shadow: var(--ptv-shadow-md);
+        color: var(--ptv-color-on-accent);
+        font-weight: var(--ptv-weight-medium);
+      }
+
+      .ptv-skip-link:focus-visible {
+        transform: translateY(0);
+      }
+
+      .ptv-visually-hidden {
+        position: absolute !important;
+        inline-size: 1px !important;
+        block-size: 1px !important;
+        padding: 0 !important;
+        margin: -1px !important;
+        overflow: hidden !important;
+        clip-path: inset(50%) !important;
+        border: 0 !important;
+        white-space: nowrap !important;
+      }
+
+      :where(
+        a,
+        button,
+        input,
+        select,
+        textarea,
+        summary,
+        [tabindex]
+      ):focus-visible {
+        outline: 0.2rem solid var(--ptv-color-focus);
+        outline-offset: 0.2rem;
+      }
+
+      :where(h1, h2, h3, h4, section, article, aside)[id] {
+        scroll-margin-block-start: var(--ptv-space-xl);
+      }
+
+      @media (forced-colors: active) {
+        :where(
+          a,
+          button,
+          input,
+          select,
+          textarea,
+          summary,
+          [tabindex]
+        ):focus-visible {
+          outline-color: Highlight;
+        }
+
+        .ptv-skip-link {
+          border: 2px solid ButtonText;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+          transition-delay: 0ms !important;
+        }
+      }
+
+      /* Print preservation rules for ptlam-visualization. Original work. */
+
+      .ptv-print-only {
+        display: none;
+      }
+
+      @page {
+        margin: 16mm;
+      }
+
+      @media print {
+        :root {
+          color-scheme: light;
+        }
+
+        *,
+        *::before,
+        *::after {
+          box-shadow: none !important;
+          text-shadow: none !important;
+          animation: none !important;
+          transition: none !important;
+        }
+
+        html,
+        body {
+          background: #ffffff;
+          color: #000000;
+          font-size: 11pt;
+        }
+
+        .ptv-document {
+          inline-size: 100%;
+          max-inline-size: none;
+          padding-inline: 0;
+        }
+
+        .ptv-grid,
+        .ptv-split {
+          display: block;
+        }
+
+        :where(.ptv-grid, .ptv-split) > * + * {
+          margin-block-start: var(--ptv-space-lg);
+        }
+
+        :where(h1, h2, h3, h4) {
+          color: #000000;
+          break-after: avoid-page;
+        }
+
+        :where(p, li, blockquote, figure, pre, table) {
+          orphans: 3;
+          widows: 3;
+        }
+
+        :where(article, section, figure, blockquote, pre, table) {
+          break-inside: avoid-page;
+        }
+
+        a {
+          color: inherit;
+        }
+
+        pre {
+          overflow: visible;
+          border-color: #777777;
+          background: transparent;
+          white-space: pre-wrap;
+          word-break: break-word;
+        }
+
+        details:not([open]) > :not(summary) {
+          display: block !important;
+        }
+
+        .ptv-print-hidden,
+        .ptv-skip-link {
+          display: none !important;
+        }
+
+        .ptv-print-only {
+          display: block;
+        }
+      }
+
+      /* Selected fallback components: cards, responsive data, and disclosures. */
+      .ptv-card {
+        min-inline-size: 0;
+        max-inline-size: 100%;
+        padding: var(--ptv-space-lg);
+        overflow-wrap: anywhere;
+        border: 1px solid var(--ptv-color-border);
+        border-radius: var(--ptv-radius-lg);
+        background: var(--ptv-color-surface);
+        box-shadow: var(--ptv-shadow-sm);
+      }
+
+      .ptv-table-region {
+        min-inline-size: 0;
+        max-inline-size: 100%;
+        overflow-x: auto;
+        border: 1px solid var(--ptv-color-border);
+        border-radius: var(--ptv-radius-md);
+        background: var(--ptv-color-surface);
+        scrollbar-gutter: stable;
+      }
+
+      .ptv-table {
+        inline-size: 100%;
+        min-inline-size: max(100%, var(--ptv-breakpoint-medium));
+        border-collapse: collapse;
+        font-size: var(--ptv-text-sm);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .ptv-table caption {
+        padding: var(--ptv-space-sm) var(--ptv-space-md);
+        color: var(--ptv-color-text-muted);
+        text-align: start;
+      }
+
+      .ptv-table th,
+      .ptv-table td {
+        padding: var(--ptv-space-sm) var(--ptv-space-md);
+        overflow-wrap: anywhere;
+        border-block-end: 1px solid var(--ptv-color-border);
+        text-align: start;
+        vertical-align: top;
+      }
+
+      .ptv-table th {
+        background: var(--ptv-color-surface-muted);
+      }
+
+      .ptv-table-number {
+        text-align: end !important;
+        white-space: nowrap;
+      }
+
+      .ptv-disclosure {
+        overflow: hidden;
+        border: 1px solid var(--ptv-color-border);
+        border-radius: var(--ptv-radius-md);
+        background: var(--ptv-color-surface);
+      }
+
+      .ptv-disclosure + .ptv-disclosure {
+        margin-block-start: var(--ptv-space-sm);
+      }
+
+      .ptv-disclosure-summary,
+      .ptv-disclosure-content {
+        padding: var(--ptv-space-md);
+      }
+
+      .ptv-disclosure-summary {
+        font-weight: var(--ptv-weight-bold);
+      }
+
+      .ptv-disclosure[open] > .ptv-disclosure-summary {
+        border-block-end: 1px solid var(--ptv-color-border);
+        background: var(--ptv-color-surface-muted);
+      }
+
+      /* Fixture treatment: aligned options with weighted trade-off evidence. */
+      .fixture-outcome {
+        padding: var(--ptv-space-lg);
+        border: 1px solid var(--ptv-color-accent);
+        border-radius: var(--ptv-radius-lg);
+        background: var(--ptv-color-surface);
+        box-shadow: var(--ptv-shadow-md);
+      }
+
+      .fixture-options {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: var(--ptv-space-md);
+      }
+
+      .fixture-option-score {
+        color: var(--ptv-color-accent);
+        font-size: var(--ptv-text-2xl);
+        font-variant-numeric: tabular-nums;
+        font-weight: var(--ptv-weight-bold);
+      }
+
+      .fixture-option--recommended {
+        border-color: var(--ptv-color-positive);
+        box-shadow: 0 0 0 0.2rem var(--ptv-color-selection);
+      }
+
+      .fixture-label {
+        display: inline-flex;
+        inline-size: fit-content;
+        padding: var(--ptv-space-2xs) var(--ptv-space-sm);
+        border: 1px solid var(--ptv-color-border-strong);
+        border-radius: var(--ptv-radius-pill);
+        color: var(--ptv-color-text-muted);
+        font-size: var(--ptv-text-xs);
+        font-weight: var(--ptv-weight-bold);
+      }
+
+      @media (max-width: 48rem) {
+        .fixture-options {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+
+      @media (max-width: 30rem) {
+        .ptv-card,
+        .fixture-outcome {
+          padding: var(--ptv-space-md);
+        }
+
+        .ptv-table {
+          min-inline-size: var(--ptv-breakpoint-compact);
+        }
+      }
+
+      @media print {
+        .ptv-card,
+        .ptv-table-region,
+        .ptv-disclosure {
+          overflow: visible;
+          border-color: currentColor;
+          background: transparent;
+          box-shadow: none;
+        }
+
+        .ptv-table {
+          min-inline-size: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="ptv-skip-link" href="#ptv-main">Skip to main content</a>
+
+    <header class="ptv-document ptv-stack">
+      <p class="fixture-label">Synthetic acceptance fixture · S-DEC-1</p>
+    </header>
+
+    <main
+      id="ptv-main"
+      class="ptv-document ptv-stack"
+      data-fixture-treatment="weighted-comparison"
+      tabindex="-1"
+    >
+      <header class="ptv-stack">
+        <p>Decision comparison · trade-offs under explicit weights</p>
+        <h1>Synthetic queue strategy decision</h1>
+        <div class="fixture-outcome ptv-stack">
+          <p class="fixture-label">Recommendation</p>
+          <p>
+            <strong>Choose option B, Buffered lane.</strong> It scores
+            <strong>4.00/5.00</strong>, ahead of option A by 0.20 under the
+            stated weights. The recommendation changes to A if operational
+            simplicity rises to 35% and resilience falls to 20%.
+          </p>
+        </div>
+        <p>
+          The scenario, scores, and options are invented for regression testing;
+          they are not advice about a live system.
+        </p>
+      </header>
+
+      <section class="ptv-stack" aria-labelledby="ptv-options-title">
+        <header class="ptv-stack">
+          <p class="fixture-label">Proposed concepts</p>
+          <h2 id="ptv-options-title">
+            Three strategies answer different risks
+          </h2>
+        </header>
+        <div class="fixture-options">
+          <article class="ptv-card ptv-stack">
+            <h3>A · Direct lane</h3>
+            <p class="fixture-option-score">3.80</p>
+            <p>Fastest and simplest, with no buffer during a worker pause.</p>
+            <p><strong>Best at:</strong> latency and operational simplicity.</p>
+          </article>
+          <article class="ptv-card fixture-option--recommended ptv-stack">
+            <h3>B · Buffered lane</h3>
+            <p class="fixture-option-score">4.00</p>
+            <p>Absorbs a 90 s worker pause with one bounded queue.</p>
+            <p>
+              <strong>Best balance:</strong> resilience without replication.
+            </p>
+          </article>
+          <article class="ptv-card ptv-stack">
+            <h3>C · Replicated lane</h3>
+            <p class="fixture-option-score">3.00</p>
+            <p>Survives one lane failure, but doubles coordination work.</p>
+            <p><strong>Best at:</strong> resilience alone.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="ptv-stack" aria-labelledby="ptv-matrix-title">
+        <header class="ptv-stack">
+          <p class="fixture-label">Evidence</p>
+          <h2 id="ptv-matrix-title">Weighted matrix</h2>
+          <p>
+            Every raw score uses a 1–5 scale, where 5 is best. Weighted total is
+            the sum of score × weight; no hidden normalization is applied.
+          </p>
+        </header>
+        <p id="ptv-matrix-scroll">
+          Scroll the matrix horizontally on a narrow screen.
+        </p>
+        <div
+          class="ptv-table-region"
+          role="region"
+          aria-labelledby="ptv-matrix-title"
+          aria-describedby="ptv-matrix-scroll"
+          tabindex="0"
+        >
+          <table class="ptv-table">
+            <caption>
+              Synthetic decision matrix; weights total exactly 100%.
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Criterion</th>
+                <th scope="col" class="ptv-table-number">Weight</th>
+                <th scope="col" class="ptv-table-number">A</th>
+                <th scope="col" class="ptv-table-number">B</th>
+                <th scope="col" class="ptv-table-number">C</th>
+                <th scope="col">Interpretation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">End-to-end latency</th>
+                <td class="ptv-table-number">30%</td>
+                <td class="ptv-table-number">5</td>
+                <td class="ptv-table-number">4</td>
+                <td class="ptv-table-number">3</td>
+                <td>Lower coordination delay scores higher.</td>
+              </tr>
+              <tr>
+                <th scope="row">Pause resilience</th>
+                <td class="ptv-table-number">35%</td>
+                <td class="ptv-table-number">2</td>
+                <td class="ptv-table-number">5</td>
+                <td class="ptv-table-number">5</td>
+                <td>Capacity to absorb a 90 s worker pause.</td>
+              </tr>
+              <tr>
+                <th scope="row">Operational simplicity</th>
+                <td class="ptv-table-number">20%</td>
+                <td class="ptv-table-number">5</td>
+                <td class="ptv-table-number">3</td>
+                <td class="ptv-table-number">1</td>
+                <td>
+                  Fewer independent runtime responsibilities score higher.
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Synthetic monthly cost</th>
+                <td class="ptv-table-number">15%</td>
+                <td class="ptv-table-number">4</td>
+                <td class="ptv-table-number">3</td>
+                <td class="ptv-table-number">1</td>
+                <td>Relative fixture estimate; not a market price.</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <th scope="row">Weighted total</th>
+                <td class="ptv-table-number">100%</td>
+                <td class="ptv-table-number">3.80</td>
+                <td class="ptv-table-number"><strong>4.00</strong></td>
+                <td class="ptv-table-number">3.00</td>
+                <td>Highest total is recommended under current weights.</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </section>
+
+      <section class="ptv-stack" aria-labelledby="ptv-context-title">
+        <header class="ptv-stack">
+          <p class="fixture-label">Current versus proposed</p>
+          <h2 id="ptv-context-title">Context that changes the choice</h2>
+        </header>
+        <p>
+          <strong>Current synthetic state:</strong> option A handles 60 events/s
+          and pauses intake whenever its only worker stops.
+        </p>
+        <p>
+          <strong>Proposed synthetic state:</strong> option B adds a 5,400-event
+          buffer, sufficient for 90 s at exactly 60 events/s.
+        </p>
+
+        <div data-ptv-disclosures>
+          <details class="ptv-disclosure" data-ptv-disclosure open>
+            <summary class="ptv-disclosure-summary">
+              Sensitivity calculation
+            </summary>
+            <div class="ptv-disclosure-content ptv-stack">
+              <p>
+                With operational simplicity at 35% and resilience at 20%, A
+                scores 4.25 and B scores 3.70. That reversal is why the weights
+                are part of the conclusion, not hidden configuration.
+              </p>
+            </div>
+          </details>
+          <details class="ptv-disclosure" data-ptv-disclosure>
+            <summary class="ptv-disclosure-summary">Rejected shortcut</summary>
+            <div class="ptv-disclosure-content ptv-stack">
+              <p>
+                Choosing C solely because it has two lanes ignores its scores of
+                1 for simplicity and cost. Resilience is material, but it is not
+                the only criterion in this scenario.
+              </p>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section class="ptv-stack" aria-labelledby="ptv-source-title">
+        <h2 id="ptv-source-title">Source and caveats</h2>
+        <p>
+          <strong>Source:</strong> synthetic fixture specification S-DEC-1,
+          revision 1. The embedded scores and weights are the complete evidence
+          set for this invented decision.
+        </p>
+        <p>
+          <strong>Caveat:</strong> no latency measurement, vendor quote, failure
+          injection, or production observation supports these numbers. A real
+          decision would require those inputs before applying this method.
+        </p>
+      </section>
+    </main>
+
+    <footer class="ptv-document ptv-stack">
+      <p>
+        Portable local fixture · no network dependency · generated by
+        ptlam-visualization v1.
+      </p>
+    </footer>
+  </body>
+</html>

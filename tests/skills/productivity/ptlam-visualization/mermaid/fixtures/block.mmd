@@ -1,0 +1,14 @@
+---
+config:
+  deterministicIds: true
+  deterministicIDSeed: ptlam-mermaid-11.16.0-block
+---
+block
+  %% ptlam-acc-title: Processing blocks
+  %% ptlam-acc-description: Input passes through validation and then storage.
+  columns 3
+  input["Input"]
+  validate["Validate"]
+  store[("Store")]
+  input --> validate
+  validate --> store

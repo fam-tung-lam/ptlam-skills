@@ -1,7 +1,13 @@
 {
   "$schema": "https://raw.githubusercontent.com/DavidAnson/markdownlint-cli2/main/schema/markdownlint-cli2-config-schema.json",
   "globs": ["**/*.{md,mdx}"],
-  "ignores": ["local/**", "node_modules/**"],
+  "ignores": [
+    ".lavish/**",
+    ".ptlam/**",
+    "local/**",
+    "node_modules/**",
+    "tests/**/integration-results/**",
+  ],
   "config": {
     "default": true,
     "MD013": {
