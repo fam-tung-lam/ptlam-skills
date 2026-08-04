@@ -80,7 +80,7 @@ test("resource lookup is independent of cwd and preserves non-English text", asy
       ["generator", "ptlam-visualization"],
       ["ptlam-visualization-version", "1"],
       ["ptlam-visualization-capability", "html"],
-      ["ptlam-visualization-design-system-version", "1"],
+      ["ptlam-visualization-design-system-version", "2"],
     ];
     for (const [name, content] of requiredMetadata) {
       assert.equal(
@@ -154,7 +154,7 @@ test("the starter inlines only required local resources", async () => {
     );
     assert.match(html, /Print preservation rules for ptlam-visualization/);
     const styleMarkers = [
-      "ptlam-visualization design tokens, version 1",
+      "ptlam-visualization design tokens, version 2",
       "Semantic document defaults for ptlam-visualization",
       "Responsive layout primitives for ptlam-visualization",
       "Keyboard, high-contrast, and reduced-motion foundations",

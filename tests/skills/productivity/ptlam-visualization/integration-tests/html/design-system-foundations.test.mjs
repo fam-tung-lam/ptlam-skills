@@ -172,7 +172,7 @@ test("the starter is semantic, complete, and safe to assemble", () => {
   );
   assert.match(
     template,
-    /<meta\s+name="ptlam-visualization-design-system-version"\s+content="1"\s*\/>/,
+    /<meta\s+name="ptlam-visualization-design-system-version"\s+content="2"\s*\/>/,
   );
 
   for (const slot of ["STYLES", "CONTENT", "SCRIPTS"]) {

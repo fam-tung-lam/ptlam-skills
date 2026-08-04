@@ -33,7 +33,7 @@ function documentWith(body, extraHead = "") {
     <meta name="generator" content="ptlam-visualization">
     <meta name="ptlam-visualization-version" content="1">
     <meta name="ptlam-visualization-capability" content="html">
-    <meta name="ptlam-visualization-design-system-version" content="1">
+    <meta name="ptlam-visualization-design-system-version" content="2">
     <title>Temporary validator test</title>
     ${extraHead}
   </head>
@@ -146,7 +146,7 @@ test("language, title, viewport, and generator fields are checked independently"
     <meta name="generator" content="another-generator">
     <meta name="ptlam-visualization-version" content="2">
     <meta name="ptlam-visualization-capability" content="combined">
-    <meta name="ptlam-visualization-design-system-version" content="2">
+    <meta name="ptlam-visualization-design-system-version" content="99">
     <title> </title>
   </head>
   <body><main>Readable source</main></body>

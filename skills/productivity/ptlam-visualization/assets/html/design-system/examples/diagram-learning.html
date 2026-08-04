@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="en" data-ptv-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="ptlam-visualization" />
+    <meta name="ptlam-visualization-version" content="1" />
+    <meta name="ptlam-visualization-capability" content="html" />
+    <meta name="ptlam-visualization-design-system-version" content="2" />
+    <title>Diagram learning patterns</title>
+    <link rel="stylesheet" href="../tokens/tokens.css" />
+    <link rel="stylesheet" href="../foundations/base.css" />
+    <link rel="stylesheet" href="../foundations/layout.css" />
+    <link rel="stylesheet" href="../foundations/accessibility.css" />
+    <link rel="stylesheet" href="../components/content.css" />
+    <link rel="stylesheet" href="../components/navigation.css" />
+    <link rel="stylesheet" href="../components/diagrams.css" />
+    <link rel="stylesheet" href="../components/flows.css" />
+  </head>
+  <body>
+    <a class="ptv-skip-link" href="#ptv-main">Skip to main content</a>
+
+    <header class="ptv-document ptv-stack">
+      <p class="ptv-section-kicker">Design system v2 · golden interaction</p>
+      <h1>Explore a system, then run one flow</h1>
+      <p>
+        The abstraction changes only when you open a meaningful group. The
+        process diagram keeps one topology while its current node, edge, state,
+        and explanation move together.
+      </p>
+    </header>
+
+    <main id="ptv-main" class="ptv-document ptv-stack" tabindex="-1">
+      <section class="ptv-section" aria-labelledby="ptv-zoom-heading">
+        <header class="ptv-section-header">
+          <p class="ptv-section-kicker">Pattern 01 · semantic zoom</p>
+          <h2 id="ptv-zoom-heading">One hierarchy, separate connected maps</h2>
+          <p>
+            Open the highlighted boundary. The child replaces the current map;
+            the breadcrumb and Zoom out return to a parent abstraction.
+          </p>
+        </header>
+
+        <div
+          class="ptv-semantic-zoom"
+          data-ptv-semantic-zoom
+          data-ptv-semantic-zoom-status-template="Viewing {label}. Path: {path}."
+        >
+          <header class="ptv-semantic-zoom-toolbar">
+            <nav
+              class="ptv-semantic-zoom-breadcrumbs"
+              aria-label="System abstraction path"
+            >
+              <ol class="ptv-semantic-zoom-trail">
+                <li>
+                  <button
+                    class="ptv-semantic-zoom-crumb"
+                    type="button"
+                    data-ptv-semantic-zoom-target="platform"
+                  >
+                    Product platform
+                  </button>
+                </li>
+                <li>
+                  <button
+                    class="ptv-semantic-zoom-crumb"
+                    type="button"
+                    data-ptv-semantic-zoom-target="backend"
+                  >
+                    Backend
+                  </button>
+                </li>
+                <li>
+                  <button
+                    class="ptv-semantic-zoom-crumb"
+                    type="button"
+                    data-ptv-semantic-zoom-target="orders"
+                  >
+                    Orders service
+                  </button>
+                </li>
+              </ol>
+            </nav>
+            <button
+              class="ptv-semantic-zoom-out"
+              type="button"
+              data-ptv-semantic-zoom-out
+            >
+              Zoom out
+            </button>
+            <p class="ptv-semantic-zoom-status" data-ptv-semantic-zoom-status>
+              All authored levels follow below when JavaScript is unavailable.
+            </p>
+          </header>
+
+          <div class="ptv-semantic-zoom-viewport">
+            <section
+              class="ptv-semantic-zoom-level"
+              data-ptv-semantic-zoom-level="platform"
+              data-ptv-semantic-zoom-label="Product platform"
+              aria-labelledby="ptv-platform-level"
+            >
+              <h3 id="ptv-platform-level">Product platform</h3>
+              <div
+                class="ptv-diagram-region"
+                role="group"
+                aria-label="Customer uses frontend, frontend calls backend, and backend emits telemetry to operations"
+              >
+                <div class="ptv-diagram-canvas">
+                  <svg
+                    class="ptv-diagram-connections"
+                    viewBox="0 0 768 448"
+                    aria-hidden="true"
+                  >
+                    <defs>
+                      <marker
+                        id="ptv-platform-arrow"
+                        viewBox="0 0 10 10"
+                        refX="9"
+                        refY="5"
+                        markerWidth="7"
+                        markerHeight="7"
+                        orient="auto-start-reverse"
+                      >
+                        <path d="M0 0 10 5 0 10z" fill="currentColor" />
+                      </marker>
+                    </defs>
+                    <path
+                      class="ptv-diagram-edge"
+                      d="M152 226H246"
+                      marker-end="url(#ptv-platform-arrow)"
+                    />
+                    <text class="ptv-diagram-edge-label" x="185" y="214">
+                      uses
+                    </text>
+                    <path
+                      class="ptv-diagram-edge"
+                      d="M378 226H466"
+                      marker-end="url(#ptv-platform-arrow)"
+                    />
+                    <text class="ptv-diagram-edge-label" x="405" y="214">
+                      calls
+                    </text>
+                    <path
+                      class="ptv-diagram-edge"
+                      d="M575 274V334H438"
+                      marker-end="url(#ptv-platform-arrow)"
+                    />
+                    <text class="ptv-diagram-edge-label" x="485" y="326">
+                      emits telemetry
+                    </text>
+                  </svg>
+                  <div
+                    class="ptv-diagram-boundary"
+                    style="left: 24%; top: 12%; width: 62%; height: 76%"
+                  >
+                    <span class="ptv-diagram-boundary-label"
+                      >Product boundary</span
+                    >
+                  </div>
+                  <div
+                    class="ptv-diagram-node"
+                    style="left: 4%; top: 40%; width: 16%"
+                  >
+                    <span class="ptv-diagram-node-label">Customer</span>
+                    <span class="ptv-diagram-node-kind">person</span>
+                  </div>
+                  <div
+                    class="ptv-diagram-node"
+                    style="left: 32%; top: 40%; width: 18%"
+                  >
+                    <span class="ptv-diagram-node-label">Frontend</span>
+                    <span class="ptv-diagram-node-kind">web + mobile</span>
+                  </div>
+                  <button
+                    class="ptv-diagram-boundary-button"
+                    type="button"
+                    style="left: 61%; top: 38%; width: 22%"
+                    data-ptv-semantic-zoom-in="backend"
+                  >
+                    <span class="ptv-diagram-boundary-label">Backend</span>
+                    <span class="ptv-diagram-node-kind">service landscape</span>
+                    <span class="ptv-diagram-zoom-hint">Open level</span>
+                  </button>
+                  <div
+                    class="ptv-diagram-node"
+                    style="left: 42%; top: 74%; width: 20%"
+                  >
+                    <span class="ptv-diagram-node-label">Operations</span>
+                    <span class="ptv-diagram-node-kind">observability</span>
+                  </div>
+                </div>
+              </div>
+              <p>
+                At this altitude, Backend is one meaningful group. Its internal
+                services do not compete with the system relationship.
+              </p>
+            </section>
+
+            <section
+              class="ptv-semantic-zoom-level"
+              data-ptv-semantic-zoom-level="backend"
+              data-ptv-semantic-zoom-parent="platform"
+              data-ptv-semantic-zoom-label="Backend"
+              aria-labelledby="ptv-backend-level"
+            >
+              <h3 id="ptv-backend-level">Backend</h3>
+              <div
+                class="ptv-diagram-region"
+                role="group"
+                aria-label="API gateway routes requests to core commerce, and core commerce publishes to data and events"
+              >
+                <div class="ptv-diagram-canvas">
+                  <svg
+                    class="ptv-diagram-connections"
+                    viewBox="0 0 768 448"
+                    aria-hidden="true"
+                  >
+                    <defs>
+                      <marker
+                        id="ptv-backend-arrow"
+                        viewBox="0 0 10 10"
+                        refX="9"
+                        refY="5"
+                        markerWidth="7"
+                        markerHeight="7"
+                        orient="auto-start-reverse"
+                      >
+                        <path d="M0 0 10 5 0 10z" fill="currentColor" />
+                      </marker>
+                    </defs>
+                    <path
+                      class="ptv-diagram-edge"
+                      d="M164 220H276"
+                      marker-end="url(#ptv-backend-arrow)"
+                    />
+                    <text class="ptv-diagram-edge-label" x="200" y="208">
+                      requests
+                    </text>
+                    <path
+                      class="ptv-diagram-edge"
+                      d="M402 220H492"
+                      marker-end="url(#ptv-backend-arrow)"
+                    />
+                    <text class="ptv-diagram-edge-label" x="430" y="208">
+                      routes
+                    </text>
+                    <path
+                      class="ptv-diagram-edge"
+                      d="M598 266V338H420"
+                      marker-end="url(#ptv-backend-arrow)"
+                    />
+                    <text class="ptv-diagram-edge-label" x="472" y="326">
+                      publishes
+                    </text>
+                  </svg>
+                  <div
+                    class="ptv-diagram-boundary"
+                    style="left: 5%; top: 10%; width: 90%; height: 80%"
+                  >
+                    <span class="ptv-diagram-boundary-label"
+                      >Backend boundary</span
+                    >
+                  </div>
+                  <div
+                    class="ptv-diagram-node"
+                    style="left: 8%; top: 40%; width: 18%"
+                  >
+                    <span class="ptv-diagram-node-label">Frontend</span>
+                    <span class="ptv-diagram-node-kind">caller</span>
+                  </div>
+                  <div
+                    class="ptv-diagram-node"
+                    style="left: 36%; top: 40%; width: 18%"
+                  >
+                    <span class="ptv-diagram-node-label">API gateway</span>
+                    <span class="ptv-diagram-node-kind">entry point</span>
+                  </div>
+                  <button
+                    class="ptv-diagram-boundary-button"
+                    type="button"
+                    style="left: 64%; top: 38%; width: 22%"
+                    data-ptv-semantic-zoom-in="orders"
+                  >
+                    <span class="ptv-diagram-boundary-label"
+                      >Orders service</span
+                    >
+                    <span class="ptv-diagram-node-kind">service group</span>
+                    <span class="ptv-diagram-zoom-hint">Open level</span>
+                  </button>
+                  <div
+                    class="ptv-diagram-node"
+                    style="left: 38%; top: 74%; width: 22%"
+                  >
+                    <span class="ptv-diagram-node-label"
+                      >Data &amp; events</span
+                    >
+                    <span class="ptv-diagram-node-kind">platform group</span>
+                  </div>
+                </div>
+              </div>
+              <p>
+                Backend is now the whole current map. Orders is simply the next
+                useful group, not a fixed C4 category.
+              </p>
+            </section>
+
+            <section
+              class="ptv-semantic-zoom-level"
+              data-ptv-semantic-zoom-level="orders"
+              data-ptv-semantic-zoom-parent="backend"
+              data-ptv-semantic-zoom-label="Orders service"
+              aria-labelledby="ptv-orders-level"
+            >
+              <h3 id="ptv-orders-level">Orders service</h3>
+              <div
+                class="ptv-diagram-region"
+                role="group"
+                aria-label="API handler calls order core, order core writes PostgreSQL and records an event"
+              >
+                <div class="ptv-diagram-canvas">
+                  <svg
+                    class="ptv-diagram-connections"
+                    viewBox="0 0 768 448"
+                    aria-hidden="true"
+                  >
+                    <defs>
+                      <marker
+                        id="ptv-orders-arrow"
+                        viewBox="0 0 10 10"
+                        refX="9"
+                        refY="5"
+                        markerWidth="7"
+                        markerHeight="7"
+                        orient="auto-start-reverse"
+                      >
+                        <path d="M0 0 10 5 0 10z" fill="currentColor" />
+                      </marker>
+                    </defs>
+                    <path
+                      class="ptv-diagram-edge"
+                      d="M204 216H314"
+                      marker-end="url(#ptv-orders-arrow)"
+                    />
+                    <text class="ptv-diagram-edge-label" x="244" y="204">
+                      calls
+                    </text>
+                    <path
+                      class="ptv-diagram-edge"
+                      d="M448 216H568"
+                      marker-end="url(#ptv-orders-arrow)"
+                    />
+                    <text class="ptv-diagram-edge-label" x="484" y="204">
+                      writes
+                    </text>
+                    <path
+                      class="ptv-diagram-edge"
+                      d="M386 258V334"
+                      marker-end="url(#ptv-orders-arrow)"
+                    />
+                    <text class="ptv-diagram-edge-label" x="398" y="303">
+                      records event
+                    </text>
+                  </svg>
+                  <div
+                    class="ptv-diagram-boundary"
+                    style="left: 7%; top: 10%; width: 86%; height: 80%"
+                  >
+                    <span class="ptv-diagram-boundary-label"
+                      >Orders service boundary</span
+                    >
+                  </div>
+                  <div
+                    class="ptv-diagram-node"
+                    style="left: 13%; top: 40%; width: 18%"
+                  >
+                    <span class="ptv-diagram-node-label">API handler</span>
+                    <span class="ptv-diagram-node-kind">HTTP boundary</span>
+                  </div>
+                  <div
+                    class="ptv-diagram-node"
+                    style="left: 42%; top: 40%; width: 20%"
+                  >
+                    <span class="ptv-diagram-node-label">Order core</span>
+                    <span class="ptv-diagram-node-kind">business logic</span>
+                  </div>
+                  <div
+                    class="ptv-diagram-node"
+                    style="left: 73%; top: 40%; width: 18%"
+                  >
+                    <span class="ptv-diagram-node-label">PostgreSQL</span>
+                    <span class="ptv-diagram-node-kind">order data</span>
+                  </div>
+                  <div
+                    class="ptv-diagram-node"
+                    style="left: 42%; top: 74%; width: 20%"
+                  >
+                    <span class="ptv-diagram-node-label">Event outbox</span>
+                    <span class="ptv-diagram-node-kind">reliable events</span>
+                  </div>
+                </div>
+              </div>
+              <p>
+                This example stops here. A different lesson could continue to
+                arbitrary component, schema, or code levels.
+              </p>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section class="ptv-section" aria-labelledby="ptv-flow-heading">
+        <header class="ptv-section-header">
+          <p class="ptv-section-kicker">Pattern 02 · live flow</p>
+          <h2 id="ptv-flow-heading">One stable graph, synchronized state</h2>
+          <p>
+            Advance manually. The graph does not redraw: the active node, edge,
+            counters, explanation, progress, and timeline describe one state.
+          </p>
+        </header>
+
+        <div
+          class="ptv-flow"
+          data-ptv-flow
+          data-ptv-flow-interval="1500"
+          data-ptv-flow-progress-template="Step {current} of {total}"
+        >
+          <div class="ptv-flow-diagram">
+            <svg
+              viewBox="0 0 380 540"
+              role="img"
+              aria-labelledby="ptv-flow-title ptv-flow-description"
+            >
+              <title id="ptv-flow-title">Order request flow</title>
+              <desc id="ptv-flow-description">
+                Request enters the API, the core validates it, PostgreSQL saves
+                it, and the outbox publishes the saved event.
+              </desc>
+              <defs>
+                <marker
+                  id="ptv-flow-arrow"
+                  viewBox="0 0 10 10"
+                  refX="9"
+                  refY="5"
+                  markerWidth="7"
+                  markerHeight="7"
+                  orient="auto-start-reverse"
+                >
+                  <path d="M0 0 10 5 0 10z" fill="currentColor" />
+                </marker>
+              </defs>
+              <line
+                class="ptv-flow-edge"
+                x1="190"
+                y1="98"
+                x2="190"
+                y2="142"
+                marker-end="url(#ptv-flow-arrow)"
+                data-ptv-flow-edge="accept"
+              />
+              <line
+                class="ptv-flow-edge"
+                x1="190"
+                y1="224"
+                x2="190"
+                y2="268"
+                marker-end="url(#ptv-flow-arrow)"
+                data-ptv-flow-edge="persist"
+              />
+              <line
+                class="ptv-flow-edge"
+                x1="190"
+                y1="350"
+                x2="190"
+                y2="394"
+                marker-end="url(#ptv-flow-arrow)"
+                data-ptv-flow-edge="publish"
+              />
+              <text class="ptv-flow-edge-label" x="202" y="126">calls</text>
+              <text class="ptv-flow-edge-label" x="202" y="252">writes</text>
+              <text class="ptv-flow-edge-label" x="202" y="378">releases</text>
+              <g class="ptv-flow-node" data-ptv-flow-node="api">
+                <rect x="78" y="28" width="224" height="70" rx="9" />
+                <text x="190" y="57" text-anchor="middle">API handler</text>
+                <text
+                  class="ptv-flow-node-detail"
+                  x="190"
+                  y="77"
+                  text-anchor="middle"
+                >
+                  accepts request
+                </text>
+              </g>
+              <g class="ptv-flow-node" data-ptv-flow-node="core">
+                <rect x="78" y="154" width="224" height="70" rx="9" />
+                <text x="190" y="183" text-anchor="middle">Order core</text>
+                <text
+                  class="ptv-flow-node-detail"
+                  x="190"
+                  y="203"
+                  text-anchor="middle"
+                >
+                  validates business rules
+                </text>
+              </g>
+              <g class="ptv-flow-node" data-ptv-flow-node="database">
+                <rect x="78" y="280" width="224" height="70" rx="9" />
+                <text x="190" y="309" text-anchor="middle">PostgreSQL</text>
+                <text
+                  class="ptv-flow-node-detail"
+                  x="190"
+                  y="329"
+                  text-anchor="middle"
+                >
+                  commits order row
+                </text>
+              </g>
+              <g class="ptv-flow-node" data-ptv-flow-node="outbox">
+                <rect x="78" y="406" width="224" height="70" rx="9" />
+                <text x="190" y="435" text-anchor="middle">Event outbox</text>
+                <text
+                  class="ptv-flow-node-detail"
+                  x="190"
+                  y="455"
+                  text-anchor="middle"
+                >
+                  makes event deliverable
+                </text>
+              </g>
+            </svg>
+          </div>
+
+          <div class="ptv-flow-state">
+            <dl class="ptv-flow-state-fields">
+              <div class="ptv-flow-state-field">
+                <dt>Status</dt>
+                <dd data-ptv-flow-field="status">Received</dd>
+              </div>
+              <div class="ptv-flow-state-field">
+                <dt>Database writes</dt>
+                <dd data-ptv-flow-field="writes">0</dd>
+              </div>
+              <div class="ptv-flow-state-field">
+                <dt>Events ready</dt>
+                <dd data-ptv-flow-field="events">0</dd>
+              </div>
+            </dl>
+
+            <p class="ptv-flow-explanation" data-ptv-flow-explanation>
+              The API has received the request. No persistent state changed.
+            </p>
+
+            <ol class="ptv-flow-steps">
+              <li
+                class="ptv-flow-step"
+                data-ptv-flow-step
+                data-ptv-flow-active-node="api"
+                data-ptv-flow-fields='{"status":"Received","writes":0,"events":0}'
+                data-ptv-flow-explanation-text="The API has received the request. No persistent state changed."
+              >
+                The API receives the request; database writes 0; events ready 0.
+              </li>
+              <li
+                class="ptv-flow-step"
+                data-ptv-flow-step
+                data-ptv-flow-active-node="core"
+                data-ptv-flow-active-edge="accept"
+                data-ptv-flow-fields='{"status":"Validated"}'
+                data-ptv-flow-explanation-text="The core accepts a valid order. State is still only in memory."
+              >
+                The core validates the order; persistent state is unchanged.
+              </li>
+              <li
+                class="ptv-flow-step"
+                data-ptv-flow-step
+                data-ptv-flow-active-node="database"
+                data-ptv-flow-active-edge="persist"
+                data-ptv-flow-fields='{"status":"Committed","writes":1}'
+                data-ptv-flow-explanation-text="PostgreSQL commits the order. The durable order now exists."
+              >
+                PostgreSQL commits one durable write.
+              </li>
+              <li
+                class="ptv-flow-step"
+                data-ptv-flow-step
+                data-ptv-flow-active-node="outbox"
+                data-ptv-flow-active-edge="publish"
+                data-ptv-flow-fields='{"status":"Ready to publish","events":1}'
+                data-ptv-flow-explanation-text="The outbox now owns one deliverable event tied to the committed order."
+              >
+                The outbox exposes one event after the order commit.
+              </li>
+            </ol>
+
+            <div class="ptv-flow-controls" aria-label="Manual flow controls">
+              <button
+                class="ptv-flow-button ptv-flow-button--primary"
+                type="button"
+                data-ptv-flow-next
+              >
+                Next
+              </button>
+              <button class="ptv-flow-button" type="button" data-ptv-flow-back>
+                Back
+              </button>
+              <button class="ptv-flow-button" type="button" data-ptv-flow-reset>
+                Reset
+              </button>
+              <span class="ptv-flow-progress" data-ptv-flow-progress
+                >All four authored steps are listed.</span
+              >
+            </div>
+
+            <div
+              class="ptv-flow-controls ptv-flow-controls--secondary"
+              aria-label="Optional flow playback"
+            >
+              <button
+                class="ptv-flow-button"
+                type="button"
+                data-ptv-flow-play
+                data-ptv-flow-play-label="Play"
+                data-ptv-flow-pause-label="Pause"
+              >
+                Play
+              </button>
+              <label for="ptv-flow-timeline">Timeline</label>
+              <input
+                class="ptv-flow-timeline"
+                id="ptv-flow-timeline"
+                type="range"
+                min="0"
+                max="3"
+                value="0"
+                data-ptv-flow-timeline
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="ptv-document">
+      <p>
+        Golden authoring example. Production artifacts inline the selected local
+        design-system assets to remain portable.
+      </p>
+    </footer>
+
+    <script type="module" src="../behaviors/semantic-zoom.js"></script>
+    <script type="module" src="../behaviors/flow-stepper.js"></script>
+  </body>
+</html>

@@ -33,7 +33,9 @@ Treat HTML and Mermaid as internal capabilities, not separate public skills.
      [HTML quality and safety](references/html/quality-and-safety.md). Use
      `scripts/html/scaffold.mjs` and `scripts/html/validate.mjs`. Never read
      Mermaid version references, inspect its cache, or run its setup for an
-     HTML-only request.
+     HTML-only request. When the page contains a connected diagram, semantic
+     zoom, or a synchronized process simulation, also read
+     [diagrams and live flows](references/html/diagrams-and-flows.md).
    - **Mermaid:** Read the [Mermaid workflow](references/mermaid/workflow.md),
      [Mermaid output routing](references/mermaid/output-routing.md),
      [Mermaid quality and safety](references/mermaid/quality-and-safety.md), and
@@ -46,7 +48,9 @@ Treat HTML and Mermaid as internal capabilities, not separate public skills.
      diagram accessibility. HTML owns the complete page, embedded asset policy,
      interaction, portability, final validation, and browser QA. Prefer
      pre-rendered accessible SVG; use `scripts/html/extract-mermaid.mjs` only to
-     round-trip the versioned inert source record.
+     round-trip the versioned inert source record. Read
+     [diagrams and live flows](references/html/diagrams-and-flows.md) when HTML
+     coordinates diagram levels, state, or animation.
    - **External composition:** Let the specialized outer capability own a rich
      non-HTML artifact such as a multi-page PDF, presentation, map, or plot.
      Supply validated Mermaid source or temporary SVG only when useful; do not

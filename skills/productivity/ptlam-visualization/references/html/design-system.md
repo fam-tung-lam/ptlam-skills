@@ -4,6 +4,10 @@ Use this reference after choosing the information treatment. It defines how to
 select a visual direction, customize it, and assemble only the fallback pieces
 the artifact needs.
 
+Design-system version 2 adds connected-diagram, arbitrary semantic-zoom, and
+synchronized live-flow primitives. Version 1 artifacts remain valid; emit
+version 2 for newly scaffolded or newly composed artifacts.
+
 ## Resolve presentation preferences
 
 Apply this order exactly:
@@ -69,6 +73,24 @@ Assemble CSS in this order:
 Place behaviors after document content. Keep the starter template's replacement
 slots presentation-only; the scaffold owns replacement and resource inlining. Do
 not duplicate component or controller source in authoring guidance.
+
+For interactive system explanations, compose only the matching v2 resources:
+
+| Reader operation                              | Presentation asset        | Optional behavior asset      |
+| --------------------------------------------- | ------------------------- | ---------------------------- |
+| Trace connected topology and group boundaries | `components/diagrams.css` | none for a static map        |
+| Move between semantic abstraction levels      | `components/diagrams.css` | `behaviors/semantic-zoom.js` |
+| Advance a process while observing state       | `components/flows.css`    | `behaviors/flow-stepper.js`  |
+
+Inline the selected sources into the final portable document. Treat the
+standalone behavior files as additive controllers: the readable panels,
+captions, state, and conclusions must already exist in source HTML.
+
+Read
+[`examples/diagram-learning.html`](../../assets/html/design-system/examples/diagram-learning.html)
+when a concrete authoring shape is useful. It demonstrates both v2 patterns on
+one vertical page. Reuse its contracts and hooks, not its example domain or
+layout coordinates.
 
 ## Selection discipline
 

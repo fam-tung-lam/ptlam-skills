@@ -160,10 +160,17 @@ function checkNamedMeta(report, scan, name, expectedContent, label) {
       `metadata-${name}`,
       `${label} uses a dynamic value that cannot be verified statically.`,
     );
-  } else if (expectedContent !== null && content.trim() !== expectedContent) {
+  } else if (expectedContent !== null) {
+    const supportedContents = Array.isArray(expectedContent)
+      ? expectedContent
+      : [expectedContent];
+    if (supportedContents.includes(content.trim())) return;
+    const expectedDescription = supportedContents
+      .map((value) => `content="${value}"`)
+      .join(" or ");
     report.error(
       `metadata-${name}`,
-      `${label} must have content="${expectedContent}"; found content="${content.trim()}".`,
+      `${label} must have ${expectedDescription}; found content="${content.trim()}".`,
     );
   }
 }
@@ -317,7 +324,7 @@ function checkMetadata(report, scan, structure, expectedCapability) {
     report,
     scan,
     "ptlam-visualization-design-system-version",
-    "1",
+    ["1", "2"],
     "ptlam-visualization design-system version metadata",
   );
 }
