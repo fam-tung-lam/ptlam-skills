@@ -36,6 +36,7 @@ line weight and a distinct dash pattern as well as color. Use solid lines for
 calls and dashed lines for returns consistently.
 
 When the learning case needs observable consequences or playback, compose this
-component with the [state panel](../state-panel/state-panel.md) and
-[control plane](../control-plane/control-plane.md) in a pattern. Keep that
-case-specific state and control markup out of this component file.
+component with the
+[state-panel pattern](../../patterns/state-panel/state-panel.md) and
+[control-plane pattern](../../patterns/control-plane/control-plane.md). Keep
+that case-specific state and control markup out of this component file.

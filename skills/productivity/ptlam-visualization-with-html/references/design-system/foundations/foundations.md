@@ -1,12 +1,27 @@
 # Foundations
 
-Foundations are universal constraints, not visual variants. Read every file in
-this folder for every artifact:
+Foundations define who the experience serves and how it behaves before visual
+styling. This catalog mirrors the current Material 3 foundation areas that are
+applicable to portable HTML.
 
-- [Accessibility](accessibility.md): semantics, names, contrast, input, and
-  reading order.
-- [Interaction](interaction.md): consistent states and non-motion cues.
-- [Layout](layout.md): containment, reflow, and top-to-bottom reading.
+Read these core files for every artifact:
 
-Then read the [styles index](../styles/styles.md) and only the component and
-pattern references required by the artifact.
+- [Accessibility](accessibility.md)
+- [Interaction](interaction.md)
+- [Layout](layout.md)
+- [Usability and M3 Expressive](usability.md)
+
+Read the remaining file when its concern is present:
+
+- [Building for all](building-for-all.md)
+- [Content design](content-design.md)
+- [Customization](customization.md)
+- [Design tokens](design-tokens.md)
+- [Designing](designing.md)
+- [Writing](writing.md)
+- [Platform adaptation](platform-adaptation.md)
+
+Use the official [Material 3 foundations](https://m3.material.io/foundations) as
+the governing taxonomy. Platform-specific watch and XR guidance is routed
+through `platform-adaptation.md` instead of being copied into the portable-web
+baseline.

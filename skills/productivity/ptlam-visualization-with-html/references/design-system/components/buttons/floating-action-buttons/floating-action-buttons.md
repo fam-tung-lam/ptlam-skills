@@ -8,9 +8,18 @@ button in a control group.
 - [Small FAB](small-fab.md)
 - [Large FAB](large-fab.md)
 - [Extended FAB](extended-fab.md)
+- [FAB menu](fab-menu.md)
 
 Every icon-only FAB requires an accessible name. Keep it out of the diagram's
 reading path and ensure it never obscures content at narrow widths.
+
+M3 Expressive may change FAB size and shape as the related menu opens. Preserve
+the primary action, expose menu state with `aria-expanded`, and keep every menu
+action independently named.
+
+Use expressive shape and motion to connect the FAB to its revealed actions, not
+to make an unrelated floating decoration. Source:
+[Material floating action buttons](https://m3.material.io/components/floating-action-button/overview).
 
 ```css
 .fab {

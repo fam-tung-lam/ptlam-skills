@@ -10,9 +10,12 @@ Always provide an accessible name. Choose a standard variant by emphasis:
 
 ```css
 .icon-button {
+  --icon-button-size: 3rem;
   display: inline-grid;
-  width: 44px;
-  height: 44px;
+  width: var(--icon-button-size);
+  height: var(--icon-button-size);
+  min-width: 44px;
+  min-height: 44px;
   place-items: center;
   border: 1px solid transparent;
   border-radius: var(--shape-full);
@@ -20,4 +23,24 @@ Always provide an accessible name. Choose a standard variant by emphasis:
   color: var(--color-on-surface);
   cursor: pointer;
 }
+.icon-button--xs {
+  --icon-button-size: 2.75rem;
+}
+.icon-button--s {
+  --icon-button-size: 3rem;
+}
+.icon-button--m {
+  --icon-button-size: 3.5rem;
+}
+.icon-button--l {
+  --icon-button-size: 4rem;
+}
+.icon-button--xl {
+  --icon-button-size: 4.5rem;
+}
 ```
+
+M3 Expressive icon buttons use the same XS-through-XL semantic scale as label
+and split buttons. A selected or expanded icon button may change shape, but it
+must also expose `aria-pressed` or `aria-expanded`. Source:
+[Material icon buttons](https://m3.material.io/components/icon-buttons/overview).

@@ -1,12 +1,12 @@
-# Control plane
+# Control-plane pattern
 
 The control plane coordinates one timeline. It sits below the diagram and state
 panel so it controls both. “Control plane” is the correct component name;
 visible copy may simply say “Controls”.
 
-Compose its actions from the [button family](../buttons/buttons.md). The
-following `.button-row` layout belongs to the control plane, not to any button
-variant.
+Compose its actions from the
+[button family](../../components/buttons/buttons.md). The following
+`.button-row` layout belongs to the control plane, not to any button variant.
 
 ```html
 <div class="control-plane" data-control-plane>

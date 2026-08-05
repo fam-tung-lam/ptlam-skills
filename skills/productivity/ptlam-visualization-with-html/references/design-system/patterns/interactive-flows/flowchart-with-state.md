@@ -2,8 +2,8 @@
 
 Use this composition when each flow transition changes observable state. Compose
 the full [flowchart](../../components/diagrams/flowchart.md) contract on the
-left with the [state panel](../../components/state-panel/state-panel.md) on the
-right. On narrow screens, keep flow first and state second.
+left with the [state-panel pattern](../state-panel/state-panel.md) on the right.
+On narrow screens, keep flow first and state second.
 
 ```html
 <div class="visual-stage" data-flow-state="request-flow">
