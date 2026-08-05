@@ -31,9 +31,8 @@ test("Claude updater renders exact host manifests without internal dependency me
     "fixtures"
   ],
   "skills": [
-    "./skills/engineering/review-code-change",
-    "./skills/productivity/plan-task",
-    "./skills/productivity/visualize-html"
+    "./skills/visualize-html",
+    "./skills/old-visualizer"
   ]
 }
 `,
@@ -65,5 +64,5 @@ test("Claude updater renders exact host manifests without internal dependency me
   );
   assert.equal(result.marketplaceJson.includes('"version"'), false);
   assert.equal(result.marketplaceJson.includes('"dependencies"'), false);
-  assert.equal(result.marketplaceJson.includes("required_skill_ids"), false);
+  assert.equal(result.marketplaceJson.includes("required_skills"), false);
 });

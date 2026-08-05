@@ -1,0 +1,106 @@
+# Version of the plugin.yml structure understood by the compiler.
+# Change only when the manifest schema becomes incompatible.
+schema_version: 2
+
+name: ptlam-skills
+description:
+  A curated collection of portable agent skills for engineering, productivity,
+  and utility workflows.
+
+# Plugin release version. Build metadata after "+" does not affect SemVer
+# precedence.
+version: "0.1.0"
+
+author:
+  name: Pham Tung Lam
+  email: fam.tung.lam@gmail.com
+  url: https://github.com/fam-tung-lam
+homepage: https://github.com/fam-tung-lam/ptlam-skills#readme
+repository: https://github.com/fam-tung-lam/ptlam-skills
+license: MIT
+keywords:
+  - agent-skills
+  - engineering
+  - productivity
+  - utilities
+
+marketplace:
+  name: ptlam
+  description:
+    PTLam's portable agent skills as an installable Claude Code plugin.
+  plugin_description:
+    Portable agent skills for engineering, productivity, and utility workflows.
+  category: development
+  keywords:
+    - agent-skills
+    - engineering
+    - productivity
+
+categories:
+  - id: engineering
+    name: Engineering
+    description: Skills for reviewing and delivering software changes.
+  - id: productivity
+    name: Productivity
+    description: Skills for planning work and communicating ideas clearly.
+  - id: utilities
+    name: Utilities
+    description: Focused helpers for small, repeatable transformations.
+
+skills:
+  - id: ptlam-git
+    description:
+      Plan, inspect, execute, review, diagnose, or recover Git workflows safely
+      across repositories and collaboration models. Use for status and diffs;
+      staging and commits; branches, worktrees, and refs; fetch, pull, merge,
+      rebase, cherry-pick, revert, and history editing; pushes and deletions;
+      tags; pull or merge request lifecycle work; conflicts, interrupted
+      operations; recovery; and optional project-local Git profiles. Resolve
+      repository policy, authority, custody, targets, and proof before mutation
+      instead of assuming a topology or convention.
+    category_id: engineering
+    visibility: public
+    status: active
+    required_skills: []
+  - id: ptlam-testing
+    description:
+      Design, write, update, run, review, and diagnose automated tests at unit,
+      integration, and end-to-end levels. Use when an agent needs to select a
+      test level, add or repair tests, improve testability, assess test quality,
+      audit test code for compliance, maintain or refresh a project-local
+      testing profile, resolve a project's testing environment, select or
+      recommend compatible test tools, or follow an explicitly requested
+      test-first or Red-Green-Refactor workflow. Do not infer TDD merely from a
+      request for tests or integration testing.
+    category_id: engineering
+    visibility: public
+    status: active
+    required_skills: []
+  - id: ptlam-explain-with-analogy
+    description:
+      Teach an unfamiliar, abstract, or complex topic through one coherent
+      real-life analogy with stable concept mappings, connected context,
+      progressive visual scenes, and meaningful interaction. Use when the user
+      asks how something works, wants a simple or intuitive visual explanation,
+      asks for an analogy or metaphor, or needs to understand architecture,
+      relationships, workflow, structure, lifecycle, ownership, cardinality,
+      comparison, or cause and effect. Use even for one concept when its role
+      depends on surrounding components.
+    category_id: productivity
+    visibility: public
+    status: active
+    required_skills: []
+  - id: ptlam-visualization-with-html
+    description:
+      Create portable, polished, interactive HTML explainers and learning
+      artifacts with native HTML, CSS, JavaScript, SVG, and one Material 3
+      Expressive design system. Use when Codex needs to visualize architecture,
+      workflows, state changes, sequences, entity relationships, semantic zoom,
+      real-life analogy twins, or step-by-step system behavior in an HTML file;
+      when a learner should manipulate or observe a diagram rather than read
+      long prose; or when a top-to-bottom visual field guide, simulator, or
+      validation artifact is requested.
+    category_id: productivity
+    visibility: public
+    status: active
+    required_skills: []

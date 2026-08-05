@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { rm, writeFile } from "node:fs/promises";
+import { readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
 
@@ -32,6 +32,10 @@ test("check reports deterministic drift and never repairs files", async (t) => {
     { path: ".claude-plugin/marketplace.json", reason: "file is missing" },
     { path: "README.md", reason: "content differs" },
     { path: "skills/README.md", reason: "content differs" },
+    {
+      path: "skills/review-code-change/SKILL.md",
+      reason: "file is missing",
+    },
   ]);
   assert.deepEqual(await readManagedState(rootDir), before);
   assert.deepEqual(validator.calls, [{ rootDir }]);
@@ -51,7 +55,12 @@ test("check is current after generation and reuses the generator plan", async (t
   const result = await checker.checkPlugin({ rootDir });
 
   // Then
-  assert.deepEqual(result, { plugin, isCurrent: true, drift: [] });
+  assert.deepEqual(result, {
+    plugin,
+    diagnostics: [],
+    isCurrent: true,
+    drift: [],
+  });
   assert.deepEqual(await readManagedState(rootDir), before);
 });
 
@@ -115,7 +124,35 @@ test("checker passes validated Plugin to the narrow generator collaboration", as
   ]);
   assert.deepEqual(result, {
     plugin,
+    diagnostics: [],
     isCurrent: false,
     drift: [{ path: ".claude-plugin/plugin.json", reason: "content differs" }],
   });
+});
+
+test("check reports and generation removes unexpected files in skills", async (t) => {
+  // Given
+  const rootDir = await createOutputRoot(t);
+  const plugin = makeOutputPlugin();
+  const validator = createPluginValidatorFake(plugin);
+  const generator = new PluginGenerator({ validator });
+  await generator.generatePlugin({ rootDir });
+  const stalePath = path.join(rootDir, "skills", "stale.txt");
+  await writeFile(stalePath, "stale\n", "utf8");
+  const checker = new PluginChecker({ validator, generator });
+
+  // When
+  const stale = await checker.checkPlugin({ rootDir });
+
+  // Then
+  assert.deepEqual(stale.drift, [
+    { path: "skills/stale.txt", reason: "unexpected file" },
+  ]);
+
+  // When
+  const regenerated = await generator.generatePlugin({ rootDir });
+
+  // Then
+  assert.deepEqual(regenerated.changedPaths, ["skills"]);
+  await assert.rejects(readFile(stalePath), { code: "ENOENT" });
 });

@@ -6,10 +6,7 @@ import test from "node:test";
 
 const testDirectory = dirname(fileURLToPath(import.meta.url));
 const repositoryRoot = resolve(testDirectory, "../../../../..");
-const skillRoot = resolve(
-  repositoryRoot,
-  "skills/productivity/ptlam-explain-with-analogy",
-);
+const skillRoot = resolve(repositoryRoot, "skills/ptlam-explain-with-analogy");
 
 const readSkillFile = (relativePath) =>
   readFile(resolve(skillRoot, relativePath), "utf8");

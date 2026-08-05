@@ -1,23 +1,25 @@
 # Plugin Compiler
 
-The Plugin Compiler turns the authored [`plugin.yml`](../../plugin.yml) and the
-frontmatter of every catalogued `SKILL.md` into deterministic consumer files. It
-validates the catalog, updates the Claude plugin and marketplace manifests, and
-maintains the generated catalog sections in the repository README files.
+The Plugin Compiler turns authored v2 sources in [`plugin/`](../../plugin/) into
+deterministic, self-contained public skills and consumer metadata. It validates
+the complete source graph, composes required skills recursively, updates host
+manifests and documentation, and detects drift without introducing a separate
+package manager.
 
 The tool has one CLI gateway and one command component per public operation:
 
-- `PluginValidator` validates sources and builds the domain model.
-- `PluginGenerator` creates the canonical output plan and writes it safely.
+- `PluginValidator` validates sources and builds an immutable source snapshot.
+- `PluginGenerator` creates the canonical output plan and replaces managed
+  outputs safely.
 - `PluginChecker` compares that same plan with the repository without writing.
 - `PluginCompilerCLI` selects a command component and presents its result.
 
 ## Non-goals
 
 The compiler does not install skills, resolve external versions, publish a
-release, or maintain installation state. It compiles repository-owned metadata
-only. Existing agent and plugin ecosystems remain responsible for installation
-and updates.
+release, or maintain installation state. Existing agent and plugin ecosystems
+remain responsible for installation and updates. Every required skill belongs to
+the same authored plugin release.
 
 ## Commands
 
@@ -30,9 +32,146 @@ npm run catalog:check
 ```
 
 `validate` and `check` are read-only. `generate` is the only command allowed to
-replace managed files.
+replace compiler-owned outputs.
 
-## Layout
+## Authored and generated layout
+
+```text
+plugin/
+├── plugin.yml                         # authored manifest
+└── skills/                            # all authored skills
+    ├── internal-foundation/
+    │   ├── SKILL.md                   # body only; no frontmatter
+    │   └── references/
+    └── public-skill/
+        ├── SKILL.md
+        ├── agents/
+        ├── assets/
+        ├── references/
+        └── scripts/
+
+skills/                                # generated and committed as one output
+├── README.md
+└── public-skill/
+    ├── SKILL.md                       # generated frontmatter and dependency block
+    └── references/
+        └── required-skills/
+            └── internal-foundation/   # recursively composed dependency
+```
+
+Both skill directories are flat: `category_id` is metadata, not a path segment.
+`plugin/plugin.yml` and `plugin/skills/` are the only authored skill sources.
+The complete root `skills/` tree is compiler-owned and must not be edited
+manually.
+
+## Source ownership
+
+| Source                                  | Owns                                                                                         |
+| --------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `plugin/plugin.yml`                     | Plugin identity, release version, marketplace data, categories, skill metadata, and graph    |
+| `plugin/skills/<id>/SKILL.md`           | Runtime instruction body and required-skills insertion point                                 |
+| Other files under `plugin/skills/<id>/` | Authored resources copied byte-for-byte while preserving relative paths                      |
+| Generated `skills/<id>/`                | Self-contained public skill with generated frontmatter and recursively embedded dependencies |
+
+The manifest's skill `id` becomes generated frontmatter `name`. Its
+`description` becomes generated frontmatter `description` and is also used in
+the README catalog. Source `SKILL.md` files cannot contain frontmatter.
+
+Every source `SKILL.md` contains exactly one marker:
+
+```markdown
+<!-- PLUGIN-COMPILER:REQUIRED-SKILLS -->
+```
+
+The compiler removes an unused marker or replaces it with direct dependency
+context. The reserved `references/required-skills/` namespace cannot exist in a
+source skill because the compiler owns it in generated trees.
+
+## Manifest v2
+
+The manifest begins with commented, distinct schema and release versions:
+
+```yaml
+# Version of the plugin.yml structure understood by the compiler.
+# Change only when the manifest schema becomes incompatible.
+schema_version: 2
+
+name: ptlam-skills
+description: Portable skills authored and published by PTLam.
+
+# Plugin release version. Build metadata after "+" does not affect SemVer
+# precedence.
+version: "0.1.0+1"
+```
+
+`version` must be quoted. The plugin has one release version; individual skills
+and dependency edges do not have version constraints.
+
+Categories are ordered manifest objects:
+
+```yaml
+categories:
+  - id: engineering
+    name: Engineering
+    description: Skills for software engineering workflows.
+```
+
+Every authored skill has explicit distribution and lifecycle fields:
+
+```yaml
+skills:
+  - id: ptlam-testing
+    description: Universal automated testing workflow.
+    category_id: engineering
+    visibility: internal
+    status: active
+    required_skills: []
+
+  - id: ptlam-testing-flutter
+    description: Test Flutter and Dart projects.
+    category_id: engineering
+    visibility: public
+    status: active
+    required_skills:
+      - skill_id: ptlam-testing
+        reason: Provides universal testing rules.
+        instructions:
+          Read it first and apply its rules before Flutter-specific overrides.
+```
+
+`required_skills` order is the reading and display order, not an implicit
+override policy. Each edge requires:
+
+- `skill_id`: the source skill to embed;
+- `reason`: why the dependency exists;
+- `instructions`: how the agent applies it in the current skill.
+
+`reason` and `instructions` are copied verbatim into the generated `SKILL.md`
+next to a compiler-generated link to the embedded skill.
+
+### Visibility and lifecycle
+
+`visibility` and `status` are independent, required fields:
+
+| Visibility | Status       | Generated as root skill | Allowed beneath an active output |
+| ---------- | ------------ | ----------------------- | -------------------------------- |
+| `internal` | `draft`      | No                      | No                               |
+| `internal` | `active`     | No                      | Yes                              |
+| `internal` | `deprecated` | No                      | Yes, with a validation warning   |
+| `internal` | `archived`   | No                      | No                               |
+| `public`   | `draft`      | No                      | No                               |
+| `public`   | `active`     | Yes                     | Yes                              |
+| `public`   | `deprecated` | Yes                     | Yes, with a validation warning   |
+| `public`   | `archived`   | No                      | No                               |
+
+A deprecated skill requires `deprecation.reason` and `deprecation.instructions`;
+`deprecation.replacement_skill_id` is optional. An archived skill requires
+`archive.reason` and may declare `archive.replacement_skill_id`. Replacement IDs
+must identify another active skill. Deprecation notices appear in generated
+public catalog documentation rather than runtime `SKILL.md` files; archive
+metadata remains available to maintainers in the manifest.
+
+## Compiler layout
 
 ```text
 tools/plugin-compiler/
@@ -41,24 +180,28 @@ tools/plugin-compiler/
 ├── plugin-validator.mjs
 ├── plugin-generator.mjs
 ├── plugin-checker.mjs
+├── composition/
+│   └── skill-composer.mjs
 ├── models/
+│   ├── category.mjs
 │   ├── plugin.mjs
 │   ├── plugin-metadata.mjs
-│   ├── category.mjs
 │   ├── skill.mjs
-│   └── skill-frontmatter.mjs
+│   ├── skill-frontmatter.mjs
+│   ├── skill-requirement.mjs
+│   └── skill-resource.mjs
 ├── output_updaters/
 │   ├── update-claude-plugin.mjs
 │   └── update-plugin-readme.mjs
+├── validation/
+│   └── markdown-links.mjs
 └── schemas/
     └── plugin.schema.json
 ```
 
-Every JavaScript module filename uses kebab-case. Exported JavaScript symbols
-retain the language's normal PascalCase and camelCase conventions.
-
-Only the four command-layer files live at the tool root. Models, the source
-schema, and pure output helpers are grouped by responsibility.
+Every JavaScript module filename uses kebab-case. Only the four command-layer
+files live at the tool root. Models, composition, schema, and pure output
+helpers are grouped by responsibility.
 
 ## Architecture
 
@@ -66,24 +209,25 @@ schema, and pure output helpers are grouped by responsibility.
 flowchart TD
   CLI[PluginCompilerCLI]
   Validator[PluginValidator]
+  Schema[plugin.schema.json]
+  Model[Immutable Plugin source snapshot]
   Generator[PluginGenerator]
-  Checker[PluginChecker]
-  Schema[schemas/plugin.schema.json]
-  Plugin[Plugin domain model]
+  Composer[composePublishedSkills]
+  Updaters[Host and README updaters]
   Plan[Canonical expected-output plan]
-  Claude[updateClaudePlugin]
-  Readme[updatePluginReadme]
+  Checker[PluginChecker]
 
-  CLI -->|validate| Validator
-  CLI -->|generate| Generator
-  CLI -->|check| Checker
-  Generator --> Validator
-  Checker --> Validator
+  CLI --> Validator
+  CLI --> Generator
+  CLI --> Checker
   Validator --> Schema
-  Validator --> Plugin
-  Generator --> Plan
-  Plan --> Claude
-  Plan --> Readme
+  Validator --> Model
+  Generator --> Validator
+  Generator --> Composer
+  Generator --> Updaters
+  Composer --> Plan
+  Updaters --> Plan
+  Checker --> Validator
   Checker -->|reuse without writes| Plan
 ```
 
@@ -92,244 +236,175 @@ The dependency direction prevents duplicated rules:
 - Generator and Checker reuse Validator instead of parsing sources again.
 - Checker reuses Generator's expected-output plan instead of formatting files
   independently.
-- Output updaters compute content but never read or write the filesystem.
-- CLI handles terminal concerns but does not know catalog rules.
+- Composer and output updaters compute content but never mutate the filesystem.
+- CLI handles terminal concerns but does not know source or composition rules.
 
-## Core components
-
-| Component           | Public operation                                       | Owns                                                                                   | Does not own                                  |
-| ------------------- | ------------------------------------------------------ | -------------------------------------------------------------------------------------- | --------------------------------------------- |
-| `PluginCompilerCLI` | CLI command dispatch                                   | Arguments, dependency wiring, messages, exit codes                                     | Validation, output content, filesystem writes |
-| `PluginValidator`   | `validatePlugin(request)`                              | Loading, strict parsing, schema checks, discovery, models, semantic and graph checks   | Generated output or terminal presentation     |
-| `PluginGenerator`   | `generatePlugin(request)`, `buildExpectedOutputPlan()` | Validator delegation, canonical output plan, path safety, atomic complete-file writes  | Duplicate validation or drift verdicts        |
-| `PluginChecker`     | `checkPlugin(request)`                                 | Validator delegation, reuse of the canonical plan, byte comparison, complete drift set | File mutation or independent formatting       |
-
-`buildExpectedOutputPlan()` is a narrow collaboration seam between Generator and
-Checker. It is not a fourth CLI command.
-
-## Ubiquitous language
-
-- **Manifest**: the authored `plugin.yml` document before validation.
-- **Plugin**: the validated aggregate used by every downstream operation.
-- **Plugin metadata**: versioned plugin identity owned by the Plugin aggregate;
-  authored marketplace values are a separate immutable object on that aggregate.
-- **Category**: an ordered skill grouping identified by a stable ID.
-- **Skill**: one catalog member joined with its `SKILL.md` frontmatter.
-- **Required skill ID**: a hard, same-release prerequisite stored directly on a
-  Skill. Required-skill edges must reference existing skills and remain acyclic.
-- **Expected-output plan**: a deterministic map of repository-relative paths to
-  complete expected contents.
-- **Drift**: a missing managed file or content that differs byte-for-byte from
-  the expected plan.
-- **Managed region**: a generated README section bounded by unique markers.
-
-The tool deliberately has no DTO layer. Parsed values become domain models after
-structural and semantic validation. Method boundaries use Request–Result object
-values instead of transport classes.
-
-## Domain models
+## Domain model
 
 ```mermaid
 classDiagram
   class Plugin {
-    metadata
+    schema_version
+    name
+    description
+    version
     categories[]
     skills[]
   }
-  class PluginMetadata {
-    name
-    version
-    description
-  }
   class Category {
     id
-    title
+    name
     description
   }
   class Skill {
     id
-    path
-    category_id
-    kind
-    summary
-    frontmatter
-    required_skill_ids[]
-  }
-  class SkillFrontmatter {
-    name
     description
+    category_id
+    visibility
+    status
+    required_skills[]
+    source_path
+    source_body
+    resources[]
+  }
+  class SkillRequirement {
+    skill_id
+    reason
+    instructions
+  }
+  class SkillResource {
+    path
+    content_base64
   }
 
-  Plugin "1" *-- "1" PluginMetadata : metadata
   Plugin "1" *-- "1..*" Category : categories
   Plugin "1" *-- "1..*" Skill : skills
-  Skill "1" *-- "1" SkillFrontmatter : frontmatter
+  Skill "1" *-- "0..*" SkillRequirement : direct edges
+  Skill "1" *-- "0..*" SkillResource : source bytes
 ```
 
-Each model has its own explicit file and owns its immutable construction shape.
-Validator enforces authored-value and cross-model invariants before
-construction. Model values remain immutable for the lifetime of one command.
-`required_skill_ids` belongs directly to `Skill`; there is no separate relation
-model and no discovery-only `related` relation in version 1.
+The validator constructs models only after structural, semantic, graph, and
+filesystem validation succeeds. `source_body` and immutable resource snapshots
+give composition a validated input without rediscovering source files. A
+resource exposes a fresh byte buffer for each output read, preserving the
+model's immutable snapshot.
 
-## Request–Result contracts
+## Validation pipeline
 
-Requests are plain object values. `rootDir` is optional and defaults to the
-repository root when invoked through the CLI.
+`PluginValidator` fails closed:
 
-| Operation        | Request                    | Result                                                   | Writes |
-| ---------------- | -------------------------- | -------------------------------------------------------- | ------ |
-| `validatePlugin` | `{ rootDir }`              | `{ plugin, diagnostics }`                                | No     |
-| `generatePlugin` | `{ rootDir }`              | `{ plugin, changedPaths, unchangedPaths }`               | Yes    |
-| `checkPlugin`    | `{ rootDir }`              | `{ plugin, isCurrent, drift }`                           | No     |
-| Output plan      | `{ rootDir, plugin, ... }` | `{ entries, missing }`, for Generator–Checker reuse only | No     |
+1. Read `plugin/plugin.yml` through real, non-symlinked path segments.
+2. Parse strict YAML 1.2. Comments are allowed; duplicate keys, anchors,
+   aliases, merge keys, explicit tags, interpolation, and unquoted versions are
+   rejected.
+3. Validate the closed shape with `schemas/plugin.schema.json`.
+4. Validate unique IDs, category references, lifecycle metadata, replacement
+   targets, dependency status rules, and the acyclic graph.
+5. Require a one-to-one mapping between manifest entries and flat
+   `plugin/skills/<id>/` directories.
+6. Reject source frontmatter, missing or duplicate compiler markers, source use
+   of `references/required-skills/`, unsupported service or non-regular files,
+   path escapes, symlinks, and invalid inline or reference-style local Markdown
+   links.
+7. Snapshot the source body and every resource byte in deterministic path order.
+8. Construct the immutable Plugin aggregate.
 
-Validation and planning failures are reported as aggregate, actionable errors
-before any write begins. Generated models are never returned partially.
+Independent errors are aggregated in `PluginValidationError.diagnostics` when
+possible. Non-failing diagnostics report deprecated dependencies and active
+internal skills unreachable from a generated public root.
 
-## Source pipeline
+## Composition
 
-`PluginValidator` runs the source pipeline in a fail-closed order:
+For every `public` skill whose status is `active` or `deprecated`, the composer:
 
-1. Read `plugin.yml` from a real repository directory.
-2. Parse strict YAML and reject duplicate keys, aliases, anchors, explicit tags,
-   merge keys, unsupported node kinds, and unquoted plugin versions.
-3. Validate the parsed shape with `schemas/plugin.schema.json`.
-4. Validate category and skill IDs, membership, and required-skill references.
-5. Discover every `skills/<category>/<skill>/SKILL.md` and reject missing,
-   unlisted, duplicate, escaping, or symlinked paths.
-6. Parse strict YAML frontmatter and join its name and description with the
-   manifest entry.
-7. Reject self-dependencies and dependency cycles.
-8. Construct the immutable Plugin aggregate in authored order.
+1. Generates frontmatter from manifest `id` and `description`.
+2. Replaces the marker with each direct edge's verbatim `reason`,
+   `instructions`, and generated link, preserving manifest order.
+3. Copies authored resources byte-for-byte with their relative structure.
+4. Recursively materializes each required skill under
+   `references/required-skills/<skill-id>/`.
 
-Schema validation answers whether the YAML has the supported structure. Semantic
-validation answers whether its references and repository contents are coherent.
+Recursive nesting deliberately duplicates a shared leaf along separate diamond
+branches. That trade-off keeps each embedded skill self-contained and preserves
+all relative links without runtime dependency resolution.
 
 ## Operation flows
 
 ### Validate
 
 ```text
-CLI → PluginValidator → sources → schema → semantic checks → Plugin → result
+CLI → PluginValidator → manifest + source trees → schema + semantic checks
+    → immutable Plugin snapshot → result
 ```
 
-No output content is calculated and no managed file is read or written.
+No generated output is read or written.
 
 ### Generate
 
 ```text
 CLI → PluginGenerator → PluginValidator → Plugin
-    → Claude updater + README updater → expected-output plan
+    → Composer + host/README updaters → expected-output plan
     → safety checks → atomic replacements → result
 ```
 
-All expected content and all target paths are validated before the first
-replacement. A preparation failure leaves every managed output unchanged. Each
-changed file is replaced atomically, but the four-file set is intentionally not
-a transaction: after a rare later operating-system write failure, rerun generate
-to converge the complete set.
+The generator owns these outputs:
+
+- `.claude-plugin/plugin.json`;
+- `.claude-plugin/marketplace.json`;
+- the marker-bounded catalog region in `README.md`;
+- the complete `skills/` directory, including `skills/README.md`.
+
+Changed standalone files use exclusive temporary siblings and atomic rename. The
+generated `skills/` tree is built in a temporary directory and swapped as one
+recoverable unit. Before the swap, the generator compares its bytes with the
+output plan and resolves every generated local link within its standalone root
+skill. Removed or no-longer-published skills therefore disappear without stale
+files. The complete multi-output set is not a transaction, so a rare later
+operating-system failure is recovered by rerunning generation.
 
 ### Check
 
 ```text
 CLI → PluginChecker → PluginValidator → Plugin
-    → PluginGenerator expected-output plan → byte comparison → drift result
+    → Generator expected-output plan → byte comparison → drift result
 ```
 
-Checker never calls Generator's write path. Missing README inputs become drift
-evidence rather than being created.
+Checker never calls the write path. It reports missing, unexpected, and changed
+files across the complete compiler-owned output surface.
 
-## Output updaters
+## Request-result contracts
 
-`output_updaters/update-claude-plugin.mjs` computes complete contents for:
+Requests are plain objects. `rootDir` defaults to the repository root through
+the CLI.
 
-- `.claude-plugin/plugin.json`
-- `.claude-plugin/marketplace.json`
+| Operation        | Request                    | Result                                                  | Writes |
+| ---------------- | -------------------------- | ------------------------------------------------------- | ------ |
+| `validatePlugin` | `{ rootDir }`              | `{ plugin, diagnostics }`                               | No     |
+| `generatePlugin` | `{ rootDir }`              | `{ plugin, diagnostics, changedPaths, unchangedPaths }` | Yes    |
+| `checkPlugin`    | `{ rootDir }`              | `{ plugin, diagnostics, isCurrent, drift }`             | No     |
+| Output plan      | `{ rootDir, plugin, ... }` | `{ entries, missing, expectedSkills }`                  | No     |
 
-`output_updaters/update-plugin-readme.mjs` replaces only marker-bounded regions
-in:
-
-- `README.md`
-- `skills/README.md`
-
-Both modules are deterministic pure functions. They receive model/current-text
-values and return expected content values. They do not inspect paths, select a
-command, compare disk, or write files.
-
-README updates require exactly one ordered marker pair, reject nested or
-generated reserved markers, preserve every byte outside the managed region, and
-escape Markdown table cells. Table width uses Unicode display width so generated
-Markdown stays Prettier-stable.
-
-## Filesystem safety
-
-Generator and Checker resolve every managed path beneath the repository root and
-reject:
-
-- repository roots that are links or non-directories;
-- paths that escape the repository;
-- symlinks at any existing path segment;
-- non-directory parents;
-- non-regular existing targets.
-
-Generator writes complete files through exclusive temporary siblings followed by
-rename. Temporary files are cleaned after failure. Checker only reads and
-compares. This provides per-file atomicity without a transaction journal or
-multi-file rollback engine.
-
-## Error behavior
-
-Validation errors aggregate independent manifest, skill, and graph issues when
-possible. `PluginValidationError.diagnostics` contains the immutable issue list;
-the message names each source and location. CLI exit codes are:
-
-- `0`: successful operation; check found no drift.
-- `1`: invalid sources, unsafe output, generation failure, or detected drift.
-- `2`: unknown or missing command.
+Validation and planning complete before the first write. Partially validated
+models and partially planned output sets are never returned.
 
 ## Tests
 
-Tests mirror the tool beneath level-specific roots:
+Tests mirror production capability beneath level-specific roots:
 
 ```text
-tests/
-└── tools/plugin-compiler/
-    ├── unit-tests/
-    │   ├── models/
-    │   ├── output_updaters/
-    │   │   └── test-fixtures/
-    │   └── plugin-compiler-cli.test.mjs
-    └── integration-tests/
-        ├── test-doubles/
-        ├── test-fixtures/
-        ├── plugin-validator.test.mjs
-        ├── plugin-generator.test.mjs
-        ├── plugin-checker.test.mjs
-        ├── plugin-compiler-architecture.test.mjs
-        └── plugin-compiler-repository-workflow.test.mjs
+tests/tools/plugin-compiler/
+├── unit-tests/
+│   ├── composition/
+│   ├── models/
+│   └── output_updaters/
+└── integration-tests/
+    ├── plugin-validator.test.mjs
+    ├── plugin-generator.test.mjs
+    ├── plugin-checker.test.mjs
+    └── plugin-compiler-repository-workflow.test.mjs
 ```
 
-Unit tests cover in-process public behavior without filesystem access.
-Integration tests use isolated temporary repositories for the real filesystem,
-parser, schema, Validator, Generator, and Checker collaborations. Every test is
-written as Given–When–Then. The production or capability scope comes before the
-test level, and reusable doubles live at their nearest common test scope.
-
-Together they cover:
-
-- kebab-case module naming across production and test scopes;
-- strict YAML and schema failures;
-- repository discovery, symlink, and relation invariants;
-- domain-model construction and immutability;
-- pure Claude and README updater output;
-- marker, whitespace, escaping, and Unicode-width edge cases;
-- Generator atomicity and path containment;
-- Checker drift reporting and proof of no writes;
-- CLI routing, messages, and exit codes;
-- committed-output drift through `npm run catalog:check`.
-
-Run:
+Every test uses Given-When-Then. Run the complete verification set with:
 
 ```bash
 npm test
@@ -341,33 +416,30 @@ npm run markdown:check
 
 ### Add or move a skill
 
-1. Create or move `skills/<category>/<skill-id>/SKILL.md`.
-2. Keep the frontmatter `name` equal to the skill ID and directory name.
-3. Add or update the skill in `plugin.yml` and set `required_skill_ids`.
-4. Run `npm run catalog:generate`.
-5. Review all generated changes, then run the complete checks.
+1. Create or move `plugin/skills/<skill-id>/`.
+2. Write a body-only `SKILL.md` with exactly one required-skills marker.
+3. Add or update the skill in `plugin/plugin.yml`, including `category_id`,
+   `visibility`, `status`, and `required_skills`.
+4. Run `npm run catalog:generate` and review the root `skills/` replacement and
+   other generated diffs.
+5. Run validation, drift, tests, and Markdown checks.
 
 ### Change the plugin version
 
-1. Update `plugin.version` in `plugin.yml` as a quoted string.
-2. Generate and review `.claude-plugin/plugin.json`.
-3. Run validation, drift, tests, and Markdown checks before release.
+1. Update the quoted top-level `version` in `plugin/plugin.yml`.
+2. Leave `schema_version` unchanged unless the manifest contract becomes
+   incompatible.
+3. Generate and review all committed outputs before release.
 
 ### Evolve the manifest schema
 
 Treat `schema_version` as a compatibility boundary. Update the schema,
-Validator, models, fixtures, README contract, and migration behavior together.
+Validator, models, fixtures, documentation, and migration behavior together.
 Never accept an unknown schema version silently.
 
 ### Add another generated target
 
-Start with a pure, explicitly named updater under `output_updaters/`. Add its
-result to Generator's canonical plan so Checker automatically verifies the same
-content. Introduce a generic provider abstraction only after two real providers
-demonstrate a stable common contract.
-
-### Extract another module
-
-Keep behavior private to its command component unless it has an independent,
-reusable contract. Avoid one-function pass-through modules that merely expose an
-implementation step.
+Start with a pure, explicitly named updater or composer. Add its result to
+Generator's canonical plan so Checker verifies the same content. Introduce a
+generic provider abstraction only after two real providers demonstrate a stable
+common contract.

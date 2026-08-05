@@ -16,10 +16,6 @@ export const SKILLS_README_END_MARKER =
 const MANAGED_MARKER_PATTERN =
   /<!-- (?:BEGIN|END) GENERATED:PLUGIN-CATALOG:[^>]+-->/;
 
-const TEST_COLLECTION_EXPLANATION =
-  "The test skills are intentionally simple. They verify collection discovery,\n" +
-  "installation, metadata, and invocation independently from the available skills.";
-
 function markdownCell(value) {
   const normalized = String(value).replace(/\s+/gu, " ").trim();
   if (/[\p{Cc}\p{Cf}\p{Cs}]/u.test(normalized)) {
@@ -99,54 +95,58 @@ function replaceManagedRegion(text, startMarker, endMarker, content, label) {
 }
 
 function renderRootCatalogSection(plugin) {
-  const categoryTitles = new Map(
-    plugin.categories.map((category) => [category.id, category.title]),
+  const categoryNames = new Map(
+    plugin.categories.map((category) => [category.id, category.name]),
   );
-  const skillRows = (kind) =>
-    plugin.skills
-      .filter((skill) => skill.kind === kind)
-      .map((skill) => [
-        `\`${skill.id}\``,
-        categoryTitles.get(skill.category_id),
-        skill.summary,
-      ]);
+  const publicSkills = plugin.skills.filter(
+    (skill) =>
+      skill.visibility === "public" &&
+      (skill.status === "active" || skill.status === "deprecated"),
+  );
+  const rows = publicSkills.map((skill) => {
+    const deprecated = skill.status === "deprecated";
+    const status = deprecated
+      ? `Deprecated — ${skill.deprecation.reason} ${skill.deprecation.instructions}`
+      : "Active";
+    const replacement = skill.deprecation?.replacement_skill_id
+      ? `\`${skill.deprecation.replacement_skill_id}\``
+      : "—";
 
-  const sections = [
+    return [
+      `\`${skill.id}\``,
+      categoryNames.get(skill.category_id),
+      skill.description,
+      status,
+      replacement,
+    ];
+  });
+
+  return [
     "## Available skills",
     "",
-    renderMarkdownTable(["Skill", "Category", "Purpose"], skillRows("product")),
-  ];
-  const testRows = skillRows("test");
-
-  if (testRows.length > 0) {
-    sections.push(
-      "",
-      "## Test collection",
-      "",
-      renderMarkdownTable(["Skill", "Category", "Purpose"], testRows),
-      "",
-      TEST_COLLECTION_EXPLANATION,
-    );
-  }
-
-  return sections.join("\n");
+    renderMarkdownTable(
+      ["Skill", "Category", "Description", "Status", "Replacement"],
+      rows,
+    ),
+  ].join("\n");
 }
 
 function renderCategorySection(plugin) {
   const rows = plugin.categories.map((category) => {
     const skills = plugin.skills
-      .filter((skill) => skill.category_id === category.id)
-      .toSorted((left, right) => {
-        if (left.kind === right.kind) return 0;
-        return left.kind === "product" ? -1 : 1;
-      })
+      .filter(
+        (skill) =>
+          skill.category_id === category.id &&
+          skill.visibility === "public" &&
+          (skill.status === "active" || skill.status === "deprecated"),
+      )
       .map((skill) => `\`${skill.id}\``);
 
     return [`\`${category.id}\``, skills.length > 0 ? skills.join(", ") : "—"];
   });
 
   return [
-    "## Initial categories",
+    "## Categories",
     "",
     renderMarkdownTable(["Category", "Skills"], rows),
   ].join("\n");

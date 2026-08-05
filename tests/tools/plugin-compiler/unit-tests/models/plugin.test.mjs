@@ -6,21 +6,21 @@ import { Plugin } from "../../../../../tools/plugin-compiler/models/plugin.mjs";
 import { PluginMetadata } from "../../../../../tools/plugin-compiler/models/plugin-metadata.mjs";
 import { Skill } from "../../../../../tools/plugin-compiler/models/skill.mjs";
 import { SkillFrontmatter } from "../../../../../tools/plugin-compiler/models/skill-frontmatter.mjs";
+import { SkillRequirement } from "../../../../../tools/plugin-compiler/models/skill-requirement.mjs";
+import { SkillResource } from "../../../../../tools/plugin-compiler/models/skill-resource.mjs";
 
-test("Plugin exposes the complete catalog as immutable domain values", () => {
+test("Plugin snapshots the complete v2 source model as immutable values", () => {
   // Given
-  const plugin = new Plugin({
-    schema_version: 1,
-    metadata: {
-      name: "fixture-skills",
-      version: "1.2.3",
-      description: "Fixture plugin.",
-      author: { name: "Fixture Owner" },
-      homepage: "https://example.test/readme",
-      repository: "https://example.test/repository",
-      license: "MIT",
-      keywords: ["agent-skills"],
-    },
+  const input = {
+    schema_version: 2,
+    name: "fixture-skills",
+    description: "Fixture plugin.",
+    version: "1.2.3+1",
+    author: { name: "Fixture Owner" },
+    homepage: "https://example.test/readme",
+    repository: "https://example.test/repository",
+    license: "MIT",
+    keywords: ["agent-skills"],
     marketplace: {
       name: "fixture",
       description: "Fixture marketplace.",
@@ -31,52 +31,71 @@ test("Plugin exposes the complete catalog as immutable domain values", () => {
     categories: [
       {
         id: "engineering",
-        title: "Engineering",
+        name: "Engineering",
         description: "Engineering skills.",
       },
     ],
     skills: [
       {
         id: "alpha-skill",
+        description: "Alpha description.",
         category_id: "engineering",
-        kind: "product",
-        summary: "Alpha summary.",
-        required_skill_ids: [],
-        path: "skills/engineering/alpha-skill",
-        frontmatter: {
-          name: "alpha-skill",
-          description: "Alpha description.",
-        },
+        visibility: "public",
+        status: "active",
+        required_skills: [
+          {
+            skill_id: "core-skill",
+            reason: "Core rules.",
+            instructions: "Read first.",
+          },
+        ],
+        source_path: "plugin/skills/alpha-skill",
+        source_body: "# Alpha\n",
+        resources: [
+          { path: "references/example.md", content_base64: "IyBFeGFtcGxlCg==" },
+        ],
       },
     ],
-  });
+  };
 
   // When
-  const skill = plugin.skills[0];
+  const plugin = new Plugin(input);
+  input.author.name = "Changed";
+  input.keywords.push("changed");
+  input.skills[0].required_skills[0].reason = "Changed";
 
   // Then
-  assert.ok(plugin instanceof Plugin);
+  const skill = plugin.skills[0];
   assert.ok(plugin.metadata instanceof PluginMetadata);
   assert.ok(plugin.categories[0] instanceof Category);
   assert.ok(skill instanceof Skill);
   assert.ok(skill.frontmatter instanceof SkillFrontmatter);
-  assert.equal(skill.category_id, "engineering");
-  assert.deepEqual(skill.required_skill_ids, []);
-  assert.equal(plugin.marketplace.plugin_description, "Fixture listing.");
+  assert.ok(skill.required_skills[0] instanceof SkillRequirement);
+  assert.ok(skill.resources[0] instanceof SkillResource);
+  assert.equal(plugin.author.name, "Fixture Owner");
+  assert.deepEqual(plugin.keywords, ["agent-skills"]);
+  assert.equal(skill.required_skills[0].reason, "Core rules.");
+  assert.equal(skill.path, "skills/alpha-skill");
+  assert.deepEqual(skill.resource_paths, ["references/example.md"]);
+  const firstRead = skill.resources[0].content;
+  firstRead[0] = 0;
+  assert.equal(skill.resources[0].content.toString("utf8"), "# Example\n");
 
   for (const value of [
     plugin,
+    plugin.author,
+    plugin.keywords,
     plugin.metadata,
-    plugin.metadata.author,
-    plugin.metadata.keywords,
-    plugin.marketplace,
-    plugin.marketplace.keywords,
     plugin.categories,
     plugin.categories[0],
     plugin.skills,
     skill,
-    skill.required_skill_ids,
     skill.frontmatter,
+    skill.required_skills,
+    skill.required_skills[0],
+    skill.resources,
+    skill.resources[0],
+    skill.resource_paths,
   ]) {
     assert.equal(Object.isFrozen(value), true);
   }

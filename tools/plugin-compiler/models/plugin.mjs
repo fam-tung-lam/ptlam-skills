@@ -2,48 +2,73 @@ import { Category } from "./category.mjs";
 import { PluginMetadata } from "./plugin-metadata.mjs";
 import { Skill } from "./skill.mjs";
 
-/**
- * Immutable normalized plugin catalog consumed by all output updaters.
- * Use {@link PluginValidator#validatePlugin} to create a fully validated model.
- *
- * @property {number} schema_version Manifest schema version.
- * @property {PluginMetadata} metadata Normalized plugin publication metadata.
- * @property {{ name: string, description: string, plugin_description: string, category: string, keywords: readonly string[] }} marketplace
- *   Frozen marketplace projection settings.
- * @property {readonly Category[]} categories Frozen normalized categories.
- * @property {readonly Skill[]} skills Frozen normalized skills.
- */
+/** Immutable normalized v2 plugin source model. */
 export class Plugin {
   /**
-   * @param {object} plugin Validated plugin catalog fields.
+   * @param {object} plugin Validated manifest and source snapshot.
    * @param {number} plugin.schema_version Manifest schema version.
-   * @param {PluginMetadata|object} plugin.metadata Existing metadata model or validated fields.
-   * @param {{ name: string, description: string, plugin_description: string, category: string, keywords: Iterable<string> }} plugin.marketplace
-   *   Marketplace projection settings.
-   * @param {Iterable<Category|object>} plugin.categories Category models or validated fields.
-   * @param {Iterable<Skill|object>} plugin.skills Skill models or validated fields.
-   * @throws {TypeError} If plugin data is omitted, iterable fields are invalid, or a nested model cannot be constructed.
+   * @param {string} plugin.name Stable plugin identifier.
+   * @param {string} plugin.description Human-readable plugin description.
+   * @param {string} plugin.version Plugin release version.
+   * @param {{ name: string, email?: string, url?: string }} plugin.author Publication author.
+   * @param {string} plugin.homepage Publication homepage.
+   * @param {string} plugin.repository Source repository URL.
+   * @param {string} plugin.license License name.
+   * @param {Iterable<string>} plugin.keywords Discovery keywords.
+   * @param {object} plugin.marketplace Marketplace projection settings.
+   * @param {Iterable<Category|object>} plugin.categories Ordered categories.
+   * @param {Iterable<Skill|object>} plugin.skills Ordered authored skills.
    */
-  constructor({ schema_version, metadata, marketplace, categories, skills }) {
+  constructor({
+    schema_version,
+    name,
+    description,
+    version,
+    author,
+    homepage,
+    repository,
+    license,
+    keywords,
+    marketplace,
+    categories,
+    skills,
+  }) {
     this.schema_version = schema_version;
-    this.metadata =
-      metadata instanceof PluginMetadata
-        ? metadata
-        : new PluginMetadata(metadata);
+    this.name = name;
+    this.description = description;
+    this.version = version;
+    this.author = Object.freeze({ ...author });
+    this.homepage = homepage;
+    this.repository = repository;
+    this.license = license;
+    this.keywords = Object.freeze([...keywords]);
     this.marketplace = Object.freeze({
       ...marketplace,
       keywords: Object.freeze([...marketplace.keywords]),
     });
     this.categories = Object.freeze(
-      categories.map((category) =>
+      [...categories].map((category) =>
         category instanceof Category ? category : new Category(category),
       ),
     );
     this.skills = Object.freeze(
-      skills.map((skill) =>
+      [...skills].map((skill) =>
         skill instanceof Skill ? skill : new Skill(skill),
       ),
     );
+
+    // Transitional projection for existing host-manifest updaters. Top-level
+    // v2 identity and publication fields above remain canonical.
+    this.metadata = new PluginMetadata({
+      name,
+      description,
+      version,
+      author,
+      homepage,
+      repository,
+      license,
+      keywords,
+    });
     Object.freeze(this);
   }
 }

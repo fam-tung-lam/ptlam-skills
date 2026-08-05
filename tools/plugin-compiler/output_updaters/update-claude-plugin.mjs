@@ -15,31 +15,35 @@ function renderJson(value) {
  * const { pluginJson, marketplaceJson } = updateClaudePlugin({ plugin });
  */
 export function updateClaudePlugin({ plugin }) {
-  const { metadata, marketplace } = plugin;
+  const publicSkills = plugin.skills.filter(
+    (skill) =>
+      skill.visibility === "public" &&
+      (skill.status === "active" || skill.status === "deprecated"),
+  );
 
   return {
     pluginJson: renderJson({
-      name: metadata.name,
-      version: metadata.version,
-      description: metadata.description,
-      author: metadata.author,
-      homepage: metadata.homepage,
-      repository: metadata.repository,
-      license: metadata.license,
-      keywords: metadata.keywords,
-      skills: plugin.skills.map((skill) => `./${skill.path}`),
+      name: plugin.name,
+      version: plugin.version,
+      description: plugin.description,
+      author: plugin.author,
+      homepage: plugin.homepage,
+      repository: plugin.repository,
+      license: plugin.license,
+      keywords: plugin.keywords,
+      skills: publicSkills.map((skill) => `./skills/${skill.id}`),
     }),
     marketplaceJson: renderJson({
-      name: marketplace.name,
-      owner: metadata.author,
-      description: marketplace.description,
+      name: plugin.marketplace.name,
+      owner: plugin.author,
+      description: plugin.marketplace.description,
       plugins: [
         {
-          name: metadata.name,
+          name: plugin.name,
           source: "./",
-          description: marketplace.plugin_description,
-          category: marketplace.category,
-          keywords: marketplace.keywords,
+          description: plugin.marketplace.plugin_description,
+          category: plugin.marketplace.category,
+          keywords: plugin.marketplace.keywords,
         },
       ],
     }),

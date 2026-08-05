@@ -13,6 +13,12 @@ const DEFAULT_ROOT = path.resolve(
   "../..",
 );
 
+function reportWarnings(diagnostics, stderr) {
+  if (!diagnostics || diagnostics.length === 0) return;
+  stderr("Plugin warnings:");
+  for (const diagnostic of diagnostics) stderr(`- ${diagnostic}`);
+}
+
 /**
  * Command dispatcher for validating, generating, and checking plugin artifacts.
  * Inject collaborators and output callbacks when embedding the CLI in tests or
@@ -69,7 +75,10 @@ export class PluginCompilerCLI {
 
     try {
       if (command === "validate") {
-        const { plugin } = await this.validator.validatePlugin({ rootDir });
+        const { plugin, diagnostics } = await this.validator.validatePlugin({
+          rootDir,
+        });
+        reportWarnings(diagnostics, stderr);
         stdout(
           `Plugin is valid: ${plugin.skills.length} skills in ${plugin.categories.length} categories.`,
         );
@@ -78,6 +87,7 @@ export class PluginCompilerCLI {
 
       if (command === "generate") {
         const result = await this.generator.generatePlugin({ rootDir });
+        reportWarnings(result.diagnostics, stderr);
         stdout("Generated plugin outputs:");
         for (const relativePath of result.changedPaths) {
           stdout(`- ${relativePath}`);
@@ -89,6 +99,7 @@ export class PluginCompilerCLI {
       }
 
       const result = await this.checker.checkPlugin({ rootDir });
+      reportWarnings(result.diagnostics, stderr);
       if (result.isCurrent) {
         stdout("Plugin outputs are current.");
         return 0;

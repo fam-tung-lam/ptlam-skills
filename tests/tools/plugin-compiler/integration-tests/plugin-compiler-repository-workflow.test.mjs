@@ -20,23 +20,22 @@ const outputPaths = [
   ".claude-plugin/marketplace.json",
   "README.md",
   "skills/README.md",
+  "skills/fixture-skill/SKILL.md",
 ];
 
-const fixtureManifest = `schema_version: 1
-
-plugin:
-  name: fixture-skills
-  version: "0.1.0"
-  description: Fixture plugin description.
-  author:
-    name: Fixture Owner
-    email: owner@example.test
-    url: https://example.test
-  homepage: https://example.test/readme
-  repository: https://example.test/repository
-  license: MIT
-  keywords:
-    - agent-skills
+const fixtureManifest = `schema_version: 2
+name: fixture-skills
+description: Fixture plugin description.
+version: "0.1.0"
+author:
+  name: Fixture Owner
+  email: owner@example.test
+  url: https://example.test
+homepage: https://example.test/readme
+repository: https://example.test/repository
+license: MIT
+keywords:
+  - agent-skills
 
 marketplace:
   name: fixture
@@ -48,23 +47,23 @@ marketplace:
 
 categories:
   - id: engineering
-    title: Engineering
+    name: Engineering
     description: Engineering skills.
 
 skills:
   - id: fixture-skill
-    category: engineering
-    kind: product
-    summary: Exercise compiler workflows.
-    required_skill_ids: []
+    description: Exercise plugin compiler workflows.
+    category_id: engineering
+    visibility: public
+    status: active
+    required_skills: []
 `;
 
-const fixtureSkill = `---
-name: fixture-skill
-description: Exercise plugin compiler workflows.
----
+const fixtureSkill = `# Fixture skill
 
-# Fixture skill
+Exercise compiler workflows.
+
+<!-- PLUGIN-COMPILER:REQUIRED-SKILLS -->
 `;
 
 const rootReadme = `# Fixture plugin
@@ -101,15 +100,20 @@ async function createFixtureRepository(t) {
 
   const skillPath = path.join(
     rootDir,
+    "plugin",
     "skills",
-    "engineering",
     "fixture-skill",
     "SKILL.md",
   );
   await mkdir(path.dirname(skillPath), { recursive: true });
-  await writeFile(path.join(rootDir, "plugin.yml"), fixtureManifest, "utf8");
+  await writeFile(
+    path.join(rootDir, "plugin", "plugin.yml"),
+    fixtureManifest,
+    "utf8",
+  );
   await writeFile(skillPath, fixtureSkill, "utf8");
   await writeFile(path.join(rootDir, "README.md"), rootReadme, "utf8");
+  await mkdir(path.join(rootDir, "skills"), { recursive: true });
   await writeFile(
     path.join(rootDir, "skills", "README.md"),
     skillsReadme,
@@ -175,7 +179,12 @@ test("a fixture repository generates all outputs and checks current", async (t) 
   const generation = await generator.generatePlugin({ rootDir });
 
   // Then
-  assert.deepEqual(generation.changedPaths, outputPaths);
+  assert.deepEqual(generation.changedPaths, [
+    ".claude-plugin/plugin.json",
+    ".claude-plugin/marketplace.json",
+    "README.md",
+    "skills",
+  ]);
   assert.deepEqual(generation.unchangedPaths, []);
 
   // When
@@ -184,7 +193,7 @@ test("a fixture repository generates all outputs and checks current", async (t) 
 
   // Then
   assert.equal(claudePlugin.name, "fixture-skills");
-  assert.deepEqual(claudePlugin.skills, ["./skills/engineering/fixture-skill"]);
+  assert.deepEqual(claudePlugin.skills, ["./skills/fixture-skill"]);
   assert.match(generated["README.md"], /`fixture-skill`/u);
   assert.match(generated["skills/README.md"], /`engineering`/u);
 
@@ -203,12 +212,12 @@ test("a source change creates drift and check never mutates outputs", async (t) 
   await generator.generatePlugin({ rootDir });
 
   const beforeDriftCheck = await readOutputs(rootDir);
-  const manifestPath = path.join(rootDir, "plugin.yml");
+  const manifestPath = path.join(rootDir, "plugin", "plugin.yml");
   const manifest = await readFile(manifestPath, "utf8");
   await writeFile(
     manifestPath,
     manifest.replace(
-      "Exercise compiler workflows.",
+      "Exercise plugin compiler workflows.",
       "Exercise changed compiler workflows.",
     ),
     "utf8",
@@ -221,6 +230,7 @@ test("a source change creates drift and check never mutates outputs", async (t) 
   assert.equal(stale.isCurrent, false);
   assert.deepEqual(stale.drift, [
     { path: "README.md", reason: "content differs" },
+    { path: "skills/fixture-skill/SKILL.md", reason: "content differs" },
   ]);
   assert.deepEqual(await readOutputs(rootDir), beforeDriftCheck);
 });
@@ -232,13 +242,13 @@ test("invalid source prevents generation from changing existing outputs", async 
   await generator.generatePlugin({ rootDir });
   const beforeFailure = await readOutputs(rootDir);
 
-  const manifestPath = path.join(rootDir, "plugin.yml");
+  const manifestPath = path.join(rootDir, "plugin", "plugin.yml");
   const manifest = await readFile(manifestPath, "utf8");
   await writeFile(
     manifestPath,
     manifest.replace(
-      "schema_version: 1",
-      "schema_version: 1\nunexpected: true",
+      "schema_version: 2",
+      "schema_version: 2\nunexpected: true",
     ),
     "utf8",
   );
@@ -254,20 +264,20 @@ test("invalid source prevents generation from changing existing outputs", async 
   assert.deepEqual(await readOutputs(rootDir), beforeFailure);
 });
 
-test("a missing README prevents partial regeneration", async (t) => {
+test("a missing root README prevents partial regeneration", async (t) => {
   // Given
   const rootDir = await createFixtureRepository(t);
   const { generator } = createCompiler();
   await generator.generatePlugin({ rootDir });
 
-  const skillsReadmePath = path.join(rootDir, "skills", "README.md");
-  await rm(skillsReadmePath);
+  const rootReadmePath = path.join(rootDir, "README.md");
+  await rm(rootReadmePath);
   const preservedPaths = outputPaths.filter(
-    (relativePath) => relativePath !== "skills/README.md",
+    (relativePath) => relativePath !== "README.md",
   );
   const beforeFailure = await readOutputs(rootDir, preservedPaths);
 
-  const manifestPath = path.join(rootDir, "plugin.yml");
+  const manifestPath = path.join(rootDir, "plugin", "plugin.yml");
   const manifest = await readFile(manifestPath, "utf8");
   await writeFile(
     manifestPath,
@@ -279,7 +289,7 @@ test("a missing README prevents partial regeneration", async (t) => {
   const generation = generator.generatePlugin({ rootDir });
 
   // Then
-  await assert.rejects(generation, /skills\/README\.md|missing|ENOENT/iu);
+  await assert.rejects(generation, /README\.md|missing|ENOENT/iu);
   assert.deepEqual(await readOutputs(rootDir, preservedPaths), beforeFailure);
-  await assert.rejects(readFile(skillsReadmePath, "utf8"), { code: "ENOENT" });
+  await assert.rejects(readFile(rootReadmePath, "utf8"), { code: "ENOENT" });
 });

@@ -6,17 +6,45 @@
   "additionalProperties": false,
   "required": [
     "schema_version",
-    "plugin",
+    "name",
+    "description",
+    "version",
+    "author",
+    "homepage",
+    "repository",
+    "license",
+    "keywords",
     "marketplace",
     "categories",
     "skills"
   ],
   "properties": {
     "schema_version": {
-      "const": 1
+      "const": 2
     },
-    "plugin": {
-      "$ref": "#/$defs/pluginMetadata"
+    "name": {
+      "$ref": "#/$defs/identifier"
+    },
+    "description": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "version": {
+      "$ref": "#/$defs/version"
+    },
+    "author": {
+      "$ref": "#/$defs/author"
+    },
+    "homepage": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "repository": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "license": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "keywords": {
+      "$ref": "#/$defs/stringList"
     },
     "marketplace": {
       "$ref": "#/$defs/marketplace"
@@ -39,15 +67,16 @@
   "$defs": {
     "identifier": {
       "type": "string",
+      "maxLength": 64,
       "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
     },
     "nonEmptyString": {
       "type": "string",
       "pattern": "\\S"
     },
-    "markdownTableText": {
+    "version": {
       "type": "string",
-      "pattern": "^(?=.*\\S)[^\\p{Cc}\\p{Cf}\\p{Cs}]+$"
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$"
     },
     "stringList": {
       "type": "array",
@@ -70,47 +99,6 @@
         },
         "url": {
           "$ref": "#/$defs/nonEmptyString"
-        }
-      }
-    },
-    "pluginMetadata": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "name",
-        "version",
-        "description",
-        "author",
-        "homepage",
-        "repository",
-        "license",
-        "keywords"
-      ],
-      "properties": {
-        "name": {
-          "$ref": "#/$defs/identifier"
-        },
-        "version": {
-          "type": "string",
-          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$"
-        },
-        "description": {
-          "$ref": "#/$defs/nonEmptyString"
-        },
-        "author": {
-          "$ref": "#/$defs/author"
-        },
-        "homepage": {
-          "$ref": "#/$defs/nonEmptyString"
-        },
-        "repository": {
-          "$ref": "#/$defs/nonEmptyString"
-        },
-        "license": {
-          "$ref": "#/$defs/nonEmptyString"
-        },
-        "keywords": {
-          "$ref": "#/$defs/stringList"
         }
       }
     },
@@ -145,44 +133,142 @@
     "category": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "title", "description"],
+      "required": ["id", "name", "description"],
       "properties": {
         "id": {
           "$ref": "#/$defs/identifier"
         },
-        "title": {
-          "$ref": "#/$defs/markdownTableText"
+        "name": {
+          "$ref": "#/$defs/nonEmptyString"
         },
         "description": {
           "$ref": "#/$defs/nonEmptyString"
         }
       }
     },
+    "skillRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["skill_id", "reason", "instructions"],
+      "properties": {
+        "skill_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "reason": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "instructions": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "replacement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason"],
+      "properties": {
+        "reason": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "replacement_skill_id": {
+          "$ref": "#/$defs/identifier"
+        }
+      }
+    },
+    "deprecation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason", "instructions"],
+      "properties": {
+        "reason": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "instructions": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "replacement_skill_id": {
+          "$ref": "#/$defs/identifier"
+        }
+      }
+    },
     "skill": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "category", "kind", "summary", "required_skill_ids"],
+      "required": [
+        "id",
+        "description",
+        "category_id",
+        "visibility",
+        "status",
+        "required_skills"
+      ],
       "properties": {
         "id": {
           "$ref": "#/$defs/identifier"
         },
-        "category": {
+        "description": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "category_id": {
           "$ref": "#/$defs/identifier"
         },
-        "kind": {
-          "enum": ["product", "test"]
+        "visibility": {
+          "enum": ["internal", "public"]
         },
-        "summary": {
-          "$ref": "#/$defs/markdownTableText"
+        "status": {
+          "enum": ["draft", "active", "deprecated", "archived"]
         },
-        "required_skill_ids": {
+        "required_skills": {
           "type": "array",
-          "uniqueItems": true,
           "items": {
-            "$ref": "#/$defs/identifier"
+            "$ref": "#/$defs/skillRequirement"
+          }
+        },
+        "deprecation": {
+          "$ref": "#/$defs/deprecation"
+        },
+        "archive": {
+          "$ref": "#/$defs/replacement"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": { "const": "deprecated" }
+            },
+            "required": ["status"]
+          },
+          "then": {
+            "required": ["deprecation"],
+            "properties": {
+              "deprecation": { "$ref": "#/$defs/deprecation" },
+              "archive": false
+            }
+          },
+          "else": {
+            "properties": { "deprecation": false }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": { "const": "archived" }
+            },
+            "required": ["status"]
+          },
+          "then": {
+            "required": ["archive"],
+            "properties": {
+              "archive": { "$ref": "#/$defs/replacement" },
+              "deprecation": false
+            }
+          },
+          "else": {
+            "properties": { "archive": false }
           }
         }
-      }
+      ]
     }
   }
 }

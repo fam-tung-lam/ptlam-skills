@@ -56,7 +56,7 @@ test("validate delegates only to PluginValidator", async () => {
         requests.push(request);
         return {
           plugin: { skills: [{}, {}], categories: [{}] },
-          diagnostics: [],
+          diagnostics: ["deprecated dependency"],
         };
       },
     },
@@ -70,7 +70,10 @@ test("validate delegates only to PluginValidator", async () => {
   // Then
   assert.equal(exitCode, 0);
   assert.deepEqual(requests, [{ rootDir: "/repository" }]);
-  assert.deepEqual(output.stderr, []);
+  assert.deepEqual(output.stderr, [
+    "Plugin warnings:",
+    "- deprecated dependency",
+  ]);
   assert.deepEqual(output.stdout, [
     "Plugin is valid: 2 skills in 1 categories.",
   ]);
@@ -87,6 +90,7 @@ test("generate presents changed and unchanged paths from PluginGenerator", async
         requests.push(request);
         return {
           plugin: {},
+          diagnostics: ["generation warning"],
           changedPaths: ["README.md"],
           unchangedPaths: ["skills/README.md"],
         };
@@ -101,7 +105,7 @@ test("generate presents changed and unchanged paths from PluginGenerator", async
   // Then
   assert.equal(exitCode, 0);
   assert.deepEqual(requests, [{ rootDir: "/repository" }]);
-  assert.deepEqual(output.stderr, []);
+  assert.deepEqual(output.stderr, ["Plugin warnings:", "- generation warning"]);
   assert.deepEqual(output.stdout, [
     "Generated plugin outputs:",
     "- README.md",
@@ -117,7 +121,12 @@ test("check returns success when PluginChecker reports current outputs", async (
     generator: unused("generator"),
     checker: {
       async checkPlugin() {
-        return { plugin: {}, isCurrent: true, drift: [] };
+        return {
+          plugin: {},
+          diagnostics: ["check warning"],
+          isCurrent: true,
+          drift: [],
+        };
       },
     },
   });
@@ -127,7 +136,7 @@ test("check returns success when PluginChecker reports current outputs", async (
 
   // Then
   assert.equal(exitCode, 0);
-  assert.deepEqual(output.stderr, []);
+  assert.deepEqual(output.stderr, ["Plugin warnings:", "- check warning"]);
   assert.deepEqual(output.stdout, ["Plugin outputs are current."]);
 });
 

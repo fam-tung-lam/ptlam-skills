@@ -38,9 +38,11 @@ test("generate validates once and writes only changed complete outputs", async (
   assert.deepEqual(first.unchangedPaths, []);
   assert.deepEqual(validator.calls, [{ rootDir }]);
   const firstState = await readManagedState(rootDir);
-  for (const relativePath of MANAGED_OUTPUT_PATHS) {
-    assert.equal(typeof firstState[relativePath], "string");
-  }
+  assert.equal(typeof firstState[".claude-plugin/plugin.json"], "string");
+  assert.equal(typeof firstState[".claude-plugin/marketplace.json"], "string");
+  assert.equal(typeof firstState["README.md"], "string");
+  assert.equal(typeof firstState.skills, "object");
+  assert.ok(firstState.skills["review-code-change/SKILL.md"]);
 
   // When
   const second = await generator.generatePlugin({ rootDir });
@@ -76,7 +78,13 @@ test("expected-output plan is deterministic, ordered, and read-only", async (t) 
   assert.deepEqual(first, second);
   assert.deepEqual(
     first.entries.map((entry) => entry.path),
-    MANAGED_OUTPUT_PATHS,
+    [
+      ".claude-plugin/plugin.json",
+      ".claude-plugin/marketplace.json",
+      "README.md",
+      "skills/README.md",
+      "skills/review-code-change/SKILL.md",
+    ],
   );
   assert.deepEqual(first.missing, ["README.md"]);
   assert.deepEqual(first.entries[2], {
@@ -110,7 +118,7 @@ test("missing README or render failure writes nothing", async (t) => {
   assert.deepEqual(await readManagedState(missingRoot), beforeMissing);
 
   const invalidRoot = await createOutputRoot(t, {
-    skillsReadme: "# Skills without managed markers\n",
+    rootReadme: "# Plugin without managed markers\n",
   });
   const invalidGenerator = new PluginGenerator({
     validator: createPluginValidatorFake(),
@@ -123,10 +131,7 @@ test("missing README or render failure writes nothing", async (t) => {
   });
 
   // Then
-  await assert.rejects(
-    invalidGeneration,
-    /skills\/README\.md: missing start marker/,
-  );
+  await assert.rejects(invalidGeneration, /README\.md: missing start marker/);
   assert.deepEqual(await readManagedState(invalidRoot), beforeInvalid);
 });
 
@@ -181,4 +186,99 @@ test("generation atomically replaces a stale regular output", async (t) => {
     ),
     [],
   );
+});
+
+test("a skills staging failure leaves every managed output unchanged", async (t) => {
+  // Given
+  const rootDir = await createOutputRoot(t);
+  const plugin = makeOutputPlugin();
+  const generator = new PluginGenerator({
+    validator: createPluginValidatorFake(plugin),
+  });
+  await generator.generatePlugin({ rootDir });
+  const before = await readManagedState(rootDir);
+  plugin.version = "1.2.4";
+  plugin.skills[0].resources = [
+    {
+      path: `references/${"x".repeat(300)}`,
+      content: Buffer.from("cannot be staged"),
+    },
+  ];
+
+  // When
+  const generation = generator.generatePlugin({ rootDir });
+
+  // Then
+  await assert.rejects(generation, /ENAMETOOLONG|name too long/iu);
+  assert.deepEqual(await readManagedState(rootDir), before);
+  assert.deepEqual(
+    (await readdir(rootDir)).filter((name) =>
+      name.startsWith(".plugin-compiler-skills-"),
+    ),
+    [],
+  );
+});
+
+test("generation preserves multiline dependency context verbatim", async (t) => {
+  // Given
+  const rootDir = await createOutputRoot(t);
+  const plugin = makeOutputPlugin();
+  plugin.skills.unshift({
+    id: "base-skill",
+    category_id: "engineering",
+    description: "Base rules.",
+    visibility: "internal",
+    status: "active",
+    required_skills: [],
+    source_body:
+      "# Base skill\n\n<!-- PLUGIN-COMPILER:REQUIRED-SKILLS -->\n\nApply base rules.\n",
+    resources: [],
+  });
+  plugin.skills[1].required_skills = [
+    {
+      skill_id: "base-skill",
+      reason: "Provides base rules.",
+      instructions: "Apply step one.\nApply step two.",
+    },
+  ];
+  const generator = new PluginGenerator({
+    validator: createPluginValidatorFake(plugin),
+  });
+
+  // When
+  await generator.generatePlugin({ rootDir });
+  const generated = await readFile(
+    path.join(rootDir, "skills", "review-code-change", "SKILL.md"),
+    "utf8",
+  );
+
+  // Then
+  assert.match(
+    generated,
+    /\*\*Instructions:\*\* Apply step one\.\nApply step two\./u,
+  );
+});
+
+test("generated-link validation runs before any managed output changes", async (t) => {
+  // Given
+  const rootDir = await createOutputRoot(t);
+  const plugin = makeOutputPlugin();
+  const generator = new PluginGenerator({
+    validator: createPluginValidatorFake(plugin),
+  });
+  await generator.generatePlugin({ rootDir });
+  const before = await readManagedState(rootDir);
+  plugin.version = "1.2.4";
+  plugin.skills[0].source_body =
+    "# Review code change\n\n<!-- PLUGIN-COMPILER:REQUIRED-SKILLS -->\n\nRead [missing](references/missing.md).\n";
+
+  // When
+  const generation = generator.generatePlugin({ rootDir });
+
+  // Then
+  await assert.rejects(
+    generation,
+    /Generated skills validation failed[\s\S]*local link target does not exist/u,
+  );
+  assert.deepEqual(await readManagedState(rootDir), before);
 });

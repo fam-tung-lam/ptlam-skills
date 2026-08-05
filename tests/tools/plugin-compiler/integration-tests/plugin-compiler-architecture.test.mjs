@@ -62,6 +62,8 @@ test("keeps one explicit file per approved domain model", async () => {
     "plugin-metadata.mjs",
     "plugin.mjs",
     "skill-frontmatter.mjs",
+    "skill-requirement.mjs",
+    "skill-resource.mjs",
     "skill.mjs",
   ];
 
