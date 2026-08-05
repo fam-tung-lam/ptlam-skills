@@ -1,4 +1,11 @@
-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import {
+  mkdir,
+  mkdtemp,
+  readFile,
+  readdir,
+  rm,
+  writeFile,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -20,21 +27,19 @@ export const staleSkillsReadme =
 
 export function makeOutputPlugin() {
   return {
-    schema_version: 1,
-    metadata: {
-      name: "fixture-skills",
-      version: "1.2.3",
-      description: "Fixture plugin description.",
-      author: {
-        name: "Fixture Owner",
-        email: "owner@example.test",
-        url: "https://example.test",
-      },
-      homepage: "https://example.test/readme",
-      repository: "https://example.test/repository",
-      license: "MIT",
-      keywords: ["agent-skills", "fixtures"],
+    schema_version: 2,
+    name: "fixture-skills",
+    version: "1.2.3",
+    description: "Fixture plugin description.",
+    author: {
+      name: "Fixture Owner",
+      email: "owner@example.test",
+      url: "https://example.test",
     },
+    homepage: "https://example.test/readme",
+    repository: "https://example.test/repository",
+    license: "MIT",
+    keywords: ["agent-skills", "fixtures"],
     marketplace: {
       name: "fixture",
       description: "Fixture marketplace.",
@@ -45,52 +50,27 @@ export function makeOutputPlugin() {
     categories: [
       {
         id: "engineering",
-        title: "Engineering",
+        name: "Engineering",
         description: "Engineering skills.",
       },
       {
         id: "productivity",
-        title: "Productivity",
+        name: "Productivity",
         description: "Productivity skills.",
       },
-      { id: "empty", title: "Empty", description: "Reserved category." },
+      { id: "empty", name: "Empty", description: "Reserved category." },
     ],
     skills: [
       {
         id: "review-code-change",
         category_id: "engineering",
-        kind: "test",
-        summary: "Review a small change.",
-        required_skill_ids: [],
-        path: "skills/engineering/review-code-change",
-        frontmatter: {
-          name: "review-code-change",
-          description: "Review changes safely.",
-        },
-      },
-      {
-        id: "plan-task",
-        category_id: "productivity",
-        kind: "test",
-        summary: "Turn one goal into a plan.",
-        required_skill_ids: [],
-        path: "skills/productivity/plan-task",
-        frontmatter: {
-          name: "plan-task",
-          description: "Plan work.",
-        },
-      },
-      {
-        id: "visualize-html",
-        category_id: "productivity",
-        kind: "product",
-        summary: "Create a polished HTML artifact.",
-        required_skill_ids: ["review-code-change"],
-        path: "skills/productivity/visualize-html",
-        frontmatter: {
-          name: "visualize-html",
-          description: "Create HTML artifacts.",
-        },
+        description: "Review changes safely.",
+        visibility: "public",
+        status: "active",
+        required_skills: [],
+        source_body:
+          "# Review code change\n\n<!-- PLUGIN-COMPILER:REQUIRED-SKILLS -->\n",
+        resources: [],
       },
     ],
   };
@@ -124,10 +104,27 @@ export async function readManagedState(rootDir) {
     await Promise.all(
       MANAGED_OUTPUT_PATHS.map(async (relativePath) => {
         try {
-          return [
-            relativePath,
-            await readFile(path.join(rootDir, relativePath), "utf8"),
-          ];
+          if (relativePath !== "skills") {
+            return [
+              relativePath,
+              await readFile(path.join(rootDir, relativePath), "utf8"),
+            ];
+          }
+          const files = {};
+          async function visit(directory, prefix = "") {
+            const entries = await readdir(directory, { withFileTypes: true });
+            entries.sort((left, right) => left.name.localeCompare(right.name));
+            for (const entry of entries) {
+              const entryPath = path.join(directory, entry.name);
+              const relativeEntry = prefix
+                ? `${prefix}/${entry.name}`
+                : entry.name;
+              if (entry.isDirectory()) await visit(entryPath, relativeEntry);
+              else files[relativeEntry] = await readFile(entryPath, "base64");
+            }
+          }
+          await visit(path.join(rootDir, relativePath));
+          return [relativePath, files];
         } catch (error) {
           if (error.code === "ENOENT") return [relativePath, null];
           throw error;

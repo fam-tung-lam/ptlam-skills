@@ -1,0 +1,2216 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Inside an agent · interactive system field guide</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --color-canvas: #090e15;
+        --color-surface: #0f1622;
+        --color-surface-container: #151f2d;
+        --color-surface-container-high: #1b2838;
+        --color-surface-container-low: #0c131d;
+        --color-outline: #2a3a4f;
+        --color-outline-strong: #63748c;
+        --color-on-surface: #e7edf5;
+        --color-on-surface-variant: #9caabe;
+        --color-primary: #e8b84c;
+        --color-primary-container: #372d19;
+        --color-on-primary: #17130a;
+        --color-secondary: #65c7d9;
+        --color-success: #69c69a;
+        --color-warning: #e6874f;
+        --color-tertiary: #a997e8;
+        --color-error: #ef6b69;
+        --shape-small: 0.5rem;
+        --shape-medium: 0.75rem;
+        --shape-large: 1rem;
+        --content-max: 76rem;
+        --space-1: 0.375rem;
+        --space-2: 0.625rem;
+        --space-3: 1rem;
+        --space-4: 1.5rem;
+        --space-5: 2.25rem;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+        overflow-x: hidden;
+      }
+      body {
+        margin: 0;
+        overflow-x: hidden;
+        background: var(--color-canvas);
+        color: var(--color-on-surface);
+        font:
+          400 clamp(0.98rem, 0.94rem + 0.2vw, 1.08rem)/1.65 ui-sans-serif,
+          system-ui,
+          sans-serif;
+      }
+      img,
+      svg {
+        display: block;
+        max-width: 100%;
+      }
+      svg {
+        width: 100%;
+        height: auto;
+      }
+      pre,
+      code,
+      .mono {
+        font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+        overflow-wrap: anywhere;
+      }
+      button {
+        font: inherit;
+      }
+      button:focus-visible,
+      a:focus-visible,
+      [role="button"]:focus-visible {
+        outline: 2px solid var(--color-secondary);
+        outline-offset: 3px;
+        box-shadow: 0 0 0 0.2rem rgba(101, 199, 217, 0.2);
+      }
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        font-family: ui-serif, Georgia, serif;
+        line-height: 1.08;
+        text-wrap: balance;
+      }
+      h1 {
+        font-size: clamp(2.5rem, 8vw, 6.2rem);
+        max-width: 11ch;
+      }
+      h2 {
+        font-size: clamp(1.9rem, 4vw, 3.4rem);
+      }
+      h3 {
+        font-size: clamp(1.1rem, 2vw, 1.4rem);
+      }
+      p {
+        max-width: 68ch;
+      }
+      .eyebrow {
+        margin: 0;
+        color: var(--color-primary);
+        font:
+          700 0.7rem/1.4 ui-monospace,
+          monospace;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+      }
+      .skip-link {
+        position: fixed;
+        left: 1rem;
+        top: -5rem;
+        z-index: 100;
+        padding: 0.7rem 1rem;
+        background: var(--color-primary);
+        color: var(--color-on-primary);
+        border-radius: 0.4rem;
+      }
+      .skip-link:focus {
+        top: 1rem;
+      }
+      .hero,
+      .field-nav,
+      main,
+      footer {
+        width: min(calc(100% - 2rem), var(--content-max));
+        margin-inline: auto;
+      }
+      .hero {
+        padding-block: clamp(4rem, 12vw, 9rem) clamp(2rem, 6vw, 4rem);
+      }
+      .hero-line {
+        width: 4.5rem;
+        height: 0.2rem;
+        margin-bottom: 1.2rem;
+        background: var(--color-primary);
+      }
+      .lede {
+        max-width: 60ch;
+        color: var(--color-on-surface-variant);
+        font-size: clamp(1.05rem, 2vw, 1.35rem);
+      }
+      .hero-note {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        margin-top: 1.2rem;
+        color: var(--color-on-surface-variant);
+        font:
+          700 0.76rem/1.4 ui-monospace,
+          monospace;
+      }
+      .hero-note::before {
+        content: "";
+        width: 0.55rem;
+        height: 0.55rem;
+        border-radius: 50%;
+        background: var(--color-success);
+        box-shadow: 0 0 0 0.25rem rgba(105, 198, 154, 0.12);
+      }
+      .field-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        padding: 0.75rem;
+        border: 1px solid var(--color-outline);
+        border-radius: var(--shape-medium);
+        background: rgba(15, 22, 34, 0.92);
+        scrollbar-width: thin;
+      }
+      .field-nav a {
+        flex: 1 1 10rem;
+        min-width: 0;
+        padding: 0.62rem 0.75rem;
+        color: var(--color-on-surface-variant);
+        text-decoration: none;
+        border-radius: var(--shape-small);
+        font-size: 0.85rem;
+      }
+      .field-nav a:hover {
+        color: var(--color-on-surface);
+        background: var(--color-surface-container);
+      }
+      .field-nav span {
+        color: var(--color-primary);
+        font-family: ui-monospace, monospace;
+      }
+      main {
+        display: grid;
+        gap: clamp(5rem, 12vw, 10rem);
+        padding-block: 4rem 10rem;
+      }
+      .guide-section {
+        display: grid;
+        gap: var(--space-4);
+        min-width: 0;
+        scroll-margin-top: 1rem;
+      }
+      .section-head {
+        display: grid;
+        gap: var(--space-2);
+      }
+      .section-head p {
+        margin: 0;
+        color: var(--color-on-surface-variant);
+      }
+      .visual-stage {
+        min-width: 0;
+        overflow: hidden;
+        border: 1px solid var(--color-outline);
+        border-radius: var(--shape-large);
+        background: var(--color-surface);
+        box-shadow: 0 1.25rem 4rem rgba(0, 0, 0, 0.2);
+      }
+      .panel-label {
+        margin: 0 0 0.9rem;
+        color: var(--color-on-surface-variant);
+        font:
+          700 0.67rem/1.4 ui-monospace,
+          monospace;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+      }
+      .twin-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+        padding: 1rem;
+      }
+      .twin-grid figure {
+        min-width: 0;
+        margin: 0;
+        padding: 1rem;
+        border: 1px solid var(--color-outline);
+        border-radius: var(--shape-medium);
+        background: var(--color-surface-container);
+      }
+      .twin-grid figcaption {
+        margin-bottom: 0.8rem;
+        color: var(--color-on-surface-variant);
+        font:
+          700 0.67rem/1.4 ui-monospace,
+          monospace;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .twin-state {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.6rem;
+        padding: 0 1rem 1rem;
+      }
+      .twin-state div {
+        min-width: 0;
+        padding: 0.72rem;
+        border: 1px solid var(--color-outline);
+        border-radius: var(--shape-small);
+        background: var(--color-surface-container-low);
+      }
+      .twin-state span {
+        display: block;
+        color: var(--color-on-surface-variant);
+        font-size: 0.7rem;
+      }
+      .twin-state strong {
+        display: block;
+        margin-top: 0.2rem;
+        font:
+          700 0.85rem/1.4 ui-monospace,
+          monospace;
+        overflow-wrap: anywhere;
+      }
+      .twin-state .is-changed {
+        color: var(--color-primary);
+      }
+      .is-changed::before {
+        content: "Changed · ";
+        color: var(--color-primary);
+        font-size: 0.7em;
+        text-transform: uppercase;
+      }
+      .stage-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr);
+      }
+      .stage-grid > * {
+        min-width: 0;
+        padding: clamp(1rem, 3vw, 2rem);
+      }
+      .stage-grid > :last-child {
+        border-left: 1px solid var(--color-outline);
+      }
+      .state-panel {
+        display: grid;
+        align-content: start;
+        gap: 1rem;
+        background: var(--color-surface-container-low);
+      }
+      .state-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.6rem;
+        margin: 0;
+      }
+      .state-grid div {
+        min-width: 0;
+        padding: 0.75rem;
+        border: 1px solid var(--color-outline);
+        border-radius: var(--shape-small);
+        background: var(--color-surface-container);
+      }
+      .state-grid dt {
+        color: var(--color-on-surface-variant);
+        font-size: 0.7rem;
+      }
+      .state-grid dd {
+        margin: 0.2rem 0 0;
+        font:
+          700 0.9rem/1.35 ui-monospace,
+          monospace;
+        overflow-wrap: anywhere;
+      }
+      .state-grid dd.is-changed {
+        color: var(--color-primary);
+      }
+      .frame {
+        min-width: 0;
+        min-height: 8rem;
+        padding: 0.9rem;
+        border: 1px solid var(--color-outline);
+        border-radius: var(--shape-small);
+        background: var(--color-surface);
+        overflow-wrap: anywhere;
+      }
+      .frame strong {
+        color: var(--color-primary);
+      }
+      .control-plane {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 1rem;
+        min-width: 0;
+        padding: 1rem;
+        border-top: 1px solid var(--color-outline);
+        background: var(--color-surface-container-low);
+      }
+      .step-readout {
+        display: grid;
+        gap: 0.15rem;
+      }
+      .step-readout span {
+        color: var(--color-on-surface-variant);
+        font-size: 0.68rem;
+      }
+      .step-readout output {
+        font:
+          700 0.85rem/1.3 ui-monospace,
+          monospace;
+      }
+      .step-caption {
+        max-width: none;
+        margin: 0;
+        color: var(--color-on-surface-variant);
+        overflow-wrap: anywhere;
+      }
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        min-width: 0;
+      }
+      .button {
+        min-height: 44px;
+        min-width: 44px;
+        padding: 0.62rem 0.82rem;
+        border: 1px solid var(--color-outline);
+        border-radius: var(--shape-small);
+        background: var(--color-surface-container);
+        color: var(--color-on-surface);
+        font:
+          700 0.76rem/1 ui-sans-serif,
+          system-ui,
+          sans-serif;
+        cursor: pointer;
+      }
+      .button:hover:not(:disabled) {
+        border-color: var(--color-outline-strong);
+        background: var(--color-surface-container-high);
+      }
+      .button--filled {
+        border-color: var(--color-primary);
+        background: var(--color-primary);
+        color: var(--color-on-primary);
+      }
+      .button--text {
+        background: transparent;
+      }
+      .button[aria-pressed="true"] {
+        border-color: var(--color-secondary);
+        box-shadow: inset 0 0 0 1px var(--color-secondary);
+      }
+      .button:disabled {
+        opacity: 0.36;
+        cursor: not-allowed;
+      }
+      .flow-node rect,
+      .flow-node polygon {
+        fill: var(--color-surface-container);
+        stroke: var(--color-outline);
+        stroke-width: 1.5;
+      }
+      .flow-node text {
+        fill: var(--color-on-surface);
+        font:
+          700 13px ui-monospace,
+          monospace;
+        text-anchor: middle;
+      }
+      .flow-node .sub {
+        fill: var(--color-on-surface-variant);
+        font-size: 9px;
+        font-weight: 400;
+      }
+      .flow-node.is-active rect,
+      .flow-node.is-active polygon {
+        stroke: var(--color-primary);
+        stroke-width: 2.5;
+        filter: drop-shadow(0 0 7px rgba(232, 184, 76, 0.3));
+      }
+      .flow-node.is-complete rect,
+      .flow-node.is-complete polygon {
+        stroke: var(--color-success);
+        stroke-dasharray: 3 2;
+      }
+      .flow-node.is-complete.is-active rect,
+      .flow-node.is-complete.is-active polygon {
+        stroke: var(--color-primary);
+        stroke-width: 2.5;
+        stroke-dasharray: none;
+        filter: drop-shadow(0 0 7px rgba(232, 184, 76, 0.3));
+      }
+      .flow-edge path,
+      .flow-edge line {
+        fill: none;
+        stroke: var(--color-outline-strong);
+        stroke-width: 1.5;
+      }
+      .flow-edge text {
+        fill: var(--color-on-surface-variant);
+        font:
+          10px ui-monospace,
+          monospace;
+      }
+      .flow-edge.is-active path,
+      .flow-edge.is-active line {
+        stroke: var(--color-primary);
+        stroke-width: 2.6;
+        stroke-dasharray: 7 5;
+        animation: edge-flow 1s linear infinite;
+      }
+      .flow-edge.is-complete path,
+      .flow-edge.is-complete line {
+        stroke: var(--color-success);
+        stroke-dasharray: 3 2;
+      }
+      .flow-edge.is-complete.is-active path,
+      .flow-edge.is-complete.is-active line {
+        stroke: var(--color-primary);
+        stroke-width: 2.6;
+        stroke-dasharray: 7 5;
+        animation: edge-flow 1s linear infinite;
+      }
+      @keyframes edge-flow {
+        to {
+          stroke-dashoffset: -24;
+        }
+      }
+      .callout {
+        max-width: 72ch;
+        padding: 0.9rem 1rem;
+        border-left: 3px solid var(--color-primary);
+        border-radius: 0 var(--shape-small) var(--shape-small) 0;
+        background: var(--color-surface-container);
+        color: var(--color-on-surface-variant);
+      }
+      .callout strong {
+        color: var(--color-on-surface);
+      }
+      .lifetime-twin {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+      }
+      .lifetime-twin > section {
+        display: grid;
+        align-content: start;
+        gap: 0.65rem;
+        min-width: 0;
+        padding: 1rem;
+        border: 1px solid var(--color-outline);
+        border-radius: var(--shape-medium);
+        background: var(--color-surface);
+      }
+      .lifetime-layer {
+        min-width: 0;
+        padding: 1rem;
+        border: 1px solid var(--color-outline);
+        border-left-width: 4px;
+        border-radius: var(--shape-small);
+        background: var(--color-surface-container);
+      }
+      .lifetime-layer span {
+        display: block;
+        margin-bottom: 0.25rem;
+        color: var(--color-on-surface-variant);
+        font:
+          700 0.68rem/1.4 ui-monospace,
+          monospace;
+        text-transform: uppercase;
+      }
+      .lifetime-layer strong {
+        display: block;
+        overflow-wrap: anywhere;
+      }
+      .stable {
+        border-left-color: var(--color-success);
+      }
+      .context {
+        border-left-color: var(--color-secondary);
+      }
+      .volatile {
+        border-left-color: var(--color-warning);
+      }
+      .c4 {
+        display: grid;
+        gap: 1rem;
+        padding: 1rem;
+      }
+      .c4-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      .c4-toolbar button {
+        min-height: 44px;
+        padding: 0.6rem 0.8rem;
+        border: 1px solid var(--color-outline);
+        border-radius: var(--shape-small);
+        background: var(--color-surface-container);
+        color: var(--color-on-surface-variant);
+        cursor: pointer;
+      }
+      .c4-toolbar button[aria-pressed="true"] {
+        border-color: var(--color-primary);
+        background: var(--color-primary-container);
+        color: var(--color-primary);
+      }
+      .c4-toolbar button:disabled {
+        opacity: 0.4;
+      }
+      .c4-breadcrumb {
+        margin: 0;
+        color: var(--color-on-surface-variant);
+        font:
+          700 0.75rem/1.4 ui-monospace,
+          monospace;
+      }
+      .c4-map {
+        min-width: 0;
+        padding: 1rem;
+        border: 1px solid var(--color-outline);
+        border-radius: var(--shape-medium);
+        background: var(--color-surface-container);
+      }
+      .c4-map[hidden] {
+        display: none;
+      }
+      .c4-node rect {
+        fill: var(--color-surface);
+        stroke: var(--color-outline-strong);
+        stroke-width: 1.5;
+      }
+      .c4-node.focus rect {
+        stroke: var(--color-primary);
+        stroke-width: 2.5;
+      }
+      .c4-node text {
+        fill: var(--color-on-surface);
+        font:
+          700 13px ui-monospace,
+          monospace;
+        text-anchor: middle;
+      }
+      .c4-node .kind {
+        fill: var(--color-on-surface-variant);
+        font-size: 9px;
+      }
+      .c4-link {
+        fill: none;
+        stroke: var(--color-outline-strong);
+        stroke-width: 1.3;
+        marker-end: url(#c4-arrow);
+      }
+      .c4-link-label {
+        fill: var(--color-on-surface-variant);
+        font:
+          9px ui-monospace,
+          monospace;
+        text-anchor: middle;
+      }
+      .zoom-target {
+        cursor: pointer;
+      }
+      .erd {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        gap: 1rem;
+        align-items: center;
+        min-width: 0;
+        padding: 1rem;
+      }
+      .entity {
+        min-width: 0;
+        overflow: hidden;
+        border: 1px solid var(--color-outline);
+        border-radius: var(--shape-medium);
+        background: var(--color-surface);
+      }
+      .entity header {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding: 0.8rem;
+        background: var(--color-surface-container);
+      }
+      .entity header span {
+        color: var(--color-on-surface-variant);
+        font-size: 0.68rem;
+        text-align: right;
+      }
+      .entity dl {
+        margin: 0;
+      }
+      .field {
+        display: grid;
+        grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+        gap: 0.6rem;
+        padding: 0.48rem 0.8rem;
+        border-top: 1px solid var(--color-outline);
+      }
+      .field dt,
+      .field dd {
+        min-width: 0;
+        margin: 0;
+        overflow-wrap: anywhere;
+      }
+      .field dt {
+        font-family: ui-monospace, monospace;
+      }
+      .field dd {
+        color: var(--color-on-surface-variant);
+        font-size: 0.78rem;
+        text-align: right;
+      }
+      .field.pk dt {
+        color: var(--color-primary);
+      }
+      .field.fk dt {
+        color: var(--color-secondary);
+      }
+      .relationship {
+        color: var(--color-on-surface-variant);
+        font-family: ui-monospace, monospace;
+        white-space: nowrap;
+      }
+      .sequence .participant rect {
+        fill: var(--color-surface-container);
+        stroke: var(--color-outline);
+      }
+      .sequence .participant text {
+        fill: var(--color-on-surface);
+        font:
+          700 12px ui-monospace,
+          monospace;
+        text-anchor: middle;
+      }
+      .sequence .participant.is-sender rect {
+        stroke: var(--color-primary);
+        stroke-width: 2.5;
+      }
+      .sequence .participant.is-receiver rect {
+        stroke: var(--color-secondary);
+        stroke-width: 2.5;
+        stroke-dasharray: 6 3;
+      }
+      .sequence .lifeline {
+        stroke: var(--color-outline);
+        stroke-dasharray: 4 5;
+      }
+      .sequence-message path {
+        fill: none;
+        stroke: var(--color-outline-strong);
+        stroke-width: 1.5;
+      }
+      .sequence-message text {
+        fill: var(--color-on-surface-variant);
+        font:
+          10px ui-monospace,
+          monospace;
+        text-anchor: middle;
+      }
+      .sequence-message.is-active path {
+        stroke: var(--color-primary);
+        stroke-width: 2.6;
+        stroke-dasharray: 7 5;
+        animation: edge-flow 1s linear infinite;
+      }
+      .sequence-message.is-active text {
+        fill: var(--color-primary);
+      }
+      .sequence-message.is-complete path {
+        stroke: var(--color-success);
+        stroke-dasharray: 3 2;
+      }
+      .noscript-summary {
+        margin: 1rem;
+        padding: 1rem;
+        border: 1px solid var(--color-outline);
+        border-radius: var(--shape-small);
+        background: var(--color-surface-container);
+      }
+      .noscript-summary li + li {
+        margin-top: 0.65rem;
+      }
+      footer {
+        border-top: 1px solid var(--color-outline);
+        padding-block: 2rem 4rem;
+        color: var(--color-on-surface-variant);
+      }
+      @media (max-width: 760px) {
+        .twin-grid,
+        .twin-state,
+        .lifetime-twin,
+        .stage-grid,
+        .erd {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .stage-grid > :last-child {
+          border-left: 0;
+          border-top: 1px solid var(--color-outline);
+        }
+        .control-plane {
+          grid-template-columns: minmax(0, 1fr);
+          align-items: start;
+        }
+        .relationship {
+          justify-self: center;
+          transform: rotate(90deg);
+          margin-block: 0.5rem;
+        }
+      }
+      @media (max-width: 420px) {
+        .state-grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .hero,
+        .field-nav,
+        main,
+        footer {
+          width: min(calc(100% - 1rem), var(--content-max));
+        }
+        .button-row {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to the field guide</a>
+    <header class="hero">
+      <div class="hero-line"></div>
+      <p class="eyebrow">Interactive system field guide</p>
+      <h1>Inside one useful agent</h1>
+      <p class="lede">
+        Start with a familiar hotel concierge desk, keep the same relationship
+        map beside the literal software, then zoom and operate the mechanisms
+        yourself.
+      </p>
+      <p class="hero-note">One analogy · one topology · observable state</p>
+    </header>
+    <nav class="field-nav" aria-label="Field guide sections">
+      <a href="#twin"><span>01</span> Everyday twin</a>
+      <a href="#memory"><span>02</span> Memory cadence</a>
+      <a href="#runtime"><span>03</span> Runtime</a>
+      <a href="#architecture"><span>04</span> Semantic zoom</a>
+      <a href="#sequence"><span>05</span> Sequence</a>
+      <a href="#data"><span>06</span> Data</a>
+    </nav>
+    <main id="main">
+      <section class="guide-section" id="twin" aria-labelledby="twin-title">
+        <header class="section-head">
+          <p class="eyebrow">Step 01 · Everyday twin</p>
+          <h2 id="twin-title">The same loop at a concierge desk</h2>
+          <p>
+            Advance once. The everyday and literal maps move together because
+            corresponding concepts share one semantic identity.
+          </p>
+        </header>
+        <div class="visual-stage" data-stepper="twin">
+          <div class="twin-grid">
+            <figure>
+              <figcaption>Everyday system · hotel concierge</figcaption>
+              <svg
+                viewBox="0 0 470 570"
+                role="img"
+                aria-labelledby="hotel-flow-title hotel-flow-desc"
+              >
+                <title id="hotel-flow-title">
+                  Hotel concierge request flow
+                </title>
+                <desc id="hotel-flow-desc">
+                  A service log informs a decision. The concierge either answers
+                  or dispatches a service, records the outcome, and updates the
+                  guest.
+                </desc>
+                <defs>
+                  <marker
+                    id="hotel-arrow"
+                    viewBox="0 0 10 10"
+                    refX="9"
+                    refY="5"
+                    markerWidth="6"
+                    markerHeight="6"
+                    orient="auto"
+                  >
+                    <path
+                      d="M0 0 10 5 0 10Z"
+                      fill="currentColor"
+                      style="color: var(--color-outline-strong)"
+                    />
+                  </marker>
+                </defs>
+                <g class="flow-edge" data-edge="history-decide">
+                  <path d="M235 86V132" marker-end="url(#hotel-arrow)" />
+                </g>
+                <g class="flow-edge" data-edge="decide-branch">
+                  <path d="M235 200V237" marker-end="url(#hotel-arrow)" />
+                </g>
+                <g class="flow-edge" data-edge="branch-act">
+                  <path d="M235 309V348" marker-end="url(#hotel-arrow)" />
+                  <text x="245" y="334">yes</text>
+                </g>
+                <g class="flow-edge" data-edge="act-record">
+                  <path d="M235 406V445" marker-end="url(#hotel-arrow)" />
+                </g>
+                <g class="flow-edge" data-edge="record-close">
+                  <path
+                    d="M150 476H72V524H120"
+                    marker-end="url(#hotel-arrow)"
+                  />
+                </g>
+                <g class="flow-edge" data-edge="branch-close">
+                  <path
+                    d="M125 273H72V524H120"
+                    marker-end="url(#hotel-arrow)"
+                  />
+                  <text x="82" y="260">no</text>
+                </g>
+                <g
+                  class="flow-node is-active"
+                  data-node="history"
+                  transform="translate(110 28)"
+                >
+                  <rect width="250" height="58" rx="9" />
+                  <text x="125" y="27">service log</text>
+                  <text class="sub" x="125" y="44">
+                    rules + history + request
+                  </text>
+                </g>
+                <g
+                  class="flow-node"
+                  data-node="decide"
+                  transform="translate(110 132)"
+                >
+                  <rect width="250" height="68" rx="9" />
+                  <text x="125" y="29">concierge reviews log</text>
+                  <text class="sub" x="125" y="48">
+                    decides the next useful move
+                  </text>
+                </g>
+                <g class="flow-node" data-node="branch">
+                  <polygon points="235,237 345,273 235,309 125,273" />
+                  <text x="235" y="269">outside service</text>
+                  <text x="235" y="285">needed?</text>
+                </g>
+                <g
+                  class="flow-node"
+                  data-node="act"
+                  transform="translate(110 348)"
+                >
+                  <rect width="250" height="58" rx="9" />
+                  <text x="125" y="27">dispatch approved service</text>
+                  <text class="sub" x="125" y="44">
+                    weather desk · taxi · repair
+                  </text>
+                </g>
+                <g
+                  class="flow-node"
+                  data-node="record"
+                  transform="translate(110 445)"
+                >
+                  <rect width="250" height="58" rx="9" />
+                  <text x="125" y="27">record verified outcome</text>
+                  <text class="sub" x="125" y="44">
+                    attach it to this request
+                  </text>
+                </g>
+                <g
+                  class="flow-node"
+                  data-node="close"
+                  transform="translate(120 512)"
+                >
+                  <rect width="230" height="50" rx="9" />
+                  <text x="115" y="30">update the guest</text>
+                </g>
+              </svg>
+            </figure>
+            <figure>
+              <figcaption>Literal system · software agent</figcaption>
+              <svg
+                viewBox="0 0 470 570"
+                role="img"
+                aria-labelledby="agent-flow-title agent-flow-desc"
+              >
+                <title id="agent-flow-title">Software agent request flow</title>
+                <desc id="agent-flow-desc">
+                  Messages inform a model call. The agent either returns an
+                  answer or validates and runs tools, appends results, and
+                  returns an answer.
+                </desc>
+                <defs>
+                  <marker
+                    id="agent-arrow"
+                    viewBox="0 0 10 10"
+                    refX="9"
+                    refY="5"
+                    markerWidth="6"
+                    markerHeight="6"
+                    orient="auto"
+                  >
+                    <path
+                      d="M0 0 10 5 0 10Z"
+                      fill="currentColor"
+                      style="color: var(--color-outline-strong)"
+                    />
+                  </marker>
+                </defs>
+                <g class="flow-edge" data-edge="history-decide">
+                  <path d="M235 86V132" marker-end="url(#agent-arrow)" />
+                </g>
+                <g class="flow-edge" data-edge="decide-branch">
+                  <path d="M235 200V237" marker-end="url(#agent-arrow)" />
+                </g>
+                <g class="flow-edge" data-edge="branch-act">
+                  <path d="M235 309V348" marker-end="url(#agent-arrow)" />
+                  <text x="245" y="334">yes</text>
+                </g>
+                <g class="flow-edge" data-edge="act-record">
+                  <path d="M235 406V445" marker-end="url(#agent-arrow)" />
+                </g>
+                <g class="flow-edge" data-edge="record-close">
+                  <path
+                    d="M150 476H72V524H120"
+                    marker-end="url(#agent-arrow)"
+                  />
+                </g>
+                <g class="flow-edge" data-edge="branch-close">
+                  <path
+                    d="M125 273H72V524H120"
+                    marker-end="url(#agent-arrow)"
+                  />
+                  <text x="82" y="260">no</text>
+                </g>
+                <g
+                  class="flow-node is-active"
+                  data-node="history"
+                  transform="translate(110 28)"
+                >
+                  <rect width="250" height="58" rx="9" />
+                  <text x="125" y="27">messages[]</text>
+                  <text class="sub" x="125" y="44">
+                    system + history + user
+                  </text>
+                </g>
+                <g
+                  class="flow-node"
+                  data-node="decide"
+                  transform="translate(110 132)"
+                >
+                  <rect width="250" height="68" rx="9" />
+                  <text x="125" y="29">call the model</text>
+                  <text class="sub" x="125" y="48">
+                    messages + tool schemas → API
+                  </text>
+                </g>
+                <g class="flow-node" data-node="branch">
+                  <polygon points="235,237 345,273 235,309 125,273" />
+                  <text x="235" y="269">tool calls</text>
+                  <text x="235" y="285">present?</text>
+                </g>
+                <g
+                  class="flow-node"
+                  data-node="act"
+                  transform="translate(110 348)"
+                >
+                  <rect width="250" height="58" rx="9" />
+                  <text x="125" y="27">validate &amp; run tools</text>
+                  <text class="sub" x="125" y="44">
+                    only registered capabilities
+                  </text>
+                </g>
+                <g
+                  class="flow-node"
+                  data-node="record"
+                  transform="translate(110 445)"
+                >
+                  <rect width="250" height="58" rx="9" />
+                  <text x="125" y="27">append tool results</text>
+                  <text class="sub" x="125" y="44">linked by tool-call id</text>
+                </g>
+                <g
+                  class="flow-node"
+                  data-node="close"
+                  transform="translate(120 512)"
+                >
+                  <rect width="230" height="50" rx="9" />
+                  <text x="115" y="30">return final answer</text>
+                </g>
+              </svg>
+            </figure>
+          </div>
+          <div class="twin-state">
+            <div>
+              <span>Everyday state</span
+              ><strong data-state="everyday">service log ready</strong>
+            </div>
+            <div>
+              <span>Literal state</span
+              ><strong data-state="literal">messages[] ready</strong>
+            </div>
+            <div>
+              <span>Shared outcome</span
+              ><strong data-state="outcome">request open</strong>
+            </div>
+          </div>
+          <div class="control-plane">
+            <div class="step-readout">
+              <span>Current frame</span><output data-step-count>1 / 6</output>
+            </div>
+            <p class="step-caption" data-step-caption aria-live="polite">
+              Both systems begin with rules, history, and the new request.
+            </p>
+            <div class="button-row" aria-label="Twin flow controls">
+              <button
+                class="button button--filled"
+                type="button"
+                data-action="next"
+              >
+                Next →</button
+              ><button class="button" type="button" data-action="back" disabled>
+                ← Back</button
+              ><button
+                class="button"
+                type="button"
+                data-action="play"
+                aria-pressed="false"
+              >
+                Play</button
+              ><button
+                class="button button--text"
+                type="button"
+                data-action="reset"
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+          <noscript>
+            <div class="noscript-summary">
+              <h3>Twin flow, all steps</h3>
+              <ol>
+                <li>Rules, history, and the new request are ready.</li>
+                <li>
+                  The concierge reviews the log; the agent calls the model.
+                </li>
+                <li>Both decide whether an outside capability is needed.</li>
+                <li>
+                  An approved service or registered tool performs the work.
+                </li>
+                <li>The verified result joins the same request history.</li>
+                <li>The guest or user receives the final answer.</li>
+              </ol>
+            </div>
+          </noscript>
+        </div>
+        <aside class="callout">
+          <strong>Keep the relationship, not the costume.</strong> A concierge
+          is a useful topology for requests, approved services, and records; it
+          is not a claim that a model thinks like a human.
+        </aside>
+      </section>
+
+      <section class="guide-section" id="memory" aria-labelledby="memory-title">
+        <header class="section-head">
+          <p class="eyebrow">Step 02 · Memory cadence</p>
+          <h2 id="memory-title">Layered by how often it changes</h2>
+          <p>
+            The real mapping is lifetime and role. Each everyday layer sits
+            beside the literal layer with the same cadence.
+          </p>
+        </header>
+        <div class="lifetime-twin">
+          <section aria-labelledby="hotel-memory">
+            <h3 id="hotel-memory">Everyday · hotel desk</h3>
+            <div class="lifetime-layer stable">
+              <span>Stable · weeks</span
+              ><strong>Hotel policies and service directory</strong
+              ><small>Rebuilt when policy or approved vendors change.</small>
+            </div>
+            <div class="lifetime-layer context">
+              <span>Context · days</span
+              ><strong>Guest and reservation notes</strong
+              ><small>Expires when the stay ends.</small>
+            </div>
+            <div class="lifetime-layer volatile">
+              <span>Volatile · one shift</span
+              ><strong>Open requests and live handoff state</strong
+              ><small>Changes with every interaction.</small>
+            </div>
+          </section>
+          <section aria-labelledby="agent-memory">
+            <h3 id="agent-memory">Literal · software agent</h3>
+            <div class="lifetime-layer stable">
+              <span>Stable · weeks</span
+              ><strong>Identity, rules, and tool guidance</strong
+              ><small>Rebuilt when instructions or tools change.</small>
+            </div>
+            <div class="lifetime-layer context">
+              <span>Context · days</span
+              ><strong>Project and discovered context</strong
+              ><small>Refreshed when the working scope changes.</small>
+            </div>
+            <div class="lifetime-layer volatile">
+              <span>Volatile · one session</span
+              ><strong>Current messages and live state</strong
+              ><small>Changes during the active conversation.</small>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section
+        class="guide-section"
+        id="runtime"
+        aria-labelledby="runtime-title"
+      >
+        <header class="section-head">
+          <p class="eyebrow">Step 03 · Runtime, live</p>
+          <h2 id="runtime-title">Run one real turn yourself</h2>
+          <p>
+            The flow stays left. The state it produces stays right. One control
+            plane advances both.
+          </p>
+        </header>
+        <div class="visual-stage" data-stepper="runtime">
+          <div class="stage-grid">
+            <div>
+              <p class="panel-label">Agent flow</p>
+              <svg
+                viewBox="0 0 520 560"
+                role="img"
+                aria-labelledby="runtime-flow-title runtime-flow-desc"
+              >
+                <title id="runtime-flow-title">One agent turn</title>
+                <desc id="runtime-flow-desc">
+                  Messages go to the model. A decision either returns an answer
+                  or validates and runs tools before looping.
+                </desc>
+                <defs>
+                  <marker
+                    id="runtime-arrow"
+                    viewBox="0 0 10 10"
+                    refX="9"
+                    refY="5"
+                    markerWidth="6"
+                    markerHeight="6"
+                    orient="auto"
+                  >
+                    <path
+                      d="M0 0 10 5 0 10Z"
+                      fill="currentColor"
+                      style="color: var(--color-outline-strong)"
+                    />
+                  </marker>
+                </defs>
+                <g class="flow-edge" data-edge="receive-call">
+                  <path d="M260 82V132" marker-end="url(#runtime-arrow)" />
+                </g>
+                <g class="flow-edge" data-edge="call-branch">
+                  <path d="M260 200V238" marker-end="url(#runtime-arrow)" />
+                </g>
+                <g class="flow-edge" data-edge="branch-run">
+                  <path d="M260 310V350" marker-end="url(#runtime-arrow)" />
+                  <text x="271" y="336">tools</text>
+                </g>
+                <g class="flow-edge" data-edge="run-append">
+                  <path d="M260 410V450" marker-end="url(#runtime-arrow)" />
+                </g>
+                <g class="flow-edge" data-edge="append-call">
+                  <path
+                    d="M365 480H442V166H390"
+                    marker-end="url(#runtime-arrow)"
+                  />
+                </g>
+                <g class="flow-edge" data-edge="branch-return">
+                  <path
+                    d="M150 274H70V520H130"
+                    marker-end="url(#runtime-arrow)"
+                  />
+                  <text x="80" y="258">answer</text>
+                </g>
+                <g
+                  class="flow-node is-active"
+                  data-node="receive"
+                  transform="translate(130 24)"
+                >
+                  <rect width="260" height="58" rx="9" />
+                  <text x="130" y="28">messages[]</text>
+                  <text class="sub" x="130" y="45">
+                    system + history + new user
+                  </text>
+                </g>
+                <g
+                  class="flow-node"
+                  data-node="call"
+                  transform="translate(130 132)"
+                >
+                  <rect width="260" height="68" rx="9" />
+                  <text x="130" y="30">call model</text>
+                  <text class="sub" x="130" y="49">one API call</text>
+                </g>
+                <g
+                  class="flow-node"
+                  data-node="branch"
+                  transform="translate(0 0)"
+                >
+                  <polygon points="260,238 370,274 260,310 150,274" />
+                  <text x="260" y="270">tool calls</text>
+                  <text x="260" y="286">present?</text>
+                </g>
+                <g
+                  class="flow-node"
+                  data-node="run"
+                  transform="translate(130 350)"
+                >
+                  <rect width="260" height="60" rx="9" />
+                  <text x="130" y="29">validate &amp; run tools</text>
+                  <text class="sub" x="130" y="46">
+                    parallel when independent
+                  </text>
+                </g>
+                <g
+                  class="flow-node"
+                  data-node="append"
+                  transform="translate(130 450)"
+                >
+                  <rect width="260" height="60" rx="9" />
+                  <text x="130" y="29">append results</text>
+                  <text class="sub" x="130" y="46">
+                    role: tool · linked ids
+                  </text>
+                </g>
+                <g
+                  class="flow-node"
+                  data-node="return"
+                  transform="translate(130 510)"
+                >
+                  <rect width="260" height="48" rx="9" />
+                  <text x="130" y="29">return final answer</text>
+                </g>
+              </svg>
+            </div>
+            <aside class="state-panel" aria-labelledby="runtime-state-title">
+              <h3 id="runtime-state-title">Observable state</h3>
+              <dl class="state-grid">
+                <div>
+                  <dt>phase</dt>
+                  <dd data-state="phase">received</dd>
+                </div>
+                <div>
+                  <dt>API calls</dt>
+                  <dd data-state="calls">0</dd>
+                </div>
+                <div>
+                  <dt>messages</dt>
+                  <dd data-state="messages">2</dd>
+                </div>
+                <div>
+                  <dt>tool result</dt>
+                  <dd data-state="result">—</dd>
+                </div>
+              </dl>
+              <div class="frame" data-frame aria-live="polite">
+                <strong>USER</strong><br />“What is the weather in Hanoi?”
+              </div>
+            </aside>
+          </div>
+          <div class="control-plane">
+            <div class="step-readout">
+              <span>Current frame</span><output data-step-count>1 / 7</output>
+            </div>
+            <p class="step-caption" data-step-caption aria-live="polite">
+              The rules, history, and new question form one message array.
+            </p>
+            <div class="button-row" aria-label="Runtime controls">
+              <button
+                class="button button--filled"
+                type="button"
+                data-action="next"
+              >
+                Next →</button
+              ><button class="button" type="button" data-action="back" disabled>
+                ← Back</button
+              ><button
+                class="button"
+                type="button"
+                data-action="play"
+                aria-pressed="false"
+              >
+                Play</button
+              ><button
+                class="button button--text"
+                type="button"
+                data-action="reset"
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+          <noscript>
+            <div class="noscript-summary">
+              <h3>Runtime flow, all states</h3>
+              <ol>
+                <li>
+                  Receive two messages: rules/history plus the user request.
+                </li>
+                <li>
+                  Call the model once with messages and registered tool schemas.
+                </li>
+                <li>
+                  Branch on a weather tool call; three messages now exist.
+                </li>
+                <li>Validate arguments and run the registered tool.</li>
+                <li>Append the 27 °C result as the fourth message.</li>
+                <li>Call the model again with the verified result.</li>
+                <li>Return the final answer and persist five messages.</li>
+              </ol>
+            </div>
+          </noscript>
+        </div>
+      </section>
+
+      <section
+        class="guide-section"
+        id="architecture"
+        aria-labelledby="architecture-title"
+      >
+        <header class="section-head">
+          <p class="eyebrow">Step 04 · Architecture</p>
+          <h2 id="architecture-title">Zoom by meaning, not magnification</h2>
+          <p>
+            Each level is a new map with a narrower question. The breadcrumb
+            keeps orientation as boundaries change.
+          </p>
+        </header>
+        <div class="visual-stage c4" data-c4>
+          <div class="c4-toolbar" aria-label="Architecture level">
+            <button type="button" data-c4-go="context" aria-pressed="true">
+              L1 · Context</button
+            ><button type="button" data-c4-go="containers" aria-pressed="false">
+              L2 · Containers</button
+            ><button type="button" data-c4-go="components" aria-pressed="false">
+              L3 · Components</button
+            ><button type="button" data-c4-back disabled>Zoom out</button>
+          </div>
+          <p class="c4-breadcrumb" data-c4-breadcrumb aria-live="polite">
+            World / Agent system
+          </p>
+          <div class="c4-map" data-c4-level="context">
+            <svg
+              viewBox="0 0 900 500"
+              role="img"
+              aria-labelledby="c4-context-title"
+            >
+              <title id="c4-context-title">Agent system in its world</title>
+              <defs>
+                <marker
+                  id="c4-arrow"
+                  viewBox="0 0 10 10"
+                  refX="9"
+                  refY="5"
+                  markerWidth="6"
+                  markerHeight="6"
+                  orient="auto"
+                >
+                  <path
+                    d="M0 0 10 5 0 10Z"
+                    fill="currentColor"
+                    style="color: var(--color-outline-strong)"
+                  />
+                </marker>
+              </defs>
+              <path class="c4-link" d="M190 250H345" />
+              <path class="c4-link" d="M555 250H710" />
+              <path class="c4-link" d="M450 340V420" />
+              <text class="c4-link-label" x="268" y="238">asks</text>
+              <text class="c4-link-label" x="632" y="238">tool calls</text>
+              <text class="c4-link-label" x="500" y="392">
+                files &amp; shell
+              </text>
+              <g class="c4-node" transform="translate(40 205)">
+                <rect width="150" height="90" rx="10" />
+                <text class="kind" x="75" y="24">[PERSON]</text>
+                <text x="75" y="52">You</text>
+              </g>
+              <g
+                class="c4-node focus zoom-target"
+                data-c4-enter="containers"
+                role="button"
+                tabindex="0"
+                aria-label="Zoom into Agent system"
+                transform="translate(345 180)"
+              >
+                <rect width="210" height="140" rx="10" />
+                <text class="kind" x="105" y="26">[SOFTWARE SYSTEM]</text>
+                <text x="105" y="66">Agent system</text>
+                <text class="kind" x="105" y="102">click to zoom in</text>
+              </g>
+              <g class="c4-node" transform="translate(710 195)">
+                <rect width="150" height="110" rx="10" />
+                <text class="kind" x="75" y="24">[EXTERNAL]</text>
+                <text x="75" y="52">Tool services</text>
+              </g>
+              <g class="c4-node" transform="translate(370 420)">
+                <rect width="160" height="70" rx="10" />
+                <text class="kind" x="80" y="22">[EXTERNAL]</text>
+                <text x="80" y="48">Your machine</text>
+              </g>
+            </svg>
+          </div>
+          <div class="c4-map" data-c4-level="containers">
+            <svg
+              viewBox="0 0 900 500"
+              role="img"
+              aria-labelledby="c4-containers-title"
+            >
+              <title id="c4-containers-title">
+                Containers inside the agent system
+              </title>
+              <rect
+                x="30"
+                y="30"
+                width="840"
+                height="430"
+                rx="16"
+                fill="none"
+                stroke="var(--color-outline)"
+                stroke-width="2"
+              />
+              <text
+                x="55"
+                y="64"
+                fill="var(--color-on-surface-variant)"
+                font-family="ui-monospace,monospace"
+                font-size="12"
+              >
+                AGENT SYSTEM BOUNDARY
+              </text>
+              <path class="c4-link" d="M265 180H390" />
+              <path class="c4-link" d="M510 220V335" />
+              <path class="c4-link" d="M610 180H715" />
+              <g class="c4-node" transform="translate(80 130)">
+                <rect width="185" height="100" rx="10" />
+                <text class="kind" x="92" y="24">[CONTAINER]</text>
+                <text x="92" y="54">Interface</text>
+                <text class="kind" x="92" y="78">CLI · web · chat</text>
+              </g>
+              <g
+                class="c4-node focus zoom-target"
+                data-c4-enter="components"
+                role="button"
+                tabindex="0"
+                aria-label="Zoom into Agent runtime"
+                transform="translate(390 120)"
+              >
+                <rect width="220" height="120" rx="10" />
+                <text class="kind" x="110" y="24">[CONTAINER]</text>
+                <text x="110" y="58">Agent runtime</text>
+                <text class="kind" x="110" y="88">click to zoom in</text>
+              </g>
+              <g class="c4-node" transform="translate(715 130)">
+                <rect width="120" height="100" rx="10" />
+                <text class="kind" x="60" y="24">[CONTAINER]</text>
+                <text x="60" y="56">Tools</text>
+              </g>
+              <g class="c4-node" transform="translate(405 335)">
+                <rect width="190" height="90" rx="10" />
+                <text class="kind" x="95" y="24">[DATA STORE]</text>
+                <text x="95" y="56">Session store</text>
+              </g>
+            </svg>
+          </div>
+          <div class="c4-map" data-c4-level="components">
+            <svg
+              viewBox="0 0 900 500"
+              role="img"
+              aria-labelledby="c4-components-title"
+            >
+              <title id="c4-components-title">
+                Components inside the agent runtime
+              </title>
+              <rect
+                x="30"
+                y="30"
+                width="840"
+                height="430"
+                rx="16"
+                fill="none"
+                stroke="var(--color-outline)"
+                stroke-width="2"
+              />
+              <text
+                x="55"
+                y="64"
+                fill="var(--color-on-surface-variant)"
+                font-family="ui-monospace,monospace"
+                font-size="12"
+              >
+                AGENT RUNTIME CONTAINER
+              </text>
+              <path class="c4-link" d="M255 180H370" />
+              <path class="c4-link" d="M530 180H650" />
+              <path class="c4-link" d="M450 235V335" />
+              <g class="c4-node" transform="translate(80 130)">
+                <rect width="175" height="100" rx="10" />
+                <text class="kind" x="87" y="24">[COMPONENT]</text>
+                <text x="87" y="56">Context builder</text>
+              </g>
+              <g class="c4-node focus" transform="translate(370 120)">
+                <rect width="160" height="120" rx="10" />
+                <text class="kind" x="80" y="24">[COMPONENT]</text>
+                <text x="80" y="56">Turn loop</text>
+                <text class="kind" x="80" y="85">model ↔ tools</text>
+              </g>
+              <g class="c4-node" transform="translate(650 130)">
+                <rect width="170" height="100" rx="10" />
+                <text class="kind" x="85" y="24">[COMPONENT]</text>
+                <text x="85" y="56">Tool registry</text>
+              </g>
+              <g class="c4-node" transform="translate(360 335)">
+                <rect width="180" height="90" rx="10" />
+                <text class="kind" x="90" y="24">[COMPONENT]</text>
+                <text x="90" y="56">Persistence</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="guide-section"
+        id="sequence"
+        aria-labelledby="sequence-title-heading"
+      >
+        <header class="section-head">
+          <p class="eyebrow">Step 05 · Sequence</p>
+          <h2 id="sequence-title-heading">
+            Follow messages and frames together
+          </h2>
+          <p>
+            The current message is highlighted on the left. Its payload and
+            effect appear on the right.
+          </p>
+        </header>
+        <div class="visual-stage" data-stepper="sequence">
+          <div class="stage-grid">
+            <div>
+              <p class="panel-label">Session sequence</p>
+              <svg
+                class="sequence"
+                viewBox="0 0 650 480"
+                role="img"
+                aria-labelledby="session-sequence-title session-sequence-desc"
+              >
+                <title id="session-sequence-title">
+                  Open and resume a session
+                </title>
+                <desc id="session-sequence-desc">
+                  The interface requests a list, loads messages, and resumes a
+                  session over a live channel.
+                </desc>
+                <defs>
+                  <marker
+                    id="sequence-arrow"
+                    viewBox="0 0 10 10"
+                    refX="9"
+                    refY="5"
+                    markerWidth="6"
+                    markerHeight="6"
+                    orient="auto"
+                  >
+                    <path
+                      d="M0 0 10 5 0 10Z"
+                      fill="currentColor"
+                      style="color: var(--color-outline-strong)"
+                    />
+                  </marker>
+                </defs>
+                <g
+                  class="participant is-sender"
+                  data-participant="interface"
+                  transform="translate(50 25)"
+                >
+                  <rect width="145" height="50" rx="8" />
+                  <text x="72" y="30">Interface</text>
+                </g>
+                <g
+                  class="participant is-receiver"
+                  data-participant="api"
+                  transform="translate(455 25)"
+                >
+                  <rect width="145" height="50" rx="8" />
+                  <text x="72" y="30">Agent API</text>
+                </g>
+                <line class="lifeline" x1="122" y1="75" x2="122" y2="445" />
+                <line class="lifeline" x1="527" y1="75" x2="527" y2="445" />
+                <g class="sequence-message is-active" data-edge="list-request">
+                  <path d="M122 130H527" marker-end="url(#sequence-arrow)" />
+                  <text x="324" y="116">① GET /sessions</text>
+                </g>
+                <g class="sequence-message" data-edge="list-response">
+                  <path
+                    d="M527 210H122"
+                    stroke-dasharray="5 4"
+                    marker-end="url(#sequence-arrow)"
+                  />
+                  <text x="324" y="196">② sessions[]</text>
+                </g>
+                <g class="sequence-message" data-edge="messages-request">
+                  <path d="M122 290H527" marker-end="url(#sequence-arrow)" />
+                  <text x="324" y="276">③ GET /sessions/{id}/messages</text>
+                </g>
+                <g class="sequence-message" data-edge="resume">
+                  <path d="M122 370H527" marker-end="url(#sequence-arrow)" />
+                  <text x="324" y="356">④ session.resume</text>
+                </g>
+              </svg>
+            </div>
+            <aside class="state-panel">
+              <h3>Current frame</h3>
+              <dl class="state-grid">
+                <div>
+                  <dt>channel</dt>
+                  <dd data-state="channel">HTTP</dd>
+                </div>
+                <div>
+                  <dt>screen</dt>
+                  <dd data-state="screen">session list</dd>
+                </div>
+                <div>
+                  <dt>sender</dt>
+                  <dd data-state="sender">Interface</dd>
+                </div>
+                <div>
+                  <dt>receiver</dt>
+                  <dd data-state="receiver">Agent API</dd>
+                </div>
+              </dl>
+              <div class="frame" data-frame aria-live="polite">
+                <strong>① Request</strong><br />One list call feeds the sidebar.
+              </div>
+            </aside>
+          </div>
+          <div class="control-plane">
+            <div class="step-readout">
+              <span>Current frame</span><output data-step-count>1 / 4</output>
+            </div>
+            <p class="step-caption" data-step-caption aria-live="polite">
+              The interface asks for recent sessions.
+            </p>
+            <div class="button-row" aria-label="Sequence controls">
+              <button
+                class="button button--filled"
+                type="button"
+                data-action="next"
+              >
+                Next →</button
+              ><button class="button" type="button" data-action="back" disabled>
+                ← Back</button
+              ><button
+                class="button"
+                type="button"
+                data-action="play"
+                aria-pressed="false"
+              >
+                Play</button
+              ><button
+                class="button button--text"
+                type="button"
+                data-action="reset"
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+          <noscript>
+            <div class="noscript-summary">
+              <h3>Session sequence, all frames</h3>
+              <ol>
+                <li>
+                  Interface → Agent API: request the recent session list over
+                  HTTP.
+                </li>
+                <li>
+                  Agent API → Interface: return session summaries over HTTP.
+                </li>
+                <li>Interface → Agent API: request one session transcript.</li>
+                <li>
+                  Interface → Agent API: resume work over the WebSocket channel.
+                </li>
+              </ol>
+            </div>
+          </noscript>
+        </div>
+      </section>
+
+      <section class="guide-section" id="data" aria-labelledby="data-title">
+        <header class="section-head">
+          <p class="eyebrow">Step 06 · Durable structure</p>
+          <h2 id="data-title">One session owns many message events</h2>
+          <p>
+            The ERD makes identity, ownership, and cardinality visible without
+            narrating the schema row by row.
+          </p>
+        </header>
+        <div class="visual-stage erd" role="group" aria-labelledby="data-title">
+          <article class="entity">
+            <header>
+              <strong>sessions</strong><span>one row per conversation</span>
+            </header>
+            <dl>
+              <div class="field pk">
+                <dt>id · PK</dt>
+                <dd>TEXT</dd>
+              </div>
+              <div class="field">
+                <dt>title</dt>
+                <dd>TEXT</dd>
+              </div>
+              <div class="field">
+                <dt>model</dt>
+                <dd>TEXT</dd>
+              </div>
+              <div class="field">
+                <dt>created_at</dt>
+                <dd>REAL</dd>
+              </div>
+            </dl>
+          </article>
+          <div class="relationship" aria-label="one to many">1 ───── N</div>
+          <article class="entity">
+            <header>
+              <strong>messages</strong><span>one row per turn event</span>
+            </header>
+            <dl>
+              <div class="field pk">
+                <dt>id · PK</dt>
+                <dd>INTEGER</dd>
+              </div>
+              <div class="field fk">
+                <dt>session_id · FK</dt>
+                <dd>TEXT → sessions.id</dd>
+              </div>
+              <div class="field">
+                <dt>role</dt>
+                <dd>system | user | tool</dd>
+              </div>
+              <div class="field">
+                <dt>content</dt>
+                <dd>TEXT · JSON when multimodal</dd>
+              </div>
+            </dl>
+          </article>
+        </div>
+      </section>
+    </main>
+    <footer>
+      Golden behavior example · native HTML, CSS, JavaScript, and SVG · no
+      external runtime assets. The hotel analogy explains topology and cadence,
+      not model cognition.
+    </footer>
+    <script>
+      const stepSets = {
+        twin: [
+          {
+            node: "history",
+            edge: null,
+            state: {
+              everyday: "service log ready",
+              literal: "messages[] ready",
+              outcome: "request open",
+            },
+            caption:
+              "Both systems begin with rules, history, and the new request.",
+          },
+          {
+            node: "decide",
+            edge: "history-decide",
+            state: {
+              everyday: "concierge reviewing",
+              literal: "model call in flight",
+              outcome: "decision pending",
+            },
+            caption:
+              "The concierge reviews the log; the agent sends the assembled messages to the model.",
+          },
+          {
+            node: "branch",
+            edge: "decide-branch",
+            state: {
+              everyday: "outside service requested",
+              literal: "tool call present",
+              outcome: "action required",
+            },
+            caption:
+              "Both replies name an outside capability that must be used before answering.",
+          },
+          {
+            node: "act",
+            edge: "branch-act",
+            state: {
+              everyday: "weather desk dispatched",
+              literal: "weather tool running",
+              outcome: "work in progress",
+            },
+            caption: "Only an approved service or registered tool may run.",
+          },
+          {
+            node: "record",
+            edge: "act-record",
+            state: {
+              everyday: "outcome recorded",
+              literal: "tool result appended",
+              outcome: "evidence attached",
+            },
+            caption:
+              "The verified result becomes part of the same request history.",
+          },
+          {
+            node: "close",
+            edge: "record-close",
+            state: {
+              everyday: "guest updated",
+              literal: "final answer returned",
+              outcome: "request closed",
+            },
+            caption:
+              "The guest gets the answer; the agent returns the final response.",
+          },
+        ],
+        runtime: [
+          {
+            node: "receive",
+            edge: null,
+            state: {
+              phase: "received",
+              calls: "0",
+              messages: "2",
+              result: "—",
+            },
+            frame: "<strong>USER</strong><br>“What is the weather in Hanoi?”",
+            caption:
+              "The rules, history, and new question form one message array.",
+          },
+          {
+            node: "call",
+            edge: "receive-call",
+            state: {
+              phase: "model call",
+              calls: "1",
+              messages: "2",
+              result: "—",
+            },
+            frame: "<strong>API</strong><br>messages + registered tool schemas",
+            caption: "The complete working view is sent in one model call.",
+          },
+          {
+            node: "branch",
+            edge: "call-branch",
+            state: {
+              phase: "branching",
+              calls: "1",
+              messages: "3",
+              result: "tool_call",
+            },
+            frame:
+              "<strong>ASSISTANT</strong><br>weather_lookup({ city: “Hanoi” })",
+            caption:
+              "The response asks for a registered capability instead of inventing an answer.",
+          },
+          {
+            node: "run",
+            edge: "branch-run",
+            state: {
+              phase: "running tool",
+              calls: "1",
+              messages: "3",
+              result: "pending",
+            },
+            frame: "<strong>TOOL</strong><br>Validate arguments, then execute.",
+            caption:
+              "Validation is the boundary between a requested action and real execution.",
+          },
+          {
+            node: "append",
+            edge: "run-append",
+            state: {
+              phase: "result appended",
+              calls: "1",
+              messages: "4",
+              result: "27 °C",
+            },
+            frame: "<strong>TOOL</strong><br>{ temperature: 27, unit: “C” }",
+            caption:
+              "The result is linked to the tool call and appended to durable history.",
+          },
+          {
+            node: "call",
+            edge: "append-call",
+            state: {
+              phase: "model call",
+              calls: "2",
+              messages: "4",
+              result: "27 °C",
+            },
+            frame:
+              "<strong>API</strong><br>The model can now answer from verified evidence.",
+            caption: "The grown message array goes back to the model.",
+          },
+          {
+            node: "return",
+            edge: "branch-return",
+            state: {
+              phase: "complete",
+              calls: "2",
+              messages: "5",
+              result: "27 °C",
+            },
+            frame:
+              "<strong>ASSISTANT</strong><br>It is currently 27 °C in Hanoi.",
+            caption: "A text answer ends the loop and becomes the response.",
+          },
+        ],
+        sequence: [
+          {
+            node: null,
+            edge: "list-request",
+            sender: "interface",
+            receiver: "api",
+            state: {
+              channel: "HTTP",
+              screen: "session list",
+              sender: "Interface",
+              receiver: "Agent API",
+            },
+            frame: "<strong>① Request</strong><br>GET /sessions?limit=60",
+            caption: "The interface asks for recent sessions.",
+          },
+          {
+            node: null,
+            edge: "list-response",
+            sender: "api",
+            receiver: "interface",
+            state: {
+              channel: "HTTP",
+              screen: "session list",
+              sender: "Agent API",
+              receiver: "Interface",
+            },
+            frame:
+              "<strong>② Response</strong><br>sessions[{ id, title, updated_at }]",
+            caption: "The list response paints the sidebar.",
+          },
+          {
+            node: null,
+            edge: "messages-request",
+            sender: "interface",
+            receiver: "api",
+            state: {
+              channel: "HTTP",
+              screen: "transcript",
+              sender: "Interface",
+              receiver: "Agent API",
+            },
+            frame: "<strong>③ Request</strong><br>GET /sessions/{id}/messages",
+            caption: "Selecting a session loads its transcript.",
+          },
+          {
+            node: null,
+            edge: "resume",
+            sender: "interface",
+            receiver: "api",
+            state: {
+              channel: "WebSocket",
+              screen: "live transcript",
+              sender: "Interface",
+              receiver: "Agent API",
+            },
+            frame:
+              "<strong>④ Live command</strong><br>session.resume({ session_id })",
+            caption: "The live channel takes over when work resumes.",
+          },
+        ],
+      };
+
+      function createStepper(root, steps) {
+        let index = 0,
+          timer = null;
+        const q = (s) => root.querySelector(s),
+          qa = (s) => [...root.querySelectorAll(s)];
+        const playButton = q('[data-action="play"]');
+        function setPlaybackLabel() {
+          playButton.textContent =
+            index === steps.length - 1 ? "Replay ↻" : "Play";
+        }
+        function stop() {
+          if (timer) clearInterval(timer);
+          timer = null;
+          playButton.setAttribute("aria-pressed", "false");
+          setPlaybackLabel();
+        }
+        function render() {
+          const step = steps[index],
+            previous = index ? steps[index - 1] : null,
+            visitedNodes = new Set(
+              steps
+                .slice(0, index)
+                .map((item) => item.node)
+                .filter(Boolean),
+            ),
+            visitedEdges = new Set(
+              steps
+                .slice(0, index)
+                .map((item) => item.edge)
+                .filter(Boolean),
+            );
+          qa("[data-node]").forEach((el) => {
+            const active = el.dataset.node === step.node;
+            const complete = visitedNodes.has(el.dataset.node);
+            el.classList.toggle("is-active", active);
+            el.classList.toggle("is-complete", complete);
+            el.dataset.status = active
+              ? "active"
+              : complete
+                ? "complete"
+                : "pending";
+          });
+          qa("[data-edge]").forEach((el) => {
+            const active = el.dataset.edge === step.edge;
+            const complete = visitedEdges.has(el.dataset.edge);
+            el.classList.toggle("is-active", active);
+            el.classList.toggle("is-complete", complete);
+            el.dataset.status = active
+              ? "active"
+              : complete
+                ? "complete"
+                : "pending";
+          });
+          qa("[data-participant]").forEach((el) => {
+            el.classList.toggle(
+              "is-sender",
+              el.dataset.participant === step.sender,
+            );
+            el.classList.toggle(
+              "is-receiver",
+              el.dataset.participant === step.receiver,
+            );
+          });
+          qa("[data-state]").forEach((el) => {
+            const key = el.dataset.state,
+              value = step.state[key] ?? "—";
+            el.textContent = value;
+            el.classList.toggle(
+              "is-changed",
+              Boolean(previous && previous.state[key] !== value),
+            );
+          });
+          const frame = q("[data-frame]");
+          if (frame) frame.innerHTML = step.frame || "";
+          q("[data-step-caption]").textContent = step.caption;
+          q("[data-step-count]").textContent = `${index + 1} / ${steps.length}`;
+          q('[data-action="back"]').disabled = index === 0;
+          q('[data-action="next"]').textContent =
+            index === steps.length - 1 ? "Replay ↻" : "Next →";
+          if (!timer) setPlaybackLabel();
+        }
+        q('[data-action="next"]').addEventListener("click", () => {
+          index = index === steps.length - 1 ? 0 : index + 1;
+          render();
+        });
+        q('[data-action="back"]').addEventListener("click", () => {
+          index = Math.max(0, index - 1);
+          render();
+        });
+        q('[data-action="reset"]').addEventListener("click", () => {
+          stop();
+          index = 0;
+          render();
+        });
+        playButton.addEventListener("click", () => {
+          if (timer) return stop();
+          if (index === steps.length - 1) {
+            index = 0;
+            render();
+          }
+          playButton.textContent = "Pause";
+          playButton.setAttribute("aria-pressed", "true");
+          timer = setInterval(() => {
+            if (index === steps.length - 1) return stop();
+            index += 1;
+            render();
+            if (index === steps.length - 1) stop();
+          }, 1450);
+        });
+        root._stop = stop;
+        render();
+      }
+      document
+        .querySelectorAll("[data-stepper]")
+        .forEach((root) => createStepper(root, stepSets[root.dataset.stepper]));
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden)
+          document
+            .querySelectorAll("[data-stepper]")
+            .forEach((root) => root._stop?.());
+      });
+
+      document.querySelectorAll("[data-c4]").forEach((root) => {
+        const order = ["context", "containers", "components"],
+          paths = {
+            context: "World / Agent system",
+            containers: "Agent system / Containers",
+            components: "Agent system / Agent runtime / Components",
+          };
+        const maps = [...root.querySelectorAll("[data-c4-level]")],
+          buttons = [...root.querySelectorAll("[data-c4-go]")],
+          back = root.querySelector("[data-c4-back]"),
+          crumb = root.querySelector("[data-c4-breadcrumb]");
+        let level = "context";
+        function show(next) {
+          level = next;
+          maps.forEach((map) => (map.hidden = map.dataset.c4Level !== level));
+          buttons.forEach((button) =>
+            button.setAttribute(
+              "aria-pressed",
+              String(button.dataset.c4Go === level),
+            ),
+          );
+          back.disabled = order.indexOf(level) === 0;
+          crumb.textContent = paths[level];
+        }
+        buttons.forEach((button) =>
+          button.addEventListener("click", () => show(button.dataset.c4Go)),
+        );
+        back.addEventListener("click", () =>
+          show(order[Math.max(0, order.indexOf(level) - 1)]),
+        );
+        root.querySelectorAll("[data-c4-enter]").forEach((target) => {
+          const enter = () => show(target.dataset.c4Enter);
+          target.addEventListener("click", enter);
+          target.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              enter();
+            }
+          });
+        });
+        show(level);
+      });
+    </script>
+  </body>
+</html>

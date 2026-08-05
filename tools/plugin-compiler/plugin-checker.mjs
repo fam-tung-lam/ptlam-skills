@@ -32,7 +32,7 @@ export class PluginChecker {
    */
   async checkPlugin({ rootDir }) {
     const validation = await this.validator.validatePlugin({ rootDir });
-    const { plugin } = validation;
+    const { plugin, diagnostics } = validation;
     const plan = await this.generator.buildExpectedOutputPlan({
       rootDir,
       plugin,
@@ -41,15 +41,20 @@ export class PluginChecker {
     const drift = [];
 
     for (const entry of plan.entries) {
-      if (!entry.exists) {
+      if (entry.expected === null) {
+        drift.push({ path: entry.path, reason: "unexpected file" });
+      } else if (!entry.exists) {
         drift.push({ path: entry.path, reason: "file is missing" });
-      } else if (entry.current !== entry.expected) {
+      } else if (
+        !Buffer.from(entry.current).equals(Buffer.from(entry.expected))
+      ) {
         drift.push({ path: entry.path, reason: "content differs" });
       }
     }
 
     return {
       plugin,
+      diagnostics,
       isCurrent: drift.length === 0,
       drift,
     };

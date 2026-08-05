@@ -1,14 +1,11 @@
 # Skills
 
-Each skill belongs under:
-
-```text
-skills/<category>/<skill-name>/SKILL.md
-```
+This directory is generated from `plugin/plugin.yml` and `plugin/skills/`. Do
+not edit it directly.
 
 <!-- BEGIN GENERATED:PLUGIN-CATALOG:CATEGORIES -->
 
-## Initial categories
+## Categories
 
 | Category       | Skills                                                        |
 | -------------- | ------------------------------------------------------------- |
@@ -17,6 +14,3 @@ skills/<category>/<skill-name>/SKILL.md
 | `utilities`    | —                                                             |
 
 <!-- END GENERATED:PLUGIN-CATALOG:CATEGORIES -->
-
-Add supporting `references/`, `scripts/`, `examples/`, or `templates/` inside
-the skill directory only when the skill needs them.

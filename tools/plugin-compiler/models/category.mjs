@@ -3,25 +3,28 @@
  * Construct instances from already validated manifest data.
  *
  * @property {string} id Stable category identifier.
- * @property {string} title Human-readable category title.
+ * @property {string} name Human-readable category name.
  * @property {string} description Human-readable category description.
  *
  * @example
  * const category = new Category({
  *   id: "visualization",
- *   title: "Visualization",
+ *   name: "Visualization",
  *   description: "Skills for presenting structured information.",
  * });
  */
 export class Category {
   /**
-   * @param {{ id: string, title: string, description: string }} category
+   * @param {{ id: string, name: string, description: string }} category
    *   Validated category fields from the plugin manifest.
    * @throws {TypeError} If the category argument is omitted or is not an object.
    */
-  constructor({ id, title, description }) {
+  constructor({ id, name, description }) {
     this.id = id;
-    this.title = title;
+    this.name = name;
+    // Transitional projection for existing README updaters. `name` is the v2
+    // canonical field and this alias can disappear once every updater migrates.
+    this.title = name;
     this.description = description;
     Object.freeze(this);
   }

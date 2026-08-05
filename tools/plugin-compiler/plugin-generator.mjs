@@ -3,12 +3,16 @@ import {
   lstat,
   mkdir,
   readFile,
+  readdir,
   rename,
+  rm,
   unlink,
   writeFile,
 } from "node:fs/promises";
 import path from "node:path";
+import { format } from "prettier";
 
+import { composePublishedSkills } from "./composition/skill-composer.mjs";
 import {
   ROOT_README_END_MARKER,
   ROOT_README_START_MARKER,
@@ -18,22 +22,26 @@ import {
 } from "./output_updaters/update-plugin-readme.mjs";
 import { updateClaudePlugin } from "./output_updaters/update-claude-plugin.mjs";
 import { PluginValidator } from "./plugin-validator.mjs";
+import { validateMarkdownLinks } from "./validation/markdown-links.mjs";
 
-/**
- * Repository-relative artifacts exclusively maintained by the plugin compiler.
- * Consumers can use this frozen list to report or audit the compiler's write scope.
- *
- * @type {readonly string[]}
- */
+/** Compiler-owned repository outputs. `skills` denotes the complete directory. */
 export const MANAGED_OUTPUT_PATHS = Object.freeze([
   ".claude-plugin/plugin.json",
   ".claude-plugin/marketplace.json",
   "README.md",
-  "skills/README.md",
+  "skills",
 ]);
 
+const OUTSIDE_SKILLS_PATHS = MANAGED_OUTPUT_PATHS.slice(0, 3);
 const EMPTY_ROOT_README = `${ROOT_README_START_MARKER}\n${ROOT_README_END_MARKER}`;
-const EMPTY_SKILLS_README = `${SKILLS_README_START_MARKER}\n${SKILLS_README_END_MARKER}`;
+const EMPTY_SKILLS_README = `# Skills\n\nThis directory is generated from \`plugin/plugin.yml\` and \`plugin/skills/\`. Do not edit it directly.\n\n${SKILLS_README_START_MARKER}\n${SKILLS_README_END_MARKER}\n`;
+
+function contentsEqual(left, right) {
+  if (left === null || right === null) return left === right;
+  const leftBuffer = Buffer.isBuffer(left) ? left : Buffer.from(left);
+  const rightBuffer = Buffer.isBuffer(right) ? right : Buffer.from(right);
+  return leftBuffer.equals(rightBuffer);
+}
 
 async function readOptionalText(rootDir, relativePath) {
   try {
@@ -44,18 +52,20 @@ async function readOptionalText(rootDir, relativePath) {
   }
 }
 
-async function assertSafeOutputPath(rootDir, relativePath) {
+async function assertRealRepository(rootDir) {
+  const stats = await lstat(rootDir);
+  if (stats.isSymbolicLink() || !stats.isDirectory()) {
+    throw new Error("Repository root must be a real directory, not a link");
+  }
+}
+
+async function assertSafeFilePath(rootDir, relativePath) {
   const resolvedRoot = path.resolve(rootDir);
   const segments = relativePath.split("/");
   const targetPath = path.resolve(resolvedRoot, ...segments);
   const relativeTarget = path.relative(resolvedRoot, targetPath);
-  const rootStats = await lstat(resolvedRoot);
-
   if (relativeTarget.startsWith("..") || path.isAbsolute(relativeTarget)) {
     throw new Error(`${relativePath}: managed output escapes the repository`);
-  }
-  if (rootStats.isSymbolicLink() || !rootStats.isDirectory()) {
-    throw new Error("Repository root must be a real directory, not a link");
   }
 
   let currentPath = resolvedRoot;
@@ -86,28 +96,63 @@ async function assertSafeOutputPath(rootDir, relativePath) {
       );
     }
   }
-
   return targetPath;
 }
 
-async function assertSafeOutputPaths(rootDir) {
-  await Promise.all(
-    MANAGED_OUTPUT_PATHS.map((relativePath) =>
-      assertSafeOutputPath(rootDir, relativePath),
-    ),
-  );
+async function snapshotDirectory(rootDir, relativeDirectory) {
+  const absoluteDirectory = path.join(rootDir, relativeDirectory);
+  let rootStats;
+  try {
+    rootStats = await lstat(absoluteDirectory);
+  } catch (error) {
+    if (error.code === "ENOENT") return new Map();
+    throw error;
+  }
+  if (rootStats.isSymbolicLink() || !rootStats.isDirectory()) {
+    throw new Error(
+      `${relativeDirectory}: managed output must be a real directory`,
+    );
+  }
+
+  const files = new Map();
+  async function visit(directory, prefix) {
+    const entries = await readdir(directory, { withFileTypes: true });
+    entries.sort((left, right) => left.name.localeCompare(right.name));
+    for (const entry of entries) {
+      const absolutePath = path.join(directory, entry.name);
+      const relativePath = prefix ? `${prefix}/${entry.name}` : entry.name;
+      if (entry.isSymbolicLink()) {
+        throw new Error(
+          `${relativeDirectory}/${relativePath}: managed output contains a symbolic link`,
+        );
+      }
+      if (entry.isDirectory()) {
+        await visit(absolutePath, relativePath);
+      } else if (entry.isFile()) {
+        files.set(
+          `${relativeDirectory}/${relativePath}`,
+          await readFile(absolutePath),
+        );
+      } else {
+        throw new Error(
+          `${relativeDirectory}/${relativePath}: managed output is not a regular file`,
+        );
+      }
+    }
+  }
+  await visit(absoluteDirectory, "");
+  return files;
 }
 
 async function replaceFile(rootDir, relativePath, content) {
-  const targetPath = await assertSafeOutputPath(rootDir, relativePath);
+  const targetPath = await assertSafeFilePath(rootDir, relativePath);
   await mkdir(path.dirname(targetPath), { recursive: true });
   const temporaryPath = path.join(
     path.dirname(targetPath),
     `.${path.basename(targetPath)}.${process.pid}.${randomUUID()}.tmp`,
   );
-
   try {
-    await writeFile(temporaryPath, content, { encoding: "utf8", flag: "wx" });
+    await writeFile(temporaryPath, content, { flag: "wx" });
     await rename(temporaryPath, targetPath);
   } catch (error) {
     await unlink(temporaryPath).catch(() => {});
@@ -115,113 +160,271 @@ async function replaceFile(rootDir, relativePath, content) {
   }
 }
 
-/**
- * Plans generated artifacts and replaces each changed file atomically.
- *
- * @property {PluginValidator} validator Validator used before generation.
- *
- * @example
- * const result = await new PluginGenerator().generatePlugin({ rootDir });
- * console.log(result.changedPaths);
- */
+async function stageSkillsDirectory(rootDir, expectedSkills) {
+  const token = randomUUID();
+  const stagedPath = path.join(rootDir, `.plugin-compiler-skills-${token}.tmp`);
+  try {
+    await mkdir(stagedPath, { recursive: false });
+    for (const [relativePath, content] of expectedSkills) {
+      const localPath = relativePath.slice("skills/".length);
+      const outputPath = path.join(stagedPath, ...localPath.split("/"));
+      await mkdir(path.dirname(outputPath), { recursive: true });
+      await writeFile(outputPath, content, { flag: "wx" });
+    }
+    return stagedPath;
+  } catch (error) {
+    await rm(stagedPath, { recursive: true, force: true });
+    throw error;
+  }
+}
+
+async function validateStagedSkillsDirectory(stagedPath, expectedSkills) {
+  const stagedName = path.basename(stagedPath);
+  const stagedSnapshot = await snapshotDirectory(
+    path.dirname(stagedPath),
+    stagedName,
+  );
+  const actual = new Map(
+    [...stagedSnapshot].map(([relativePath, content]) => [
+      relativePath.slice(stagedName.length + 1),
+      content,
+    ]),
+  );
+  const expected = new Map(
+    [...expectedSkills].map(([relativePath, content]) => [
+      relativePath.slice("skills/".length),
+      content,
+    ]),
+  );
+  const diagnostics = [];
+  const allPaths = [...new Set([...expected.keys(), ...actual.keys()])].sort();
+
+  for (const relativePath of allPaths) {
+    if (!expected.has(relativePath)) {
+      diagnostics.push(`${relativePath}: unexpected staged file`);
+    } else if (!actual.has(relativePath)) {
+      diagnostics.push(`${relativePath}: staged file is missing`);
+    } else if (
+      !contentsEqual(actual.get(relativePath), expected.get(relativePath))
+    ) {
+      diagnostics.push(
+        `${relativePath}: staged bytes differ from the output plan`,
+      );
+    }
+  }
+
+  for (const [relativePath, content] of actual) {
+    if (!relativePath.endsWith(".md")) continue;
+    const [rootSkillId] = relativePath.split("/");
+    const isCatalogReadme = relativePath === "README.md";
+    const prefix = isCatalogReadme ? "" : `${rootSkillId}/`;
+    const sourceFiles = new Set(
+      [...actual.keys()]
+        .filter((candidate) => candidate.startsWith(prefix))
+        .map((candidate) => candidate.slice(prefix.length)),
+    );
+    diagnostics.push(
+      ...validateMarkdownLinks({
+        source: content.toString("utf8"),
+        markdownPath: relativePath.slice(prefix.length),
+        sourceFiles,
+        skillPath: isCatalogReadme ? "skills" : `skills/${rootSkillId}`,
+      }),
+    );
+  }
+
+  if (diagnostics.length > 0) {
+    throw new Error(
+      `Generated skills validation failed:\n${diagnostics
+        .map((diagnostic) => `- ${diagnostic}`)
+        .join("\n")}`,
+    );
+  }
+}
+
+async function formatComposedSkill(content) {
+  const closing = "\n---\n";
+  const closingIndex = content.indexOf(closing, 4);
+  if (!content.startsWith("---\n") || closingIndex === -1) {
+    throw new Error("Composed SKILL.md is missing generated frontmatter");
+  }
+  const formattedFrontmatter = await format(content.slice(4, closingIndex), {
+    parser: "yaml",
+    proseWrap: "always",
+  });
+  return `---\n${formattedFrontmatter}---\n${content.slice(
+    closingIndex + closing.length,
+  )}`;
+}
+
+async function commitSkillsDirectory(rootDir, stagedPath) {
+  const token = randomUUID();
+  const targetPath = path.join(rootDir, "skills");
+  const backupPath = path.join(rootDir, `.plugin-compiler-skills-${token}.bak`);
+  let targetMoved = false;
+  let stagedInstalled = false;
+
+  try {
+    try {
+      await rename(targetPath, backupPath);
+      targetMoved = true;
+    } catch (error) {
+      if (error.code !== "ENOENT") throw error;
+    }
+    await rename(stagedPath, targetPath);
+    stagedInstalled = true;
+  } catch (error) {
+    await rm(stagedPath, { recursive: true, force: true });
+    if (targetMoved && !stagedInstalled) {
+      await rename(backupPath, targetPath).catch(() => {});
+    }
+    throw error;
+  }
+
+  if (targetMoved) {
+    await rm(backupPath, { recursive: true, force: true }).catch(() => {});
+  }
+}
+
+/** Validate, plan, and generate compiler-owned publication outputs. */
 export class PluginGenerator {
-  /**
-   * @param {{ validator?: PluginValidator }} [dependencies={}] Injectable collaborators.
-   * @param {PluginValidator} [dependencies.validator] Validator shared with callers such as the checker.
-   */
   constructor({ validator = new PluginValidator() } = {}) {
     this.validator = validator;
   }
 
-  /**
-   * Build the single expected-output plan shared by generation and checking.
-   * This method reads current files but never writes them.
-   *
-   * @param {object} request Planning inputs.
-   * @param {string} request.rootDir Repository root containing current managed outputs.
-   * @param {object} request.plugin Validated plugin domain model to render.
-   * @param {boolean} [request.allowMissingReadmes=false] Whether absent README source files should be represented as drift instead of rejected.
-   * @returns {Promise<{entries: Array<{path: string, expected: string, current: string|null, exists: boolean}>, missing: string[]}>} Expected/current content pairs and missing README paths.
-   * @throws {Error} If the repository or a managed path is unsafe, a required README is missing, rendering fails, or a file cannot be read.
-   */
   async buildExpectedOutputPlan({
     rootDir,
     plugin,
     allowMissingReadmes = false,
   }) {
     const resolvedRoot = path.resolve(rootDir);
-    await assertSafeOutputPaths(resolvedRoot);
+    await assertRealRepository(resolvedRoot);
+    await Promise.all(
+      OUTSIDE_SKILLS_PATHS.map((relativePath) =>
+        assertSafeFilePath(resolvedRoot, relativePath),
+      ),
+    );
 
-    const currentByPath = Object.fromEntries(
+    const currentOutside = Object.fromEntries(
       await Promise.all(
-        MANAGED_OUTPUT_PATHS.map(async (relativePath) => [
+        OUTSIDE_SKILLS_PATHS.map(async (relativePath) => [
           relativePath,
           await readOptionalText(resolvedRoot, relativePath),
         ]),
       ),
     );
-    const missing = ["README.md", "skills/README.md"].filter(
-      (relativePath) => currentByPath[relativePath] === null,
+    const missing = ["README.md"].filter(
+      (relativePath) => currentOutside[relativePath] === null,
     );
-
     if (!allowMissingReadmes && missing.length > 0) {
-      throw new Error(
-        `${missing.join(", ")}: README source file${missing.length === 1 ? " is" : "s are"} missing`,
-      );
+      throw new Error("README.md: README source file is missing");
     }
 
+    const composed = composePublishedSkills({ plugin });
+    const composedEntries = await Promise.all(
+      composed.entries.map(async (entry) => ({
+        ...entry,
+        content: entry.path.endsWith("/SKILL.md")
+          ? await formatComposedSkill(String(entry.content))
+          : entry.content,
+      })),
+    );
     const claude = updateClaudePlugin({ plugin });
     const readmes = updatePluginReadme({
       plugin,
-      rootReadme: currentByPath["README.md"] ?? EMPTY_ROOT_README,
-      skillsReadme: currentByPath["skills/README.md"] ?? EMPTY_SKILLS_README,
+      rootReadme: currentOutside["README.md"] ?? EMPTY_ROOT_README,
+      skillsReadme: EMPTY_SKILLS_README,
     });
-    const expectedByPath = {
-      ".claude-plugin/plugin.json": claude.pluginJson,
-      ".claude-plugin/marketplace.json": claude.marketplaceJson,
-      "README.md": readmes.rootReadme,
-      "skills/README.md": readmes.skillsReadme,
-    };
+    const expectedOutside = new Map([
+      [".claude-plugin/plugin.json", claude.pluginJson],
+      [".claude-plugin/marketplace.json", claude.marketplaceJson],
+      ["README.md", readmes.rootReadme],
+    ]);
+    const expectedSkills = new Map([
+      [
+        "skills/README.md",
+        await format(readmes.skillsReadme, {
+          parser: "markdown",
+          proseWrap: "always",
+        }),
+      ],
+      ...composedEntries.map((entry) => [entry.path, entry.content]),
+    ]);
+    const currentSkills = await snapshotDirectory(resolvedRoot, "skills");
+    const entries = [];
 
-    return {
-      entries: MANAGED_OUTPUT_PATHS.map((relativePath) => ({
+    for (const relativePath of OUTSIDE_SKILLS_PATHS) {
+      const current = currentOutside[relativePath];
+      entries.push({
         path: relativePath,
-        expected: expectedByPath[relativePath],
-        current: currentByPath[relativePath],
-        exists: currentByPath[relativePath] !== null,
-      })),
-      missing,
-    };
+        expected: expectedOutside.get(relativePath),
+        current,
+        exists: current !== null,
+      });
+    }
+    const skillPaths = [
+      ...new Set([...expectedSkills.keys(), ...currentSkills.keys()]),
+    ].sort();
+    for (const relativePath of skillPaths) {
+      entries.push({
+        path: relativePath,
+        expected: expectedSkills.get(relativePath) ?? null,
+        current: currentSkills.get(relativePath) ?? null,
+        exists: currentSkills.has(relativePath),
+      });
+    }
+
+    return { entries, missing, expectedSkills };
   }
 
-  /**
-   * Validate and atomically replace each changed complete output file.
-   *
-   * @param {{ rootDir: string }} request Generation options.
-   * @param {string} request.rootDir Repository root whose managed outputs should be updated.
-   * @returns {Promise<{plugin: object, changedPaths: string[], unchangedPaths: string[]}>} Validated model and repository-relative output paths grouped by whether they changed.
-   * @throws {import("./plugin-validator.mjs").PluginValidationError} If canonical plugin sources are invalid.
-   * @throws {Error} If managed output paths are unsafe, README markers are invalid, or filesystem writes fail.
-   */
   async generatePlugin({ rootDir }) {
-    const validation = await this.validator.validatePlugin({ rootDir });
-    const { plugin } = validation;
+    const { plugin, diagnostics } = await this.validator.validatePlugin({
+      rootDir,
+    });
     const plan = await this.buildExpectedOutputPlan({ rootDir, plugin });
     const changedEntries = plan.entries.filter(
-      (entry) => !entry.exists || entry.current !== entry.expected,
+      (entry) => !contentsEqual(entry.current, entry.expected),
     );
-    const unchangedPaths = plan.entries
-      .filter((entry) => entry.exists && entry.current === entry.expected)
-      .map((entry) => entry.path);
+    const outsideChanges = changedEntries.filter(
+      (entry) => !entry.path.startsWith("skills/"),
+    );
+    const skillsChanged = changedEntries.some((entry) =>
+      entry.path.startsWith("skills/"),
+    );
 
-    for (const entry of changedEntries) {
-      await replaceFile(rootDir, entry.path, entry.expected);
+    const resolvedRoot = path.resolve(rootDir);
+    const stagedSkills = skillsChanged
+      ? await stageSkillsDirectory(resolvedRoot, plan.expectedSkills)
+      : null;
+    try {
+      if (stagedSkills) {
+        await validateStagedSkillsDirectory(stagedSkills, plan.expectedSkills);
+      }
+      for (const entry of outsideChanges) {
+        await replaceFile(rootDir, entry.path, entry.expected);
+      }
+      if (stagedSkills) {
+        await commitSkillsDirectory(resolvedRoot, stagedSkills);
+      }
+    } catch (error) {
+      if (stagedSkills) {
+        await rm(stagedSkills, { recursive: true, force: true });
+      }
+      throw error;
     }
 
     return {
       plugin,
-      changedPaths: changedEntries.map((entry) => entry.path),
-      unchangedPaths,
+      diagnostics,
+      changedPaths: [
+        ...outsideChanges.map((entry) => entry.path),
+        ...(skillsChanged ? ["skills"] : []),
+      ],
+      unchangedPaths: MANAGED_OUTPUT_PATHS.filter(
+        (relativePath) =>
+          relativePath !== "skills" &&
+          !outsideChanges.some((entry) => entry.path === relativePath),
+      ).concat(skillsChanged ? [] : ["skills"]),
     };
   }
 }
