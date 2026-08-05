@@ -20,14 +20,18 @@ skill, or external asset at runtime.
 
 1. Identify the learner's question, the smallest complete system that answers
    it, and the important relationships, states, and transitions.
-2. Choose the minimum component set from the catalog below. Prefer one strong
-   interactive visual over repeated prose.
-3. Read [tokens.md](references/design-system/tokens.md),
-   [foundations.md](references/design-system/foundations.md), and
-   [document-shell.md](references/components/layout/document-shell.md)
-   completely.
-4. Read every selected component file completely before writing HTML. Treat its
-   DOM attributes and interaction states as a contract, not decoration.
+2. Choose the minimum component and pattern set from the catalog below. Prefer
+   one strong interactive visual over repeated prose.
+3. Read the [design-system index](references/design-system/design-system.md),
+   the complete
+   [foundations index](references/design-system/foundations/foundations.md),
+   every file it requires, and the
+   [document shell](references/design-system/patterns/layouts/document-shell.md).
+   Load the selected token, style, component, and pattern files through their
+   folder indexes.
+4. Read every selected token, style, component, and pattern file completely
+   before writing HTML. Treat its DOM attributes and interaction states as a
+   contract, not decoration.
 5. Compose a top-to-bottom document. Keep later sections progressively deeper;
    never hide the main learning sequence behind tabs.
 6. Make every changing visual operable with Back, Next, Play/Pause, and Reset
@@ -70,56 +74,69 @@ as a behavior and quality reference, not as a content template.
 - Use concise literal labels. Put qualifications near the visual they constrain.
 - Do not add quizzes, checks, or scoring unless explicitly requested.
 
-## Component catalog
+## Design-system catalog
 
-Read only the files needed for the requested artifact, plus the two required
-foundation files.
+The organization follows Material 3's distinction between foundations, visual
+styles, and named component families. Learning-specific assemblies are patterns,
+not components. Read only the selected files plus every required foundation
+file.
 
-### Foundations and layout
+### Foundations, tokens, and styles
 
-- [tokens.md](references/design-system/tokens.md): semantic colors, spacing,
-  radii, and meaning.
-- [foundations.md](references/design-system/foundations.md): tokens, typography,
-  spacing, focus, motion, responsive rules.
-- [document-shell.md](references/components/layout/document-shell.md): page
-  skeleton and top-to-bottom section flow.
-- [section-layout.md](references/components/layout/section-layout.md):
+- [foundations.md](references/design-system/foundations/foundations.md):
+  accessibility, interaction states, and responsive containment.
+- [tokens.md](references/design-system/tokens/tokens.md): semantic color,
+  typography, spacing, shape, and elevation values.
+- [styles.md](references/design-system/styles/styles.md): color, typography,
+  shape, elevation, and motion application.
+
+### Components
+
+- [components.md](references/design-system/components/components.md): standard
+  reusable component families.
+- [buttons.md](references/design-system/components/buttons/buttons.md):
+  elevated, filled, filled tonal, outlined, and text buttons.
+- [icon-buttons.md](references/design-system/components/icon-buttons/icon-buttons.md):
+  standard, filled, filled tonal, and outlined icon buttons.
+- [floating-action-buttons.md](references/design-system/components/floating-action-buttons/floating-action-buttons.md):
+  default, small, large, and extended FABs.
+
+### Layout and interaction patterns
+
+- [document-shell.md](references/design-system/patterns/layouts/document-shell.md):
+  page skeleton and top-to-bottom section flow.
+- [section-layout.md](references/design-system/patterns/layouts/section-layout.md):
   progressive sections, split panels, and responsive containment.
-- [field-guide-navigation.md](references/components/navigation/field-guide-navigation.md):
+- [field-guide-navigation.md](references/design-system/patterns/navigation/field-guide-navigation.md):
   anchor navigation and progress without tabs.
-
-### Controls and content
-
-- [control-buttons.md](references/components/buttons/control-buttons.md): Back,
-  Next, Play/Pause, Reset, disabled, focus, and labels.
-- [control-plane.md](references/components/controls/control-plane.md):
+- [control-plane.md](references/design-system/patterns/interaction/control-plane.md):
   synchronized controls, step counter, caption, and keyboard behavior.
-- [callout.md](references/components/content/callout.md): concise insight,
-  caveat, and implementation callouts.
-- [state-panel.md](references/components/content/state-panel.md): observable
-  state, frames, counters, and change emphasis.
-- [analogy-mapping.md](references/components/content/analogy-mapping.md):
+- [callout.md](references/design-system/patterns/content/callout.md): concise
+  insight, caveat, and implementation callouts.
+- [state-panel.md](references/design-system/patterns/state/state-panel.md):
+  observable state, frames, counters, and change emphasis.
+- [analogy-mapping.md](references/design-system/patterns/content/analogy-mapping.md):
   visible everyday-to-literal mapping without a dense table.
-- [layered-lifetimes.md](references/components/content/layered-lifetimes.md):
+- [layered-lifetimes.md](references/design-system/patterns/content/layered-lifetimes.md):
   stable, contextual, and volatile layers paired with an everyday system.
 
-### Diagrams
+### Diagram patterns
 
-- [flowchart.md](references/components/diagrams/flowchart.md): pure directed
-  flow.
-- [flowchart-with-state.md](references/components/diagrams/flowchart-with-state.md):
+- [flowchart.md](references/design-system/patterns/diagrams/flowchart.md): pure
+  directed flow.
+- [flowchart-with-state.md](references/design-system/patterns/diagrams/flowchart-with-state.md):
   flow on the left, synchronized state on the right.
-- [flowchart-with-state-and-control-plane.md](references/components/diagrams/flowchart-with-state-and-control-plane.md):
+- [flowchart-with-state-and-control-plane.md](references/design-system/patterns/diagrams/flowchart-with-state-and-control-plane.md):
   flow plus state plus controls below.
-- [c4-diagram.md](references/components/diagrams/c4-diagram.md): separate
-  connected maps for semantic zoom levels.
-- [state-diagram.md](references/components/diagrams/state-diagram.md): states,
-  transitions, guards, and terminal states.
-- [sequence-diagram.md](references/components/diagrams/sequence-diagram.md):
+- [c4-diagram.md](references/design-system/patterns/diagrams/c4-diagram.md):
+  separate connected maps for semantic zoom levels.
+- [state-diagram.md](references/design-system/patterns/diagrams/state-diagram.md):
+  states, transitions, guards, and terminal states.
+- [sequence-diagram.md](references/design-system/patterns/diagrams/sequence-diagram.md):
   participants, messages, and interactive frames.
-- [erd.md](references/components/diagrams/erd.md): entities, fields, keys,
-  cardinality, and relationship paths.
-- [analogy-twin.md](references/components/diagrams/analogy-twin.md):
+- [erd.md](references/design-system/patterns/diagrams/erd.md): entities, fields,
+  keys, cardinality, and relationship paths.
+- [analogy-twin.md](references/design-system/patterns/diagrams/analogy-twin.md):
   synchronized real-life and literal diagrams with one topology.
 
 ## Selection rules
