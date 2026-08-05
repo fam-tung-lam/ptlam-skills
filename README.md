@@ -25,12 +25,13 @@ skills/<category>/<skill-name>/SKILL.md
 
 ## Available skills
 
-| Skill                        | Category     | Purpose                                                                  |
-| ---------------------------- | ------------ | ------------------------------------------------------------------------ |
-| `ptlam-git`                  | Engineering  | Guide safe, adaptable Git workflows through evidence-first rules.        |
-| `ptlam-testing`              | Engineering  | Run universal test workflows with durable project-local profiles.        |
-| `ptlam-explain-with-analogy` | Productivity | Teach connected ideas through one visual, interactive real-life analogy. |
-| `ptlam-visualization`        | Productivity | Create polished HTML and pinned Mermaid visual artifacts.                |
+| Skill                           | Category     | Purpose                                                                   |
+| ------------------------------- | ------------ | ------------------------------------------------------------------------- |
+| `ptlam-git`                     | Engineering  | Guide safe, adaptable Git workflows through evidence-first rules.         |
+| `ptlam-testing`                 | Engineering  | Run universal test workflows with durable project-local profiles.         |
+| `ptlam-explain-with-analogy`    | Productivity | Teach connected ideas through one visual, interactive real-life analogy.  |
+| `ptlam-visualization-with-html` | Productivity | Build portable interactive HTML explainers from reusable visual patterns. |
+| `ptlam-visualization`           | Productivity | Create polished HTML and pinned Mermaid visual artifacts.                 |
 
 <!-- END GENERATED:PLUGIN-CATALOG:SKILLS -->
 

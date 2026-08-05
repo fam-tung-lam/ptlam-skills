@@ -1,0 +1,6 @@
+interface:
+  display_name: "PTLam Visualization with HTML"
+  short_description: "Build interactive HTML learning visuals"
+  default_prompt:
+    "Use $ptlam-visualization-with-html to create a portable interactive HTML
+    explainer."
