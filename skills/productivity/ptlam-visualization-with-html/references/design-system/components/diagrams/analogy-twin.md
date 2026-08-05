@@ -109,4 +109,4 @@ Requirements:
 - Treat this markup as a composable partial. For an interactive twin, replace
   `data-analogy-twin` with `data-stepper` only after adding the complete shared
   control plane, caption, counter, and no-JavaScript summary from
-  [flowchart-with-state-and-control-plane.md](flowchart-with-state-and-control-plane.md).
+  [flowchart-with-state-and-control-plane.md](../../patterns/interactive-flows/flowchart-with-state-and-control-plane.md).

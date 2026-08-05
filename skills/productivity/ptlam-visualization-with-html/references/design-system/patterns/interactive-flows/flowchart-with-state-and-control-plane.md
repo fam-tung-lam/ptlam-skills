@@ -1,10 +1,10 @@
 # Flowchart with state and control plane
 
-Use this as the default interactive learning component. Compose
+Use this as the default interactive learning pattern. Compose
 [flowchart with state](flowchart-with-state.md), then add one shared
-[control plane](../interaction/control-plane.md) below both panels. This is also
-discoverable as a “flowchart with state and controls”; “control plane” is the
-canonical component name.
+[control plane](../../components/control-plane/control-plane.md) below both
+panels. This is also discoverable as a “flowchart with state and controls”;
+“control plane” is the canonical component name.
 
 ```html
 <div class="visual-stage" data-stepper="request-flow">
