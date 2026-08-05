@@ -1,17 +1,29 @@
 {
   "version": 1,
   "skills": {
+    "ptlam-explain-with-analogy": {
+      "source": "fam-tung-lam/ptlam-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ptlam-explain-with-analogy/SKILL.md",
+      "computedHash": "1d8e50059ef525ca77ac2b721020095c2bf85af4767ee89dc1e8844a26d8c304"
+    },
     "ptlam-git": {
       "source": "fam-tung-lam/ptlam-skills",
       "sourceType": "github",
       "skillPath": "skills/ptlam-git/SKILL.md",
-      "computedHash": "3fe3d1e3415e5fed0f1b7cbbb9b156aa6091dd2ae864d49ee7ab0618c41d24a1"
+      "computedHash": "086a9ca609cf2638d34909cecd05729d695a59e7016335c23de0d973716e3de0"
     },
     "ptlam-testing": {
       "source": "fam-tung-lam/ptlam-skills",
       "sourceType": "github",
       "skillPath": "skills/ptlam-testing/SKILL.md",
-      "computedHash": "3f67b01be540e88d76f2da50016e0b1acf1e4a045bd5c8cd6f0be60ea276a34d"
+      "computedHash": "3bd2f30334cd3b66579df05e12194c6d7cea41fc4364db4718f201d26f97e6a4"
+    },
+    "ptlam-visualization-with-html": {
+      "source": "fam-tung-lam/ptlam-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ptlam-visualization-with-html/SKILL.md",
+      "computedHash": "ad1df17a9d3213936ed21031478b971f16846d5c3e5936f8411b713b75b8f6fa"
     }
   }
 }
