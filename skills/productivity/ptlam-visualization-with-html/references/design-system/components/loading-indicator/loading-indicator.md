@@ -26,6 +26,7 @@ when possible and announce completion, not every animation frame.
 }
 ```
 
-M3 Expressive loading indicators may use evolving shapes. Keep a clear text
-status and reduced-motion fallback. Source:
+The expressive loading indicator uses evolving shape and role color. Keep a
+clear text status and render a stable expressive shape under reduced motion.
+Source:
 [Material loading indicator](https://m3.material.io/components/loading-indicator/overview).

@@ -13,5 +13,10 @@ Every diagram component must scale from one SVG `viewBox`, expose a non-empty
 accessible name, keep labels clear of nodes and edges, show direction visibly,
 and remain composable with adjacent state or controls.
 
+Every diagram inherits the expressive component contract. Use containment and
+scale to establish levels, strong role color and shape to identify the current
+concept, and synchronized spatial motion to expose relationships and state
+changes. Keep labels and familiar diagram grammar intact.
+
 For case-specific assemblies, use [patterns](../../patterns/patterns.md),
 including interactive flows and synchronized analogy twins.

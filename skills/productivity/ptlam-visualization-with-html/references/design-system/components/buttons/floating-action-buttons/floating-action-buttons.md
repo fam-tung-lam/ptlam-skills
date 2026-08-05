@@ -13,7 +13,7 @@ button in a control group.
 Every icon-only FAB requires an accessible name. Keep it out of the diagram's
 reading path and ensure it never obscures content at narrow widths.
 
-M3 Expressive may change FAB size and shape as the related menu opens. Preserve
+The expressive FAB changes size and shape as its related menu opens. Preserve
 the primary action, expose menu state with `aria-expanded`, and keep every menu
 action independently named.
 

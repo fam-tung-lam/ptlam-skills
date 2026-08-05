@@ -1,14 +1,55 @@
 # Components
 
 Components are reusable UI building blocks. Use native HTML semantics first,
-then apply the selected Material system roles and expressive styles. Shared
-rules belong here; component-specific anatomy, states, HTML, and CSS belong in
-the selected component file.
+then apply the shared M3 Expressive roles below. Shared rules belong here;
+component-specific anatomy, states, HTML, and CSS belong in the selected
+component file.
 
 Every component must expose an accessible name or label, visible focus,
 enabled/disabled/hover/focus/pressed states where applicable, a usable target,
 and a reduced-motion end state. Do not copy Android-only behavior into HTML;
 implement the documented interaction semantics with native web primitives.
+
+## Expressive component contract
+
+Every component is expressive by default; do not create a classic sibling or a
+mode switch. Apply these shared rules through the component's own root selector:
+
+- Use color, shape, size, motion, and containment to communicate function and
+  emotional tone.
+- Give the key action or selected state the strongest size, contrast, or shape;
+  keep secondary elements visibly grouped.
+- Use high-contrast containment and generous targets to reduce search and tap
+  time.
+- Preserve familiar anatomy, visible text labels, native semantics, and stable
+  target positions.
+- Morph between `--shape-component-rest` and `--shape-component-active` for a
+  meaningful interactive state.
+- Use the effects motion curve for visual properties and the spatial curve for
+  position, size, or shape continuity.
+- Under reduced motion, render the same expressive end state immediately.
+
+```css
+.component-root {
+  border-radius: var(--shape-component-rest);
+  transition:
+    border-radius var(--motion-duration-medium) var(--motion-easing-spatial),
+    transform var(--motion-duration-medium) var(--motion-easing-spatial),
+    background-color var(--motion-duration-short) var(--motion-easing-effects);
+}
+.component-root:is(
+  :hover,
+  :focus-visible,
+  [aria-pressed="true"],
+  [aria-expanded="true"]
+) {
+  border-radius: var(--shape-component-active);
+}
+```
+
+`component-root` names the shared contract, not a required literal class. Merge
+these declarations into the specific component selector and keep its unique CSS
+in that component file.
 
 ## Buttons
 
@@ -61,6 +102,6 @@ implement the documented interaction semantics with native web primitives.
 - [Diagrams](diagrams/diagrams.md)
 
 This inventory follows the official
-[Material 3 component catalog](https://m3.material.io/components), including its
-M3 Expressive additions. Keep case-specific combinations out of this catalog;
-compose them under [patterns](../patterns/patterns.md).
+[Material 3 component catalog](https://m3.material.io/components). Every listed
+family uses the expressive contract above. Keep case-specific combinations out
+of this catalog; compose them under [patterns](../patterns/patterns.md).

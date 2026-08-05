@@ -1,8 +1,8 @@
 # Tokens
 
-Tokens are the portable CSS interface for this design system. They follow
-Material 3's semantic system-role approach and include the expressive shape,
-motion, and type dimensions needed by M3 Expressive.
+Tokens are the portable CSS interface for this M3 Expressive design system. They
+follow Material 3's semantic system-role approach; there is no parallel classic
+token set.
 
 - [Color](color.md)
 - [Typography](typography.md)

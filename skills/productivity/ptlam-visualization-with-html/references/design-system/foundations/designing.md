@@ -1,8 +1,8 @@
 # Designing
 
 Build each screen from elements, structure, and flow. Make boundaries,
-relationships, hierarchy, reading order, and transitions visible before adding
-expressive styling.
+relationships, hierarchy, reading order, and transitions visible before tuning
+the expressive intensity.
 
 Use expressive emphasis to reveal the most important action or state, not to
 make every region compete. Follow Material's guidance for

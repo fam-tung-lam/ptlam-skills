@@ -21,6 +21,6 @@ visual. Keep it close to the controlled content and group related actions.
 }
 ```
 
-M3 Expressive toolbars may combine buttons, FABs, and shape-led grouping. Keep
-the DOM and focus order predictable. Source:
+M3 Expressive toolbars combine buttons, FABs, and shape-led grouping when those
+elements are present. Keep the DOM and focus order predictable. Source:
 [Material toolbars](https://m3.material.io/components/toolbars/overview).

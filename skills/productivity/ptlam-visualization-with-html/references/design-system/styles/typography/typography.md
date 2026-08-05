@@ -44,8 +44,8 @@ code,
 Keep paragraphs short. Let the visual carry structure; use prose for intent,
 caveats, and interpretation.
 
-M3 Expressive supports flexible typography. Use weight, width, and scale to make
-hierarchy clearer, but preserve the display, headline, title, body, and label
-roles and keep text responsive. See Material's
+The expressive type system uses weight, width, and scale to make hierarchy
+clearer while preserving the display, headline, title, body, and label roles and
+responsive text. See Material's
 [typography overview](https://m3.material.io/styles/typography/overview) and
 [editorial treatments](https://m3.material.io/styles/typography/editorial-treatments).

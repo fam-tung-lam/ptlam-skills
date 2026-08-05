@@ -32,8 +32,8 @@ color, thickness, shape, or an explicit label.
 
 Never auto-play. Play may advance discretely when reduced motion is requested.
 
-For M3 Expressive, use the expressive motion scheme only for meaningful
-transitions, spatial continuity, or an active relationship. Use the standard
-scheme for utility feedback. See Material's
+Use the expressive effects curve for visual-property feedback and the spatial
+curve for meaningful position, size, shape, and relationship continuity. There
+is no classic motion scheme. See Material's
 [motion system](https://m3.material.io/styles/motion/overview/how-it-works) and
 [transition patterns](https://m3.material.io/styles/motion/transitions/transition-patterns).

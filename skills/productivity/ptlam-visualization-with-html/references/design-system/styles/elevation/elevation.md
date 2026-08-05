@@ -8,5 +8,8 @@ stage.
 Keyboard focus uses `--elevation-focus` together with an outline; shadow alone
 is not a sufficient focus indicator.
 
+Elevation in this expressive system combines tonal containment, size, and shadow
+so the most important layer is found quickly. Do not make every surface float.
+
 See Material's
 [elevation overview](https://m3.material.io/styles/elevation/overview).

@@ -1,8 +1,7 @@
 # Styles
 
 Styles apply semantic tokens consistently across components and patterns. The
-catalog follows Material 3's current style families and gives priority to M3
-Expressive behavior:
+catalog follows Material 3's current style families as one M3 Expressive system:
 
 - [Color](color/color.md)
 - [Elevation](elevation/elevation.md)
@@ -12,7 +11,8 @@ Expressive behavior:
 - [Spacing](spacing/spacing.md)
 - [Typography](typography/typography.md)
 
-Use expressive color, motion, shape, and typography as a coordinated emphasis
-system. Do not make every dimension expressive at once. Read the official
+Every output uses color, shape, size, motion, containment, and flexible type as
+a coordinated expressive hierarchy. Vary intensity by user need and context, not
+by switching to a classic design. Read the official
 [Material 3 styles catalog](https://m3.material.io/styles) when a target needs a
 platform-specific or newly added style capability.
