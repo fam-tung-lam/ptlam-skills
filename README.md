@@ -186,6 +186,29 @@ independent. Schema version 2 has no lockfile: the catalog composes same-release
 source skills and does not resolve external version ranges, commits, or
 integrity hashes.
 
+## Development dependencies
+
+`package.json` cannot contain comments because it is strict JSON. The table
+below documents why every direct development dependency exists in this private
+repository. Packages used by the compiler at runtime remain development
+dependencies because the compiler is repository tooling and is not published as
+a standalone package.
+
+| Dependency            | Usage in this project                                                                                             |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `@biomejs/biome`      | Formats, lints, and organizes imports in the plugin compiler, its tests, and the Vitest configuration.            |
+| `@types/node`         | Supplies TypeScript declarations for the Node.js APIs used by the compiler and tests.                             |
+| `@vitest/coverage-v8` | Collects V8 coverage for compiler source files and enforces the configured coverage thresholds.                   |
+| `ajv`                 | Validates `plugin/plugin.yml` data against the plugin manifest JSON Schema using JSON Schema 2020-12.             |
+| `markdownlint-cli2`   | Enforces Markdown structure and style rules that are outside Prettier's formatting responsibility.                |
+| `prettier`            | Formats authored Markdown plus compiler-generated README content and YAML frontmatter.                            |
+| `string-width`        | Measures Unicode display width so generated Markdown catalog tables remain visually aligned.                      |
+| `tsx`                 | Executes the TypeScript plugin-compiler CLI directly for catalog validation, generation, and drift checks.        |
+| `typescript`          | Runs strict, no-emit static analysis over the compiler, tests, and Vitest configuration.                          |
+| `vite`                | Provides the pinned transformation and configuration engine used internally by Vitest.                            |
+| `vitest`              | Runs unit and integration tests and provides assertions, mocks, suites, parameterized tests, and lifecycle hooks. |
+| `yaml`                | Parses source YAML with location-aware nodes and serializes generated skill frontmatter.                          |
+
 ## Markdown quality
 
 Install the pinned development tools:
