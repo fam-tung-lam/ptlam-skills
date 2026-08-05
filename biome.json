@@ -7,9 +7,12 @@
   },
   "files": {
     "includes": [
-      "tools/plugin-compiler/**/*.ts",
-      "tests/tools/plugin-compiler/**/*.ts",
-      "vitest.config.ts"
+      "**/*.ts",
+      "**/*.tsx",
+      "**/*.schema.json",
+      "biome.json",
+      "package.json",
+      "tsconfig.json"
     ]
   },
   "formatter": {

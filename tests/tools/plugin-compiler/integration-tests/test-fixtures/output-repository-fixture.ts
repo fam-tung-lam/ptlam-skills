@@ -9,33 +9,37 @@ import {
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { onTestFinished } from "vitest";
-
+import type { PluginSnapshot } from "../../../../../tools/plugin-compiler/models/plugin.ts";
+import { PluginSchemaVersion } from "../../../../../tools/plugin-compiler/models/plugin.ts";
+import {
+  type SkillRequirement,
+  type SkillSnapshot,
+  SkillStatus,
+  SkillVisibility,
+} from "../../../../../tools/plugin-compiler/models/skill.ts";
+import { MANAGED_OUTPUT_PATHS } from "../../../../../tools/plugin-compiler/publication/plugin-publication.ts";
 import {
   ROOT_README_END_MARKER,
   ROOT_README_START_MARKER,
-  SKILLS_README_END_MARKER,
-  SKILLS_README_START_MARKER,
-} from "../../../../../tools/plugin-compiler/helpers/update-plugin-readme.ts";
-import type { CompilerPlugin } from "../../../../../tools/plugin-compiler/models/plugin.ts";
-import type { CompilerSkill } from "../../../../../tools/plugin-compiler/models/skill.ts";
-import type { SkillRequirementInput } from "../../../../../tools/plugin-compiler/models/skill-requirement.ts";
-import { MANAGED_OUTPUT_PATHS } from "../../../../../tools/plugin-compiler/plugin-generator.ts";
+} from "../../../../../tools/plugin-compiler/publication/render-plugin-readme.ts";
 
-export interface MutableCompilerSkill
-  extends Omit<CompilerSkill, "required_skills" | "resources"> {
-  required_skills: SkillRequirementInput[];
+type Mutable<T> = { -readonly [Property in keyof T]: T[Property] };
+
+export interface UnsafeMutableSkillSnapshot
+  extends Omit<Mutable<SkillSnapshot>, "required_skills" | "resources"> {
+  required_skills: SkillRequirement[];
   resources: { path: string; content: Buffer }[];
 }
 
-export interface MutableCompilerPlugin extends Omit<CompilerPlugin, "skills"> {
-  skills: MutableCompilerSkill[];
+export interface UnsafeMutablePluginSnapshot
+  extends Omit<Mutable<PluginSnapshot>, "skills"> {
+  skills: UnsafeMutableSkillSnapshot[];
 }
 
 export interface OutputRootOptions {
   missingRootReadme?: boolean;
-  missingSkillsReadme?: boolean;
+  missingSkillsDirectory?: boolean;
   rootReadme?: string;
-  skillsReadme?: string;
 }
 
 export type ManagedState = Record<
@@ -47,13 +51,10 @@ export const staleRootReadme =
   `# Fixture catalog\n\nHuman introduction.\n\n${ROOT_README_START_MARKER}\n` +
   `stale root content\n${ROOT_README_END_MARKER}\n\nHuman ending.\n`;
 
-export const staleSkillsReadme =
-  `# Skills\n\n${SKILLS_README_START_MARKER}\n` +
-  `stale category content\n${SKILLS_README_END_MARKER}\n\nHuman ending.\n`;
-
-export function makeOutputPlugin(): MutableCompilerPlugin {
+/** Mutable validated-looking input reserved for publication defense tests. */
+export function makeUnsafeMutablePluginSnapshotForPublicationTest(): UnsafeMutablePluginSnapshot {
   return {
-    schema_version: 2,
+    schema_version: PluginSchemaVersion.V1,
     name: "fixture-skills",
     version: "1.2.3",
     description: "Fixture plugin description.",
@@ -91,9 +92,10 @@ export function makeOutputPlugin(): MutableCompilerPlugin {
         id: "review-code-change",
         category_id: "engineering",
         description: "Review changes safely.",
-        visibility: "public",
-        status: "active",
+        visibility: SkillVisibility.Public,
+        status: SkillStatus.Active,
         required_skills: [],
+        source_path: "plugin/skills/review-code-change",
         source_body:
           "# Review code change\n\n<!-- PLUGIN-COMPILER:REQUIRED-SKILLS -->\n",
         resources: [],
@@ -107,7 +109,9 @@ export async function createOutputRoot(
 ): Promise<string> {
   const rootDir = await mkdtemp(path.join(tmpdir(), "plugin-output-test-"));
   onTestFinished(() => rm(rootDir, { force: true, recursive: true }));
-  await mkdir(path.join(rootDir, "skills"), { recursive: true });
+  if (!options.missingSkillsDirectory) {
+    await mkdir(path.join(rootDir, "skills"), { recursive: true });
+  }
 
   if (!options.missingRootReadme) {
     await writeFile(
@@ -116,14 +120,6 @@ export async function createOutputRoot(
       "utf8",
     );
   }
-  if (!options.missingSkillsReadme) {
-    await writeFile(
-      path.join(rootDir, "skills", "README.md"),
-      options.skillsReadme ?? staleSkillsReadme,
-      "utf8",
-    );
-  }
-
   return rootDir;
 }
 
@@ -141,7 +137,9 @@ export async function readManagedState(rootDir: string): Promise<ManagedState> {
           const files: Record<string, string> = {};
           async function visit(directory: string, prefix = ""): Promise<void> {
             const entries = await readdir(directory, { withFileTypes: true });
-            entries.sort((left, right) => left.name.localeCompare(right.name));
+            entries.sort((left, right) =>
+              left.name < right.name ? -1 : left.name > right.name ? 1 : 0,
+            );
             for (const entry of entries) {
               const entryPath = path.join(directory, entry.name);
               const relativeEntry = prefix

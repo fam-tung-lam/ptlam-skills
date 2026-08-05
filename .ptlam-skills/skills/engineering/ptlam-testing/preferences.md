@@ -1,12 +1,12 @@
 ---
 schema_version: 1
 skill: ptlam-testing
-updated_at: 2026-08-05
+updated_at: 2026-08-06
 ---
 
 # Testing preferences
 
-For `tools/plugin-compiler/**` and `tests/tools/plugin-compiler/**`:
+For TypeScript production code and tests across the repository:
 
 - Always group tests with an explicit `describe` suite, including a suite with
   one test.

@@ -21,9 +21,5 @@
     "types": ["node"],
     "verbatimModuleSyntax": true
   },
-  "include": [
-    "tools/plugin-compiler/**/*.ts",
-    "tests/tools/plugin-compiler/**/*.ts",
-    "vitest.config.ts"
-  ]
+  "exclude": ["coverage", "local", "node_modules"]
 }

@@ -1,6 +1,6 @@
 # Version of the plugin.yml structure understood by the compiler.
 # Change only when the manifest schema becomes incompatible.
-schema_version: 2
+schema_version: 1
 
 name: ptlam-skills
 description:

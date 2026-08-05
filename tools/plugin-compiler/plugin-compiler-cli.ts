@@ -3,37 +3,40 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { PluginChecker, type PluginCheckerPort } from "./plugin-checker.ts";
-import {
-  PluginGenerator,
-  type PluginGeneratorPort,
-} from "./plugin-generator.ts";
-import {
-  PluginValidationError,
-  PluginValidator,
-  type PluginValidatorPort,
-} from "./plugin-validator.ts";
+import { PluginCompiler } from "./plugin-compiler.ts";
+import { PluginValidationError } from "./validation/plugin-validation-error.ts";
 
-export type PluginCompilerCommand = "validate" | "generate" | "check";
-export type PluginCompilerExitCode = 0 | 1 | 2;
-export type OutputCallback = (message: string) => void;
-
-export interface PluginCompilerOptions {
-  rootDir?: string;
-  stdout?: OutputCallback;
-  stderr?: OutputCallback;
+export enum PluginCompilerCommand {
+  Validate = "validate",
+  Generate = "generate",
+  Check = "check",
 }
 
-export interface PluginCompilerDependencies {
-  validator?: PluginValidatorPort;
-  generator?: PluginGeneratorPort;
-  checker?: PluginCheckerPort;
+export enum PluginCompilerExitCode {
+  Success = 0,
+  Failure = 1,
+  Usage = 2,
+}
+
+export type WriteOutputLine = (message: string) => void;
+
+export interface PluginCompilerCLIOptions {
+  readonly rootDir?: string;
+  readonly stdout?: WriteOutputLine;
+  readonly stderr?: WriteOutputLine;
+}
+
+export interface PluginCompilerCLIDependencies {
+  readonly compiler?: Pick<
+    PluginCompiler,
+    "validatePlugin" | "generatePlugin" | "checkPlugin"
+  >;
 }
 
 const COMMANDS: ReadonlySet<string> = new Set([
-  "validate",
-  "generate",
-  "check",
+  PluginCompilerCommand.Validate,
+  PluginCompilerCommand.Generate,
+  PluginCompilerCommand.Check,
 ]);
 const DEFAULT_ROOT = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -41,144 +44,179 @@ const DEFAULT_ROOT = path.resolve(
 );
 
 function reportWarnings(
-  diagnostics: readonly string[],
-  stderr: OutputCallback,
+  warnings: readonly string[],
+  stderr: WriteOutputLine,
 ): void {
-  if (!diagnostics || diagnostics.length === 0) return;
+  if (warnings.length === 0) return;
   stderr("Plugin warnings:");
-  for (const diagnostic of diagnostics) stderr(`- ${diagnostic}`);
+  for (const warning of warnings) stderr(`- ${warning}`);
 }
+
+function isPluginCompilerCommand(
+  value: string | undefined,
+): value is PluginCompilerCommand {
+  return value !== undefined && COMMANDS.has(value);
+}
+
+function countLabel(
+  count: number,
+  singular: string,
+  plural = `${singular}s`,
+): string {
+  return `${count} ${count === 1 ? singular : plural}`;
+}
+
+function unreachable(value: never): never {
+  throw new Error(`Unsupported plugin compiler command: ${String(value)}`);
+}
+
+type CompilerOperations = Pick<
+  PluginCompiler,
+  "validatePlugin" | "generatePlugin" | "checkPlugin"
+>;
+
+type ExecutedCommand =
+  | {
+      readonly command: PluginCompilerCommand.Validate;
+      readonly result: Awaited<
+        ReturnType<CompilerOperations["validatePlugin"]>
+      >;
+    }
+  | {
+      readonly command: PluginCompilerCommand.Generate;
+      readonly result: Awaited<
+        ReturnType<CompilerOperations["generatePlugin"]>
+      >;
+    }
+  | {
+      readonly command: PluginCompilerCommand.Check;
+      readonly result: Awaited<ReturnType<CompilerOperations["checkPlugin"]>>;
+    };
 
 /**
  * Command dispatcher for validating, generating, and checking plugin artifacts.
  * Inject collaborators and output callbacks when embedding the CLI in tests or
  * another Node.js process.
- *
- * @property {PluginValidator} validator Validator used by the command dispatcher.
- * @property {PluginGenerator} generator Generator used by `generate` and shared with the checker.
- * @property {PluginChecker} checker Read-only checker used by `check`.
  */
 export class PluginCompilerCLI {
-  readonly validator: PluginValidatorPort;
-  readonly generator: PluginGeneratorPort;
-  readonly checker: PluginCheckerPort;
+  readonly #compiler: CompilerOperations;
 
-  /**
-   * @param {{ validator?: PluginValidator, generator?: PluginGenerator, checker?: PluginChecker }} [dependencies={}] Injectable command collaborators.
-   * @param {PluginValidator} [dependencies.validator] Validator used by `validate` and default collaborators.
-   * @param {PluginGenerator} [dependencies.generator] Generator used by `generate`.
-   * @param {PluginChecker} [dependencies.checker] Checker used by `check`.
-   */
   constructor({
-    validator,
-    generator,
-    checker,
-  }: PluginCompilerDependencies = {}) {
-    this.validator = validator ?? new PluginValidator();
-    this.generator =
-      generator ?? new PluginGenerator({ validator: this.validator });
-    this.checker =
-      checker ??
-      new PluginChecker({
-        validator: this.validator,
-        generator: this.generator,
-      });
+    compiler = new PluginCompiler(),
+  }: PluginCompilerCLIDependencies = {}) {
+    this.#compiler = compiler;
   }
 
-  /**
-   * Execute one compiler command and translate expected failures into an exit code.
-   *
-   * @param {"validate"|"generate"|"check"|string} command Command name to dispatch.
-   * @param {object} [options={}] Runtime and output options.
-   * @param {string} [options.rootDir] Repository root; defaults to this package's repository.
-   * @param {(message: string) => void} [options.stdout] Success-output callback.
-   * @param {(message: string) => void} [options.stderr] Diagnostic-output callback.
-   * @returns {Promise<0|1|2>} Zero on success, one on validation/generation/drift failure, or two for an unknown command.
-   * @throws {Error} If an injected output callback throws while reporting a result.
-   */
+  /** Execute a command; output-adapter exceptions deliberately propagate. */
   async run(
     command: string | undefined,
     {
       rootDir = DEFAULT_ROOT,
       stdout = (message: string) => console.log(message),
       stderr = (message: string) => console.error(message),
-    }: PluginCompilerOptions = {},
+    }: PluginCompilerCLIOptions = {},
   ): Promise<PluginCompilerExitCode> {
-    if (command === undefined || !COMMANDS.has(command)) {
+    if (!isPluginCompilerCommand(command)) {
       stderr(
         "Usage: tsx tools/plugin-compiler/plugin-compiler-cli.ts <validate|generate|check>",
       );
-      return 2;
+      return PluginCompilerExitCode.Usage;
     }
 
+    let executed: ExecutedCommand;
     try {
-      if (command === "validate") {
-        const { plugin, diagnostics } = await this.validator.validatePlugin({
-          rootDir,
-        });
-        reportWarnings(diagnostics, stderr);
-        stdout(
-          `Plugin is valid: ${plugin.skills.length} skills in ${plugin.categories.length} categories.`,
-        );
-        return 0;
-      }
+      executed = await this.#execute(command, rootDir);
+    } catch (error) {
+      return this.#presentCompilerError(error, stderr);
+    }
 
-      if (command === "generate") {
-        const result = await this.generator.generatePlugin({ rootDir });
-        reportWarnings(result.diagnostics, stderr);
+    return this.#presentResult(executed, stdout, stderr);
+  }
+
+  async #execute(
+    command: PluginCompilerCommand,
+    rootDir: string,
+  ): Promise<ExecutedCommand> {
+    switch (command) {
+      case PluginCompilerCommand.Validate:
+        return {
+          command,
+          result: await this.#compiler.validatePlugin({ rootDir }),
+        };
+      case PluginCompilerCommand.Generate:
+        return {
+          command,
+          result: await this.#compiler.generatePlugin({ rootDir }),
+        };
+      case PluginCompilerCommand.Check:
+        return {
+          command,
+          result: await this.#compiler.checkPlugin({ rootDir }),
+        };
+      default:
+        return unreachable(command);
+    }
+  }
+
+  #presentCompilerError(
+    error: unknown,
+    stderr: WriteOutputLine,
+  ): PluginCompilerExitCode {
+    stderr(
+      error instanceof PluginValidationError
+        ? error.message
+        : `Plugin command failed: ${error instanceof Error ? error.message : String(error)}`,
+    );
+    return PluginCompilerExitCode.Failure;
+  }
+
+  #presentResult(
+    executed: ExecutedCommand,
+    stdout: WriteOutputLine,
+    stderr: WriteOutputLine,
+  ): PluginCompilerExitCode {
+    reportWarnings(executed.result.warnings, stderr);
+
+    switch (executed.command) {
+      case PluginCompilerCommand.Validate:
+        stdout(
+          `Plugin is valid: ${countLabel(executed.result.plugin.skills.length, "skill")} in ${countLabel(executed.result.plugin.categories.length, "category", "categories")}.`,
+        );
+        return PluginCompilerExitCode.Success;
+      case PluginCompilerCommand.Generate:
+        if (executed.result.changedPaths.length === 0) {
+          stdout("Plugin outputs are already current.");
+          return PluginCompilerExitCode.Success;
+        }
         stdout("Generated plugin outputs:");
-        for (const relativePath of result.changedPaths) {
+        for (const relativePath of executed.result.changedPaths) {
           stdout(`- ${relativePath}`);
         }
-        for (const relativePath of result.unchangedPaths) {
+        for (const relativePath of executed.result.unchangedPaths) {
           stdout(`- ${relativePath} (unchanged)`);
         }
-        return 0;
-      }
-
-      const result = await this.checker.checkPlugin({ rootDir });
-      reportWarnings(result.diagnostics, stderr);
-      if (result.isCurrent) {
-        stdout("Plugin outputs are current.");
-        return 0;
-      }
-
-      stderr("Plugin outputs are stale:");
-      for (const item of result.drift) {
-        stderr(`- ${item.path}: ${item.reason}`);
-      }
-      stderr("Run `npm run catalog:generate` and commit the results.");
-      return 1;
-    } catch (error) {
-      const prefix =
-        error instanceof PluginValidationError
-          ? "Plugin validation failed"
-          : "Plugin command failed";
-      stderr(
-        `${prefix}: ${error instanceof Error ? error.message : String(error)}`,
-      );
-      return 1;
+        return PluginCompilerExitCode.Success;
+      case PluginCompilerCommand.Check:
+        if (executed.result.isCurrent) {
+          stdout("Plugin outputs are current.");
+          return PluginCompilerExitCode.Success;
+        }
+        stderr("Plugin outputs are stale:");
+        for (const item of executed.result.drift) {
+          stderr(`- ${item.path}: ${item.reason}`);
+        }
+        stderr("Run `npm run plugin:compile` and commit the results.");
+        return PluginCompilerExitCode.Failure;
+      default:
+        return unreachable(executed);
     }
   }
 }
 
-/**
- * Run a plugin compiler command with default collaborators.
- *
- * @param {"validate"|"generate"|"check"|string} command Command name to dispatch.
- * @param {object} [options={}] Options forwarded to {@link PluginCompilerCLI#run}.
- * @param {string} [options.rootDir] Repository root to process.
- * @param {(message: string) => void} [options.stdout] Success-output callback.
- * @param {(message: string) => void} [options.stderr] Diagnostic-output callback.
- * @returns {Promise<0|1|2>} Process-style exit code for the command.
- * @throws {Error} If an injected output callback throws while reporting a result.
- *
- * @example
- * const exitCode = await runPluginCompilerCommand("check", { rootDir });
- */
+/** Run a command with default collaborators. */
 export async function runPluginCompilerCommand(
   command: string | undefined,
-  options: PluginCompilerOptions = {},
+  options: PluginCompilerCLIOptions = {},
 ): Promise<PluginCompilerExitCode> {
   return new PluginCompilerCLI().run(command, options);
 }

@@ -1,134 +1,128 @@
-import { Category, type CategoryInput } from "./category.ts";
-import { type PluginAuthor, PluginMetadata } from "./plugin-metadata.ts";
+import type { PluginCategory } from "./category.ts";
 import {
-  type CompilerSkill,
+  createSkillSnapshot,
   type ManifestSkill,
-  Skill,
-  type SkillInput,
+  type SkillSnapshot,
+  type SkillSnapshotInput,
 } from "./skill.ts";
 
-export interface PluginMarketplace {
-  name: string;
-  description: string;
-  plugin_description: string;
-  category: string;
-  keywords: readonly string[];
+/** Manifest schema versions understood by this compiler. */
+export enum PluginSchemaVersion {
+  /** Current source contract described by `plugin-manifest-v1.schema.json`. */
+  V1 = 1,
 }
 
-export interface PluginManifest {
-  schema_version: 2;
-  name: string;
-  description: string;
-  version: string;
-  author: PluginAuthor;
-  homepage: string;
-  repository: string;
-  license: string;
-  keywords: readonly string[];
-  marketplace: PluginMarketplace;
-  categories: readonly CategoryInput[];
-  skills: readonly ManifestSkill[];
-}
-
-export interface PluginInput
-  extends Omit<PluginManifest, "categories" | "skills"> {
-  categories: Iterable<Category | CategoryInput>;
-  skills: Iterable<Skill | SkillInput>;
-}
-
-export interface PluginModel
-  extends Omit<PluginManifest, "categories" | "skills"> {
-  categories: readonly CategoryInput[];
-  skills: readonly ManifestSkill[];
-}
-
-export interface CompilerPlugin extends Omit<PluginModel, "skills"> {
-  skills: readonly CompilerSkill[];
-}
-
-/** Immutable normalized v2 plugin source model. */
-export class Plugin implements CompilerPlugin {
-  readonly schema_version: 2;
+/** Publication identity of the plugin owner. */
+export interface PluginAuthor {
+  /** Display name written to generated host metadata. */
   readonly name: string;
-  readonly description: string;
-  readonly version: string;
-  readonly author: Readonly<PluginAuthor>;
-  readonly homepage: string;
-  readonly repository: string;
-  readonly license: string;
-  readonly keywords: readonly string[];
-  readonly marketplace: Readonly<
-    Omit<PluginMarketplace, "keywords"> & { keywords: readonly string[] }
-  >;
-  readonly categories: readonly Category[];
-  readonly skills: readonly Skill[];
-  readonly metadata: PluginMetadata;
+  /** Optional contact email written to generated host metadata. */
+  readonly email?: string;
+  /** Optional public URL written to generated host metadata. */
+  readonly url?: string;
+}
 
-  /**
-   * @param {object} plugin Validated manifest and source snapshot.
-   * @param {number} plugin.schema_version Manifest schema version.
-   * @param {string} plugin.name Stable plugin identifier.
-   * @param {string} plugin.description Human-readable plugin description.
-   * @param {string} plugin.version Plugin release version.
-   * @param {{ name: string, email?: string, url?: string }} plugin.author Publication author.
-   * @param {string} plugin.homepage Publication homepage.
-   * @param {string} plugin.repository Source repository URL.
-   * @param {string} plugin.license License name.
-   * @param {Iterable<string>} plugin.keywords Discovery keywords.
-   * @param {object} plugin.marketplace Marketplace projection settings.
-   * @param {Iterable<Category|object>} plugin.categories Ordered categories.
-   * @param {Iterable<Skill|object>} plugin.skills Ordered authored skills.
-   */
-  constructor({
+/** Metadata used to render the marketplace listing. */
+export interface PluginMarketplace {
+  /** Stable marketplace identifier. */
+  readonly name: string;
+  /** Description of the marketplace collection. */
+  readonly description: string;
+  /** Description shown for this plugin inside the marketplace. */
+  readonly plugin_description: string;
+  /** Marketplace-defined category identifier. */
+  readonly category: string;
+  /** Discovery keywords written in manifest order. */
+  readonly keywords: readonly string[];
+}
+
+/** Structurally validated values read from `plugin/plugin.yml`. */
+export interface PluginManifest {
+  /** Version of the source contract interpreted by the compiler. */
+  readonly schema_version: PluginSchemaVersion;
+  /** Stable plugin identifier. */
+  readonly name: string;
+  /** Human-readable plugin description. */
+  readonly description: string;
+  /** Quoted semantic release version. */
+  readonly version: string;
+  /** Plugin owner written to generated host metadata. */
+  readonly author: PluginAuthor;
+  /** Public plugin documentation URL. */
+  readonly homepage: string;
+  /** Public source repository URL. */
+  readonly repository: string;
+  /** License identifier written to generated host metadata. */
+  readonly license: string;
+  /** Plugin discovery keywords in manifest order. */
+  readonly keywords: readonly string[];
+  /** Marketplace-specific projection settings. */
+  readonly marketplace: PluginMarketplace;
+  /** Ordered catalog categories declared by maintainers. */
+  readonly categories: readonly PluginCategory[];
+  /** Ordered skill declarations declared by maintainers. */
+  readonly skills: readonly ManifestSkill[];
+}
+
+/** Canonical immutable source graph returned after complete validation. */
+export interface PluginSnapshot
+  extends Omit<PluginManifest, "categories" | "skills"> {
+  /** Defensively copied categories in manifest order. */
+  readonly categories: readonly PluginCategory[];
+  /** Fully inspected skills in manifest order. */
+  readonly skills: readonly SkillSnapshot[];
+}
+
+/** Complete validated values needed to construct a plugin snapshot. */
+export interface PluginSnapshotInput
+  extends Omit<PluginManifest, "categories" | "skills"> {
+  /** Validated categories to copy into the snapshot. */
+  readonly categories: Iterable<PluginCategory>;
+  /** Validated skill sources to convert into immutable snapshots. */
+  readonly skills: Iterable<SkillSnapshotInput>;
+}
+
+/**
+ * Create the canonical immutable source graph consumed by the compiler.
+ *
+ * @param input - Completely validated manifest values and inspected skill sources.
+ * @returns A deeply frozen plugin snapshot with defensively copied collections.
+ *
+ * @example
+ * const plugin = createPluginSnapshot(validatedInput);
+ * console.log(plugin.skills.length);
+ */
+export function createPluginSnapshot({
+  schema_version,
+  name,
+  description,
+  version,
+  author,
+  homepage,
+  repository,
+  license,
+  keywords,
+  marketplace,
+  categories,
+  skills,
+}: PluginSnapshotInput): PluginSnapshot {
+  return Object.freeze({
     schema_version,
     name,
     description,
     version,
-    author,
+    author: Object.freeze({ ...author }),
     homepage,
     repository,
     license,
-    keywords,
-    marketplace,
-    categories,
-    skills,
-  }: PluginInput) {
-    this.schema_version = schema_version;
-    this.name = name;
-    this.description = description;
-    this.version = version;
-    this.author = Object.freeze({ ...author });
-    this.homepage = homepage;
-    this.repository = repository;
-    this.license = license;
-    this.keywords = Object.freeze([...keywords]);
-    this.marketplace = Object.freeze({
+    keywords: Object.freeze([...keywords]),
+    marketplace: Object.freeze({
       ...marketplace,
       keywords: Object.freeze([...marketplace.keywords]),
-    });
-    this.categories = Object.freeze(
-      [...categories].map((category) =>
-        category instanceof Category ? category : new Category(category),
-      ),
-    );
-    this.skills = Object.freeze(
-      [...skills].map((skill) =>
-        skill instanceof Skill ? skill : new Skill(skill),
-      ),
-    );
-
-    // Transitional projection for existing host-manifest updaters. Top-level
-    // v2 identity and publication fields above remain canonical.
-    this.metadata = new PluginMetadata({
-      name,
-      description,
-      version,
-      author,
-      homepage,
-      repository,
-      license,
-      keywords,
-    });
-    Object.freeze(this);
-  }
+    }),
+    categories: Object.freeze(
+      [...categories].map((category) => Object.freeze({ ...category })),
+    ),
+    skills: Object.freeze([...skills].map(createSkillSnapshot)),
+  });
 }

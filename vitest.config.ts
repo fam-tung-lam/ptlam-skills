@@ -4,12 +4,12 @@ export default defineConfig({
   test: {
     clearMocks: true,
     environment: "node",
-    include: ["tests/tools/plugin-compiler/**/*.test.ts"],
+    include: ["tests/**/*.test.ts"],
     restoreMocks: true,
     coverage: {
       provider: "v8",
-      exclude: ["tests/**"],
-      include: ["tools/plugin-compiler/**/*.ts"],
+      exclude: ["tests/**", "**/*.config.ts"],
+      include: ["**/*.ts"],
       reporter: ["text", "json-summary", "html"],
       reportsDirectory: "coverage",
       thresholds: {

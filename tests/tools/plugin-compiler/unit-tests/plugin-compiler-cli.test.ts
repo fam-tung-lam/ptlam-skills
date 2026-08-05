@@ -1,21 +1,27 @@
 import assert from "node:assert/strict";
-import { describe, test, vi } from "vitest";
-import type { CompilerPlugin } from "../../../../tools/plugin-compiler/models/plugin.ts";
-import type { PluginCheckerPort } from "../../../../tools/plugin-compiler/plugin-checker.ts";
+import { describe, test } from "vitest";
+import {
+  createPluginSnapshot,
+  PluginSchemaVersion,
+} from "../../../../tools/plugin-compiler/models/plugin.ts";
+import {
+  SkillStatus,
+  SkillVisibility,
+} from "../../../../tools/plugin-compiler/models/skill.ts";
 import {
   PluginCompilerCLI,
-  type PluginCompilerOptions,
+  type PluginCompilerCLIDependencies,
+  type PluginCompilerCLIOptions,
+  PluginCompilerCommand,
+  PluginCompilerExitCode,
 } from "../../../../tools/plugin-compiler/plugin-compiler-cli.ts";
-import type { PluginGeneratorPort } from "../../../../tools/plugin-compiler/plugin-generator.ts";
-import {
-  PluginValidationError,
-  type PluginValidatorPort,
-} from "../../../../tools/plugin-compiler/plugin-validator.ts";
+import { PluginPublicationDriftReason } from "../../../../tools/plugin-compiler/publication/plugin-publication.ts";
+import { PluginValidationError } from "../../../../tools/plugin-compiler/validation/plugin-validation-error.ts";
 
 function createOutput(): {
   stdout: string[];
   stderr: string[];
-  options: PluginCompilerOptions;
+  options: PluginCompilerCLIOptions;
 } {
   const stdout: string[] = [];
   const stderr: string[] = [];
@@ -24,8 +30,8 @@ function createOutput(): {
     stderr,
     options: {
       rootDir: "/repository",
-      stdout: (message: string) => stdout.push(message),
-      stderr: (message: string) => stderr.push(message),
+      stdout: (message) => stdout.push(message),
+      stderr: (message) => stderr.push(message),
     },
   };
 }
@@ -34,52 +40,23 @@ function unexpectedCall(name: string): never {
   throw new Error(`${name} must not be called`);
 }
 
-function validatorDummy(): PluginValidatorPort {
-  return {
-    validatePlugin: vi.fn(() => unexpectedCall("validator.validatePlugin")),
-  };
-}
-
-function generatorDummy(): PluginGeneratorPort {
-  return {
-    buildExpectedOutputPlan: vi.fn(() =>
-      unexpectedCall("generator.buildExpectedOutputPlan"),
-    ),
-    generatePlugin: vi.fn(() => unexpectedCall("generator.generatePlugin")),
-  };
-}
-
-function checkerDummy(): PluginCheckerPort {
-  return {
-    checkPlugin: vi.fn(() => unexpectedCall("checker.checkPlugin")),
-  };
-}
-
-function generatorDouble(
-  generatePlugin: PluginGeneratorPort["generatePlugin"],
-): PluginGeneratorPort {
-  return {
-    buildExpectedOutputPlan: vi.fn(() =>
-      unexpectedCall("generator.buildExpectedOutputPlan"),
-    ),
-    generatePlugin,
-  };
-}
-
-function makeCompilerPlugin(): CompilerPlugin {
+function makePlugin(
+  skillIds: readonly string[] = ["alpha-skill", "beta-skill"],
+  categoryIds: readonly string[] = ["engineering", "productivity"],
+) {
   const makeSkill = (id: string) => ({
     id,
     description: `${id} description.`,
     category_id: "engineering",
-    visibility: "public" as const,
-    status: "active" as const,
+    visibility: SkillVisibility.Public,
+    status: SkillStatus.Active,
     required_skills: [],
+    source_path: `plugin/skills/${id}`,
     source_body: `# ${id}\n`,
     resources: [],
   });
-
-  return {
-    schema_version: 2,
+  return createPluginSnapshot({
+    schema_version: PluginSchemaVersion.V1,
     name: "fixture-skills",
     description: "Fixture plugin.",
     version: "1.0.0",
@@ -95,94 +72,103 @@ function makeCompilerPlugin(): CompilerPlugin {
       category: "development",
       keywords: ["fixture"],
     },
-    categories: [
-      {
-        id: "engineering",
-        name: "Engineering",
-        description: "Engineering skills.",
-      },
-    ],
-    skills: [makeSkill("alpha-skill"), makeSkill("beta-skill")],
+    categories: categoryIds.map((id) => ({
+      id,
+      name: `${id} category`,
+      description: `${id} skills.`,
+    })),
+    skills: skillIds.map(makeSkill),
+  });
+}
+
+type CompilerDouble = NonNullable<PluginCompilerCLIDependencies["compiler"]>;
+
+function compilerDouble(
+  overrides: Partial<CompilerDouble> = {},
+): CompilerDouble {
+  return {
+    validatePlugin: () => unexpectedCall("compiler.validatePlugin"),
+    generatePlugin: () => unexpectedCall("compiler.generatePlugin"),
+    checkPlugin: () => unexpectedCall("compiler.checkPlugin"),
+    ...overrides,
   };
 }
 
 describe("PluginCompilerCLI", () => {
   test("returns usage error for an unknown command without delegating", async () => {
-    // GIVEN: Command collaborators and captured output streams are prepared.
+    // GIVEN: An unknown command and a compiler that must remain idle.
     const output = createOutput();
-    const cli = new PluginCompilerCLI({
-      validator: validatorDummy(),
-      generator: generatorDummy(),
-      checker: checkerDummy(),
-    });
+    const cli = new PluginCompilerCLI({ compiler: compilerDouble() });
 
-    // WHEN: The compiler CLI runs the requested command.
+    // WHEN: The CLI receives an unknown command.
     const exitCode = await cli.run("unknown", output.options);
 
-    // THEN: The exit code, delegation, and user-facing output are verified.
-    assert.equal(exitCode, 2);
+    // THEN: Usage is reported without compiler execution.
+    assert.equal(exitCode, PluginCompilerExitCode.Usage);
     assert.deepEqual(output.stdout, []);
-    const usage = output.stderr[0];
-    assert.ok(usage);
-    assert.match(usage, /<validate\|generate\|check>/u);
+    assert.match(output.stderr[0] ?? "", /<validate\|generate\|check>/u);
   });
 
-  test("validate delegates only to PluginValidator", async () => {
-    // GIVEN: Command collaborators and captured output streams are prepared.
+  test("validate delegates to the compiler workflow", async () => {
+    // GIVEN: The compiler records validation requests.
     const output = createOutput();
-    const requests: { rootDir?: string }[] = [];
+    const requests: { rootDir: string }[] = [];
     const cli = new PluginCompilerCLI({
-      validator: {
+      compiler: compilerDouble({
         async validatePlugin(request) {
           requests.push(request);
           return {
-            plugin: makeCompilerPlugin(),
-            diagnostics: ["deprecated dependency"],
+            plugin: makePlugin(),
+            warnings: ["deprecated dependency"],
           };
         },
-      },
-      generator: generatorDummy(),
-      checker: checkerDummy(),
+      }),
     });
 
-    // WHEN: The compiler CLI runs the requested command.
-    const exitCode = await cli.run("validate", output.options);
+    // WHEN: Validation runs through the CLI adapter.
+    const exitCode = await cli.run(
+      PluginCompilerCommand.Validate,
+      output.options,
+    );
 
-    // THEN: The exit code, delegation, and user-facing output are verified.
-    assert.equal(exitCode, 0);
+    // THEN: The request and presentation remain stable.
+    assert.equal(exitCode, PluginCompilerExitCode.Success);
     assert.deepEqual(requests, [{ rootDir: "/repository" }]);
     assert.deepEqual(output.stderr, [
       "Plugin warnings:",
       "- deprecated dependency",
     ]);
     assert.deepEqual(output.stdout, [
-      "Plugin is valid: 2 skills in 1 categories.",
+      "Plugin is valid: 2 skills in 2 categories.",
     ]);
   });
 
-  test("generate presents changed and unchanged paths from PluginGenerator", async () => {
-    // GIVEN: Command collaborators and captured output streams are prepared.
+  test("generate presents changed and unchanged paths", async () => {
+    // GIVEN: The compiler returns a publication result.
     const output = createOutput();
     const requests: { rootDir: string }[] = [];
     const cli = new PluginCompilerCLI({
-      validator: validatorDummy(),
-      generator: generatorDouble(async (request) => {
-        requests.push(request);
-        return {
-          plugin: makeCompilerPlugin(),
-          diagnostics: ["generation warning"],
-          changedPaths: ["README.md"],
-          unchangedPaths: ["skills/README.md"],
-        };
+      compiler: compilerDouble({
+        async generatePlugin(request) {
+          requests.push(request);
+          return {
+            plugin: makePlugin(),
+            warnings: ["generation warning"],
+            changedPaths: ["README.md"],
+            unchangedPaths: ["skills"],
+          };
+        },
       }),
-      checker: checkerDummy(),
     });
 
-    // WHEN: The compiler CLI runs the requested command.
-    const exitCode = await cli.run("generate", output.options);
+    // WHEN: Generation runs through the CLI adapter.
+    const exitCode = await cli.run(
+      PluginCompilerCommand.Generate,
+      output.options,
+    );
 
-    // THEN: The exit code, delegation, and user-facing output are verified.
-    assert.equal(exitCode, 0);
+    // THEN: The CLI only formats the compiler result.
+    assert.equal(exitCode, PluginCompilerExitCode.Success);
     assert.deepEqual(requests, [{ rootDir: "/repository" }]);
     assert.deepEqual(output.stderr, [
       "Plugin warnings:",
@@ -191,118 +177,211 @@ describe("PluginCompilerCLI", () => {
     assert.deepEqual(output.stdout, [
       "Generated plugin outputs:",
       "- README.md",
-      "- skills/README.md (unchanged)",
+      "- skills (unchanged)",
     ]);
   });
 
-  test("check returns success when PluginChecker reports current outputs", async () => {
-    // GIVEN: Command collaborators and captured output streams are prepared.
+  test("generate reports when every output is already current", async () => {
+    // GIVEN: Generation finds no changed managed paths.
     const output = createOutput();
     const cli = new PluginCompilerCLI({
-      validator: validatorDummy(),
-      generator: generatorDummy(),
-      checker: {
+      compiler: compilerDouble({
+        async generatePlugin() {
+          return {
+            plugin: makePlugin(),
+            warnings: [],
+            changedPaths: [],
+            unchangedPaths: ["README.md", "skills"],
+          };
+        },
+      }),
+    });
+
+    // WHEN: The generation result is presented.
+    const exitCode = await cli.run(
+      PluginCompilerCommand.Generate,
+      output.options,
+    );
+
+    // THEN: The CLI reports freshness without a generated-output heading.
+    assert.equal(exitCode, PluginCompilerExitCode.Success);
+    assert.deepEqual(output.stdout, ["Plugin outputs are already current."]);
+    assert.deepEqual(output.stderr, []);
+  });
+
+  test("validate uses singular labels for one skill and category", async () => {
+    // GIVEN: The validated plugin has one skill in one category.
+    const output = createOutput();
+    const cli = new PluginCompilerCLI({
+      compiler: compilerDouble({
+        async validatePlugin() {
+          return {
+            plugin: makePlugin(["only-skill"], ["engineering"]),
+            warnings: [],
+          };
+        },
+      }),
+    });
+
+    // WHEN: Validation succeeds.
+    const exitCode = await cli.run(
+      PluginCompilerCommand.Validate,
+      output.options,
+    );
+
+    // THEN: Singular skill and category labels are grammatical.
+    assert.equal(exitCode, PluginCompilerExitCode.Success);
+    assert.deepEqual(output.stdout, [
+      "Plugin is valid: 1 skill in 1 category.",
+    ]);
+  });
+
+  test("check reports both current and stale publication states", async () => {
+    // GIVEN: Two compiler results represent current and stale outputs.
+    const currentOutput = createOutput();
+    const staleOutput = createOutput();
+    const currentCli = new PluginCompilerCLI({
+      compiler: compilerDouble({
         async checkPlugin() {
           return {
-            plugin: makeCompilerPlugin(),
-            diagnostics: ["check warning"],
+            plugin: makePlugin(),
+            warnings: ["check warning"],
             isCurrent: true,
             drift: [],
           };
         },
-      },
+      }),
     });
-
-    // WHEN: The compiler CLI runs the requested command.
-    const exitCode = await cli.run("check", output.options);
-
-    // THEN: The exit code, delegation, and user-facing output are verified.
-    assert.equal(exitCode, 0);
-    assert.deepEqual(output.stderr, ["Plugin warnings:", "- check warning"]);
-    assert.deepEqual(output.stdout, ["Plugin outputs are current."]);
-  });
-
-  test("check reports every drift item without invoking a write path", async () => {
-    // GIVEN: Command collaborators and captured output streams are prepared.
-    const output = createOutput();
-    const cli = new PluginCompilerCLI({
-      validator: validatorDummy(),
-      generator: generatorDummy(),
-      checker: {
+    const staleCli = new PluginCompilerCLI({
+      compiler: compilerDouble({
         async checkPlugin() {
           return {
-            plugin: makeCompilerPlugin(),
-            diagnostics: [],
+            plugin: makePlugin(),
+            warnings: [],
             isCurrent: false,
             drift: [
-              { path: "README.md", reason: "content differs" },
-              { path: ".claude-plugin/plugin.json", reason: "file is missing" },
+              {
+                path: "README.md",
+                reason: PluginPublicationDriftReason.ContentDiffers,
+              },
+              {
+                path: "skills",
+                reason: PluginPublicationDriftReason.MissingFile,
+              },
             ],
           };
         },
-      },
+      }),
     });
 
-    // WHEN: The compiler CLI runs the requested command.
-    const exitCode = await cli.run("check", output.options);
+    // WHEN: Both checks run through the CLI adapter.
+    const currentCode = await currentCli.run(
+      PluginCompilerCommand.Check,
+      currentOutput.options,
+    );
+    const staleCode = await staleCli.run(
+      PluginCompilerCommand.Check,
+      staleOutput.options,
+    );
 
-    // THEN: The exit code, delegation, and user-facing output are verified.
-    assert.equal(exitCode, 1);
-    assert.deepEqual(output.stdout, []);
-    assert.deepEqual(output.stderr, [
+    // THEN: Exit codes and messages reflect the compiler results.
+    assert.equal(currentCode, PluginCompilerExitCode.Success);
+    assert.deepEqual(currentOutput.stderr, [
+      "Plugin warnings:",
+      "- check warning",
+    ]);
+    assert.deepEqual(currentOutput.stdout, ["Plugin outputs are current."]);
+    assert.equal(staleCode, PluginCompilerExitCode.Failure);
+    assert.deepEqual(staleOutput.stdout, []);
+    assert.deepEqual(staleOutput.stderr, [
       "Plugin outputs are stale:",
       "- README.md: content differs",
-      "- .claude-plugin/plugin.json: file is missing",
-      "Run `npm run catalog:generate` and commit the results.",
+      "- skills: file is missing",
+      "Run `npm run plugin:compile` and commit the results.",
     ]);
   });
 
-  test("maps command failures to exit code one", async () => {
-    // GIVEN: Command collaborators and captured output streams are prepared.
-    const output = createOutput();
-    const cli = new PluginCompilerCLI({
-      validator: {
+  test("maps validation and unexpected failures to distinct messages", async () => {
+    // GIVEN: Two compiler collaborators reject with distinct error kinds.
+    const validationOutput = createOutput();
+    const commandOutput = createOutput();
+    const validationCli = new PluginCompilerCLI({
+      compiler: compilerDouble({
+        async validatePlugin() {
+          throw new PluginValidationError(["plugin/plugin.yml: invalid"]);
+        },
+      }),
+    });
+    const commandCli = new PluginCompilerCLI({
+      compiler: compilerDouble({
         async validatePlugin() {
           throw new Error("boom");
         },
-      },
-      generator: generatorDummy(),
-      checker: checkerDummy(),
+      }),
     });
 
-    // WHEN: The compiler CLI runs the requested command.
-    const exitCode = await cli.run("validate", output.options);
+    // WHEN: Both failures cross the CLI boundary.
+    const validationCode = await validationCli.run(
+      PluginCompilerCommand.Validate,
+      validationOutput.options,
+    );
+    const commandCode = await commandCli.run(
+      PluginCompilerCommand.Validate,
+      commandOutput.options,
+    );
 
-    // THEN: The exit code, delegation, and user-facing output are verified.
-    assert.equal(exitCode, 1);
-    assert.deepEqual(output.stdout, []);
-    assert.deepEqual(output.stderr, ["Plugin command failed: boom"]);
+    // THEN: Each compiler failure has one distinct heading.
+    assert.equal(validationCode, PluginCompilerExitCode.Failure);
+    assert.deepEqual(validationOutput.stderr, [
+      "Plugin validation failed with 1 error:\n- plugin/plugin.yml: invalid",
+    ]);
+    assert.equal(commandCode, PluginCompilerExitCode.Failure);
+    assert.deepEqual(commandOutput.stderr, ["Plugin command failed: boom"]);
   });
 
-  test("labels validation failures separately from command failures", async () => {
-    // GIVEN: A validator rejects the source with one public validation diagnostic.
-    const output = createOutput();
+  test("does not catch output callback failures after successful execution", async () => {
+    // GIVEN: Validation succeeds but its stdout adapter throws.
+    const callbackError = new Error("stdout unavailable");
     const cli = new PluginCompilerCLI({
-      validator: {
+      compiler: compilerDouble({
         async validatePlugin() {
-          throw new PluginValidationError([
-            "plugin/plugin.yml: invalid fixture",
-          ]);
+          return { plugin: makePlugin(), warnings: [] };
         },
-      },
-      generator: generatorDummy(),
-      checker: checkerDummy(),
+      }),
     });
 
-    // WHEN: The compiler CLI runs validation against the rejected source.
-    const exitCode = await cli.run("validate", output.options);
+    // WHEN: The CLI presents the successful result.
+    const execution = cli.run(PluginCompilerCommand.Validate, {
+      rootDir: "/repository",
+      stdout: () => {
+        throw callbackError;
+      },
+    });
 
-    // THEN: The failure uses the validation-specific prefix and exit code.
-    assert.equal(exitCode, 1);
-    assert.deepEqual(output.stdout, []);
-    assert.deepEqual(output.stderr, [
-      "Plugin validation failed: Plugin validation failed with 1 diagnostic:\n" +
-        "- plugin/plugin.yml: invalid fixture",
-    ]);
+    // THEN: The presentation failure propagates to the caller.
+    await assert.rejects(execution, (error) => error === callbackError);
+  });
+
+  test("does not catch output callback failures while presenting compiler errors", async () => {
+    // GIVEN: Compilation fails and its stderr adapter also throws.
+    const callbackError = new Error("stderr unavailable");
+    const cli = new PluginCompilerCLI({
+      compiler: compilerDouble({
+        async validatePlugin() {
+          throw new Error("compiler failure");
+        },
+      }),
+    });
+
+    // WHEN: The CLI presents the compiler failure.
+    const execution = cli.run(PluginCompilerCommand.Validate, {
+      rootDir: "/repository",
+      stderr: () => {
+        throw callbackError;
+      },
+    });
+
+    // THEN: The presentation failure propagates to the caller.
+    await assert.rejects(execution, (error) => error === callbackError);
   });
 });

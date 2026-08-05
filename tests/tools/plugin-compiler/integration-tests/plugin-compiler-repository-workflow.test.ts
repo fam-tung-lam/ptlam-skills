@@ -4,22 +4,18 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { describe, onTestFinished, test } from "vitest";
 
-import { PluginChecker } from "../../../../tools/plugin-compiler/plugin-checker.ts";
-import { PluginGenerator } from "../../../../tools/plugin-compiler/plugin-generator.ts";
-import {
-  PluginValidationError,
-  PluginValidator,
-} from "../../../../tools/plugin-compiler/plugin-validator.ts";
+import { PluginCompiler } from "../../../../tools/plugin-compiler/plugin-compiler.ts";
+import { PluginPublicationDriftReason } from "../../../../tools/plugin-compiler/publication/plugin-publication.ts";
+import { PluginValidationError } from "../../../../tools/plugin-compiler/validation/plugin-validation-error.ts";
 
 const outputPaths = [
   ".claude-plugin/plugin.json",
   ".claude-plugin/marketplace.json",
   "README.md",
-  "skills/README.md",
   "skills/fixture-skill/SKILL.md",
 ];
 
-const fixtureManifest = `schema_version: 2
+const fixtureManifest = `schema_version: 1
 name: fixture-skills
 description: Fixture plugin description.
 version: "0.1.0"
@@ -75,19 +71,6 @@ stale root catalog
 Human root content after the generated region.
 `;
 
-const skillsReadme = `# Fixture skills
-
-Human skills content before the generated region.
-
-<!-- BEGIN GENERATED:PLUGIN-CATALOG:CATEGORIES -->
-
-stale category catalog
-
-<!-- END GENERATED:PLUGIN-CATALOG:CATEGORIES -->
-
-Human skills content after the generated region.
-`;
-
 async function createFixtureRepository(): Promise<string> {
   const rootDir = await mkdtemp(
     path.join(tmpdir(), "ptlam-plugin-compiler-integration-"),
@@ -109,24 +92,7 @@ async function createFixtureRepository(): Promise<string> {
   );
   await writeFile(skillPath, fixtureSkill, "utf8");
   await writeFile(path.join(rootDir, "README.md"), rootReadme, "utf8");
-  await mkdir(path.join(rootDir, "skills"), { recursive: true });
-  await writeFile(
-    path.join(rootDir, "skills", "README.md"),
-    skillsReadme,
-    "utf8",
-  );
   return rootDir;
-}
-
-function createCompiler(): {
-  validator: PluginValidator;
-  generator: PluginGenerator;
-  checker: PluginChecker;
-} {
-  const validator = new PluginValidator();
-  const generator = new PluginGenerator({ validator });
-  const checker = new PluginChecker({ validator, generator });
-  return { validator, generator, checker };
 }
 
 async function readOutputs(
@@ -157,24 +123,25 @@ function outputAt(
 
 describe("plugin compiler repository workflow", () => {
   test("a fixture repository generates all outputs and checks current", async () => {
-    // GIVEN: An isolated repository workflow scenario is prepared.
+    // GIVEN: A valid repository has stale generated outputs.
     const rootDir = await createFixtureRepository();
-    const { validator, generator, checker } = createCompiler();
+    const compiler = new PluginCompiler();
 
-    // WHEN: The compiler workflow is exercised through its public command boundary.
-    const validation = await validator.validatePlugin({ rootDir });
+    // WHEN: The authored sources are validated.
+    const validation = await compiler.validatePlugin({ rootDir });
 
-    // THEN: The command result and managed repository state are verified.
-    assert.deepEqual(validation.diagnostics, []);
+    // THEN: Validation returns one immutable warning list and skill snapshot.
+    assert.deepEqual(validation.warnings, []);
+    assert.equal(Object.isFrozen(validation.warnings), true);
     assert.deepEqual(
       validation.plugin.skills.map((skill) => skill.id),
       ["fixture-skill"],
     );
 
-    // WHEN: The compiler workflow is exercised through its public command boundary.
-    const generation = await generator.generatePlugin({ rootDir });
+    // WHEN: The repository outputs are generated.
+    const generation = await compiler.generatePlugin({ rootDir });
 
-    // THEN: The command result and managed repository state are verified.
+    // THEN: Generation reports immutable changed and unchanged path lists.
     assert.deepEqual(generation.changedPaths, [
       ".claude-plugin/plugin.json",
       ".claude-plugin/marketplace.json",
@@ -182,32 +149,36 @@ describe("plugin compiler repository workflow", () => {
       "skills",
     ]);
     assert.deepEqual(generation.unchangedPaths, []);
+    assert.equal(Object.isFrozen(generation.warnings), true);
+    assert.equal(Object.isFrozen(generation.changedPaths), true);
+    assert.equal(Object.isFrozen(generation.unchangedPaths), true);
 
-    // WHEN: The compiler workflow is exercised through its public command boundary.
+    // WHEN: The generated files are read as consumer artifacts.
     const generated = await readOutputs(rootDir);
     const claudePlugin = JSON.parse(
       outputAt(generated, ".claude-plugin/plugin.json"),
     ) as { name: string; skills: string[] };
 
-    // THEN: The command result and managed repository state are verified.
+    // THEN: Host metadata and the catalog contain the public skill.
     assert.equal(claudePlugin.name, "fixture-skills");
     assert.deepEqual(claudePlugin.skills, ["./skills/fixture-skill"]);
     assert.match(outputAt(generated, "README.md"), /`fixture-skill`/u);
-    assert.match(outputAt(generated, "skills/README.md"), /`engineering`/u);
 
-    // WHEN: The compiler workflow is exercised through its public command boundary.
-    const current = await checker.checkPlugin({ rootDir });
+    // WHEN: The generated repository is checked for drift.
+    const current = await compiler.checkPlugin({ rootDir });
 
-    // THEN: The command result and managed repository state are verified.
+    // THEN: Check returns an immutable empty drift list.
     assert.equal(current.isCurrent, true);
     assert.deepEqual(current.drift, []);
+    assert.equal(Object.isFrozen(current.warnings), true);
+    assert.equal(Object.isFrozen(current.drift), true);
   });
 
   test("a source change creates drift and check never mutates outputs", async () => {
-    // GIVEN: An isolated repository workflow scenario is prepared.
+    // GIVEN: Generated outputs are current before one source description changes.
     const rootDir = await createFixtureRepository();
-    const { generator, checker } = createCompiler();
-    await generator.generatePlugin({ rootDir });
+    const compiler = new PluginCompiler();
+    await compiler.generatePlugin({ rootDir });
 
     const beforeDriftCheck = await readOutputs(rootDir);
     const manifestPath = path.join(rootDir, "plugin", "plugin.yml");
@@ -221,23 +192,29 @@ describe("plugin compiler repository workflow", () => {
       "utf8",
     );
 
-    // WHEN: The compiler workflow is exercised through its public command boundary.
-    const stale = await checker.checkPlugin({ rootDir });
+    // WHEN: Check compares the source change without generating.
+    const stale = await compiler.checkPlugin({ rootDir });
 
-    // THEN: The command result and managed repository state are verified.
+    // THEN: Only affected files drift and committed outputs remain untouched.
     assert.equal(stale.isCurrent, false);
     assert.deepEqual(stale.drift, [
-      { path: "README.md", reason: "content differs" },
-      { path: "skills/fixture-skill/SKILL.md", reason: "content differs" },
+      {
+        path: "README.md",
+        reason: PluginPublicationDriftReason.ContentDiffers,
+      },
+      {
+        path: "skills/fixture-skill/SKILL.md",
+        reason: PluginPublicationDriftReason.ContentDiffers,
+      },
     ]);
     assert.deepEqual(await readOutputs(rootDir), beforeDriftCheck);
   });
 
   test("invalid source prevents generation from changing existing outputs", async () => {
-    // GIVEN: An isolated repository workflow scenario is prepared.
+    // GIVEN: Current outputs exist before the manifest becomes invalid.
     const rootDir = await createFixtureRepository();
-    const { generator } = createCompiler();
-    await generator.generatePlugin({ rootDir });
+    const compiler = new PluginCompiler();
+    await compiler.generatePlugin({ rootDir });
     const beforeFailure = await readOutputs(rootDir);
 
     const manifestPath = path.join(rootDir, "plugin", "plugin.yml");
@@ -245,16 +222,16 @@ describe("plugin compiler repository workflow", () => {
     await writeFile(
       manifestPath,
       manifest.replace(
-        "schema_version: 2",
-        "schema_version: 2\nunexpected: true",
+        "schema_version: 1",
+        "schema_version: 1\nunexpected: true",
       ),
       "utf8",
     );
 
-    // WHEN: The compiler workflow is exercised through its public command boundary.
-    const generation = generator.generatePlugin({ rootDir });
+    // WHEN: Generation validates the broken manifest.
+    const generation = compiler.generatePlugin({ rootDir });
 
-    // THEN: The command result and managed repository state are verified.
+    // THEN: Validation fails before any generated output changes.
     await assert.rejects(
       generation,
       (error) => error instanceof PluginValidationError,
@@ -263,10 +240,10 @@ describe("plugin compiler repository workflow", () => {
   });
 
   test("a missing root README prevents partial regeneration", async () => {
-    // GIVEN: An isolated repository workflow scenario is prepared.
+    // GIVEN: Current outputs exist before the required root README is removed.
     const rootDir = await createFixtureRepository();
-    const { generator } = createCompiler();
-    await generator.generatePlugin({ rootDir });
+    const compiler = new PluginCompiler();
+    await compiler.generatePlugin({ rootDir });
 
     const rootReadmePath = path.join(rootDir, "README.md");
     await rm(rootReadmePath);
@@ -283,10 +260,10 @@ describe("plugin compiler repository workflow", () => {
       "utf8",
     );
 
-    // WHEN: The compiler workflow is exercised through its public command boundary.
-    const generation = generator.generatePlugin({ rootDir });
+    // WHEN: Generation plans an updated publication without the README.
+    const generation = compiler.generatePlugin({ rootDir });
 
-    // THEN: The command result and managed repository state are verified.
+    // THEN: Planning fails before any remaining output changes.
     await assert.rejects(generation, /README\.md|missing|ENOENT/iu);
     assert.deepEqual(await readOutputs(rootDir, preservedPaths), beforeFailure);
     await assert.rejects(readFile(rootReadmePath, "utf8"), { code: "ENOENT" });

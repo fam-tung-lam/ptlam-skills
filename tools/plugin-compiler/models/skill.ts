@@ -1,133 +1,185 @@
-import { SkillFrontmatter } from "./skill-frontmatter.ts";
-import {
-  SkillRequirement,
-  type SkillRequirementInput,
-} from "./skill-requirement.ts";
-import { SkillResource, type SkillResourceInput } from "./skill-resource.ts";
+/** Controls whether a skill is eligible to become a published root skill. */
+export enum SkillVisibility {
+  /** Keep the skill available only as an embedded dependency. */
+  Internal = "internal",
+  /** Allow the skill to be published when its lifecycle status permits it. */
+  Public = "public",
+}
 
-export type SkillVisibility = "internal" | "public";
-export type SkillStatus = "draft" | "active" | "deprecated" | "archived";
+/** Describes the authored lifecycle stage of a skill. */
+export enum SkillStatus {
+  /** The skill is still being authored and cannot be published or required. */
+  Draft = "draft",
+  /** The skill is supported and may be published or required. */
+  Active = "active",
+  /** The skill remains usable but should direct maintainers to a replacement. */
+  Deprecated = "deprecated",
+  /** The skill is retained as history and cannot participate in active output. */
+  Archived = "archived",
+}
 
+/** Required insertion point in every authored body-only `SKILL.md`. */
+export const REQUIRED_SKILLS_MARKER =
+  "<!-- PLUGIN-COMPILER:REQUIRED-SKILLS -->";
+
+/** Explains one directed dependency between authored skills. */
+export interface SkillRequirement {
+  /** Manifest-defined identifier of the required skill. */
+  readonly skill_id: string;
+  /** Reason the depending skill needs this requirement. */
+  readonly reason: string;
+  /** Instructions shown to an agent when applying the requirement. */
+  readonly instructions: string;
+}
+
+/** Migration guidance required for a deprecated skill. */
 export interface SkillDeprecation {
-  reason: string;
-  instructions: string;
-  replacement_skill_id?: string;
+  /** Reason maintainers should stop choosing the skill for new work. */
+  readonly reason: string;
+  /** Instructions for existing users of the deprecated skill. */
+  readonly instructions: string;
+  /** Optional manifest-defined identifier of the active replacement. */
+  readonly replacement_skill_id?: string;
 }
 
+/** Historical metadata retained for an archived skill. */
 export interface SkillArchive {
-  reason: string;
-  replacement_skill_id?: string;
-}
-
-export interface ManifestSkill {
-  id: string;
-  description: string;
-  category_id: string;
-  visibility: SkillVisibility;
-  status: SkillStatus;
-  required_skills: readonly SkillRequirementInput[];
-  deprecation?: SkillDeprecation;
-  archive?: SkillArchive;
-}
-
-export interface SkillInput extends Omit<ManifestSkill, "required_skills"> {
-  required_skills: Iterable<SkillRequirement | SkillRequirementInput>;
-  source_path: string;
-  source_body: string;
-  resources: Iterable<SkillResource | SkillResourceInput>;
-}
-
-export interface CompilerSkill extends ManifestSkill {
-  source_body: string;
-  resources: readonly {
-    path: string;
-    content: Buffer;
-  }[];
+  /** Reason the skill was removed from active use. */
+  readonly reason: string;
+  /** Optional manifest-defined identifier of the active replacement. */
+  readonly replacement_skill_id?: string;
 }
 
 /**
- * Immutable authored-skill snapshot consumed by the composer and catalog
- * updaters. Instances are created only after manifest, graph, and filesystem
- * validation completes.
+ * One skill declaration read from `plugin/plugin.yml`.
+ *
+ * Skill and category identifiers remain strings because both collections are
+ * authored catalog data, not compiler-defined closed sets.
  */
-export class Skill implements CompilerSkill {
+export interface ManifestSkill {
+  /** Stable kebab-case skill identifier and generated skill name. */
   readonly id: string;
+  /** Description used in generated frontmatter and catalog documentation. */
   readonly description: string;
+  /** Manifest-defined category identifier that owns this skill. */
   readonly category_id: string;
+  /** Publication visibility interpreted with {@link status}. */
   readonly visibility: SkillVisibility;
+  /** Lifecycle status interpreted with {@link visibility}. */
   readonly status: SkillStatus;
+  /** Ordered direct dependencies embedded into generated output. */
   readonly required_skills: readonly SkillRequirement[];
-  readonly source_path: string;
-  readonly source_body: string;
-  readonly resources: readonly SkillResource[];
-  readonly resource_paths: readonly string[];
-  readonly deprecation?: Readonly<SkillDeprecation>;
-  readonly archive?: Readonly<SkillArchive>;
-  readonly path: string;
-  readonly frontmatter: SkillFrontmatter;
-  readonly required_skill_ids: readonly string[];
+  /** Required migration guidance when {@link status} is deprecated. */
+  readonly deprecation?: SkillDeprecation;
+  /** Required historical metadata when {@link status} is archived. */
+  readonly archive?: SkillArchive;
+}
 
-  /**
-   * @param {object} skill Validated source skill.
-   * @param {string} skill.id Stable skill identifier.
-   * @param {string} skill.description Agent-facing description.
-   * @param {string} skill.category_id Owning category identifier.
-   * @param {"internal"|"public"} skill.visibility Distribution boundary.
-   * @param {"draft"|"active"|"deprecated"|"archived"} skill.status Lifecycle state.
-   * @param {Iterable<SkillRequirement|object>} skill.required_skills Ordered direct dependencies.
-   * @param {string} skill.source_path Repository-relative authored directory.
-   * @param {string} skill.source_body Authored `SKILL.md` body without frontmatter.
-   * @param {Iterable<SkillResource|object>} skill.resources Byte-for-byte resource snapshots.
-   * @param {{ reason: string, instructions: string, replacement_skill_id?: string }} [skill.deprecation]
-   * @param {{ reason: string, replacement_skill_id?: string }} [skill.archive]
-   */
-  constructor({
+/** Mutable resource bytes accepted while constructing a validated snapshot. */
+export interface SkillResourceInput {
+  /** Skill-relative POSIX path preserved in generated output. */
+  readonly path: string;
+  /** Source bytes copied defensively by the snapshot factory. */
+  readonly content: Uint8Array;
+}
+
+/** Immutable resource descriptor exposed by a validated skill snapshot. */
+export interface SkillResourceSnapshot {
+  /** Skill-relative POSIX path preserved in generated output. */
+  readonly path: string;
+  /** Fresh byte copy; mutating it never changes the stored snapshot. */
+  readonly content: Buffer;
+}
+
+/** Complete validated values needed to construct one skill snapshot. */
+export interface SkillSnapshotInput
+  extends Omit<ManifestSkill, "required_skills"> {
+  /** Ordered direct requirements to copy into the snapshot. */
+  readonly required_skills: Iterable<SkillRequirement>;
+  /** Repository-relative path of the authored skill directory. */
+  readonly source_path: string;
+  /** Validated body-only `SKILL.md` source. */
+  readonly source_body: string;
+  /** Validated source resources in deterministic path order. */
+  readonly resources: Iterable<SkillResourceInput>;
+}
+
+/** One immutable validated skill consumed by publication modules. */
+export interface SkillSnapshot extends ManifestSkill {
+  /** Repository-relative path of the authored skill directory. */
+  readonly source_path: string;
+  /** Validated body-only `SKILL.md` source. */
+  readonly source_body: string;
+  /** Defensively copied resources in deterministic path order. */
+  readonly resources: readonly SkillResourceSnapshot[];
+}
+
+function createResourceSnapshot({
+  path,
+  content,
+}: SkillResourceInput): SkillResourceSnapshot {
+  // A closure owns the bytes so freezing the descriptor cannot be bypassed by
+  // mutating either the input buffer or a buffer returned to a caller.
+  const bytes = Buffer.from(content);
+  return Object.freeze({
+    path,
+    get content(): Buffer {
+      return Buffer.from(bytes);
+    },
+  });
+}
+
+/**
+ * Create one immutable validated skill snapshot.
+ *
+ * @param input - Validated manifest fields, source body, and resource bytes.
+ * @returns A deeply frozen skill whose resource getter returns defensive copies.
+ *
+ * @example
+ * const skill = createSkillSnapshot({
+ *   id: "review-code",
+ *   description: "Review a code change.",
+ *   category_id: "engineering",
+ *   visibility: SkillVisibility.Public,
+ *   status: SkillStatus.Active,
+ *   required_skills: [],
+ *   source_path: "plugin/skills/review-code",
+ *   source_body: "# Review code\n",
+ *   resources: [],
+ * });
+ */
+export function createSkillSnapshot({
+  id,
+  description,
+  category_id,
+  visibility,
+  status,
+  required_skills,
+  source_path,
+  source_body,
+  resources,
+  deprecation,
+  archive,
+}: SkillSnapshotInput): SkillSnapshot {
+  return Object.freeze({
     id,
     description,
     category_id,
     visibility,
     status,
-    required_skills,
+    required_skills: Object.freeze(
+      [...required_skills].map((requirement) =>
+        Object.freeze({ ...requirement }),
+      ),
+    ),
     source_path,
     source_body,
-    resources,
-    deprecation,
-    archive,
-  }: SkillInput) {
-    this.id = id;
-    this.description = description;
-    this.category_id = category_id;
-    this.visibility = visibility;
-    this.status = status;
-    this.required_skills = Object.freeze(
-      [...required_skills].map((requirement) =>
-        requirement instanceof SkillRequirement
-          ? requirement
-          : new SkillRequirement(requirement),
-      ),
-    );
-    this.source_path = source_path;
-    this.source_body = source_body;
-    this.resources = Object.freeze(
-      [...resources].map((resource) =>
-        resource instanceof SkillResource
-          ? resource
-          : new SkillResource(resource),
-      ),
-    );
-    this.resource_paths = Object.freeze(
-      this.resources.map((resource) => resource.path),
-    );
-    if (deprecation) this.deprecation = Object.freeze({ ...deprecation });
-    if (archive) this.archive = Object.freeze({ ...archive });
-
-    // Transitional read projections for output code being migrated to v2.
-    this.path = `skills/${id}`;
-    this.frontmatter = new SkillFrontmatter({ name: id, description });
-    this.required_skill_ids = Object.freeze(
-      this.required_skills.map(({ skill_id }) => skill_id),
-    );
-
-    Object.freeze(this);
-  }
+    resources: Object.freeze([...resources].map(createResourceSnapshot)),
+    ...(deprecation === undefined
+      ? {}
+      : { deprecation: Object.freeze({ ...deprecation }) }),
+    ...(archive === undefined
+      ? {}
+      : { archive: Object.freeze({ ...archive }) }),
+  });
 }
