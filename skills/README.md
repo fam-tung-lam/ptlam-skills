@@ -10,11 +10,11 @@ skills/<category>/<skill-name>/SKILL.md
 
 ## Initial categories
 
-| Category       | Skills                                                                               |
-| -------------- | ------------------------------------------------------------------------------------ |
-| `engineering`  | `ptlam-git`, `ptlam-testing`                                                         |
-| `productivity` | `ptlam-explain-with-analogy`, `ptlam-visualization-with-html`, `ptlam-visualization` |
-| `utilities`    | —                                                                                    |
+| Category       | Skills                                                        |
+| -------------- | ------------------------------------------------------------- |
+| `engineering`  | `ptlam-git`, `ptlam-testing`                                  |
+| `productivity` | `ptlam-explain-with-analogy`, `ptlam-visualization-with-html` |
+| `utilities`    | —                                                             |
 
 <!-- END GENERATED:PLUGIN-CATALOG:CATEGORIES -->
 

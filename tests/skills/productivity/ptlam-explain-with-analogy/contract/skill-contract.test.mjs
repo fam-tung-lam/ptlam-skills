@@ -201,7 +201,7 @@ test("uses a compatible visualizer only as an optional rendering handoff", async
       "optional compatible visualizer",
       /(?:compatible|available)[\s\S]{0,120}visualization skill|visualiz(?:er|ation skill)[\s\S]{0,120}(?:optional|when available|if available)/iu,
     ],
-    ["example visualizer", /\$ptlam-visualization/iu],
+    ["example visualizer", /\$ptlam-visualization-with-html/iu],
     [
       "scenario handoff",
       /(?:pass|handoff|give)[\s\S]{0,180}(?:scenario|mapping ledger)/iu,
@@ -231,7 +231,7 @@ test("uses a compatible visualizer only as an optional rendering handoff", async
   );
   assert.doesNotMatch(
     skill,
-    /(?:always|must|required to) (?:invoke|use|call) \$ptlam-visualization/iu,
+    /(?:always|must|required to) (?:invoke|use|call) \$ptlam-visualization-with-html/iu,
     "the example visualizer must not become mandatory",
   );
 });
