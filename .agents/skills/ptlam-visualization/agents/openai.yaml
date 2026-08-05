@@ -1,6 +1,0 @@
-interface:
-  display_name: "PTLam Visualization"
-  short_description: "Create polished HTML and Mermaid visuals"
-  default_prompt:
-    "Use $ptlam-visualization to turn this content into the clearest fitting
-    visual artifact."

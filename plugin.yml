@@ -63,8 +63,3 @@ skills:
     kind: product
     summary: Build portable interactive HTML explainers from reusable visual patterns.
     required_skill_ids: []
-  - id: ptlam-visualization
-    category: productivity
-    kind: product
-    summary: Create polished HTML and pinned Mermaid visual artifacts.
-    required_skill_ids: []
