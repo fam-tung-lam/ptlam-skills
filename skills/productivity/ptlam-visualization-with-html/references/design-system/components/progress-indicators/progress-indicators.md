@@ -14,6 +14,7 @@ progress {
 }
 ```
 
-M3 Expressive permits waveform and thickness variation. Do not distort the
-underlying value or hide the textual status. Source:
+The expressive indicator uses waveform, thickness, shape, and role color to make
+progress easier to notice. Do not distort the underlying value or hide the
+textual status. Source:
 [Material progress indicators](https://m3.material.io/components/progress-indicators/overview).

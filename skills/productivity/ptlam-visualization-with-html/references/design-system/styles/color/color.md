@@ -8,7 +8,8 @@ Use primary for the active step, secondary for relationships, success for a
 durable or completed state, warning for volatility or caution, tertiary for a
 secondary channel, and error only for failure.
 
-M3 Expressive permits stronger color contrast and broader role use, but each
-foreground must remain paired with its matching `on-*` role. See Material's
+The expressive color system uses deliberate role contrast to make priority and
+grouping immediately visible. Each foreground remains paired with its matching
+`on-*` role. See Material's
 [color system](https://m3.material.io/styles/color/system/overview) and
 [color roles](https://m3.material.io/styles/color/roles).

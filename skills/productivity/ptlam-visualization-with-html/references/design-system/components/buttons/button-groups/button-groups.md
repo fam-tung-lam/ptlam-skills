@@ -17,10 +17,10 @@ selected value.
   gap: 0.25rem;
 }
 .button-group .button:active {
-  border-radius: var(--shape-expressive-active);
+  border-radius: var(--shape-component-active);
 }
 ```
 
-M3 Expressive button groups may react through coordinated shape changes. Keep
-labels and target positions stable. Source:
+Button groups react through coordinated expressive shape changes. Keep labels
+and target positions stable. Source:
 [Material button groups](https://m3.material.io/components/button-groups/overview).

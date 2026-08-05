@@ -2,12 +2,13 @@
 name: ptlam-visualization-with-html
 description:
   Create portable, polished, interactive HTML explainers and learning artifacts
-  with native HTML, CSS, JavaScript, and SVG. Use when Codex needs to visualize
-  architecture, workflows, state changes, sequences, entity relationships,
-  semantic zoom, real-life analogy twins, or step-by-step system behavior in an
-  HTML file; when a learner should manipulate or observe a diagram rather than
-  read long prose; or when a top-to-bottom visual field guide, simulator, or
-  validation artifact is requested.
+  with native HTML, CSS, JavaScript, SVG, and one Material 3 Expressive design
+  system. Use when Codex needs to visualize architecture, workflows, state
+  changes, sequences, entity relationships, semantic zoom, real-life analogy
+  twins, or step-by-step system behavior in an HTML file; when a learner should
+  manipulate or observe a diagram rather than read long prose; or when a
+  top-to-bottom visual field guide, simulator, or validation artifact is
+  requested.
 ---
 
 # PTLam Visualization with HTML
@@ -20,9 +21,9 @@ skill, or external asset at runtime.
 
 1. Identify the learner's question, the smallest complete system that answers
    it, and the important relationships, states, and transitions.
-2. Choose the minimum component and pattern set from the catalog below. Prefer
-   M3 Expressive color, motion, shape, type, and adaptive components when they
-   clarify hierarchy or state. Prefer one strong interactive visual over
+2. Choose the minimum component and pattern set from the catalog below. Apply
+   the single M3 Expressive system to every selected foundation, token, style,
+   component, diagram, and pattern. Prefer one strong interactive visual over
    repeated prose.
 3. Read the [design-system index](references/design-system/design-system.md),
    the complete
@@ -79,9 +80,10 @@ as a behavior and quality reference, not as a content template.
 ## Design-system catalog
 
 The organization follows the current Material 3 distinction between foundations,
-visual styles, and named component families, with M3 Expressive as the preferred
-visual direction. Learning-specific assemblies are patterns, not components.
-Read only the selected files plus every required foundation file.
+visual styles, and named component families. M3 Expressive is the only design
+mode; do not generate parallel classic, standard, or non-expressive variants.
+Learning-specific assemblies are patterns, not components. Read only the
+selected files plus every required foundation file.
 
 ### Foundations, tokens, and styles
 

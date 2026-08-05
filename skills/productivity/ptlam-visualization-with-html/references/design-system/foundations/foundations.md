@@ -4,6 +4,9 @@ Foundations define who the experience serves and how it behaves before visual
 styling. This catalog mirrors the current Material 3 foundation areas that are
 applicable to portable HTML.
 
+All foundation decisions support one M3 Expressive system. Context changes the
+intensity and tactic, never the design mode.
+
 Read these core files for every artifact:
 
 - [Accessibility](accessibility.md)
