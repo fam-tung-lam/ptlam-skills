@@ -176,28 +176,28 @@ metadata remains available to maintainers in the manifest.
 ```text
 tools/plugin-compiler/
 ├── README.md
-├── plugin-compiler-cli.mjs
-├── plugin-validator.mjs
-├── plugin-generator.mjs
-├── plugin-checker.mjs
-├── skill-composer.mjs
+├── plugin-compiler-cli.ts
+├── plugin-validator.ts
+├── plugin-generator.ts
+├── plugin-checker.ts
+├── skill-composer.ts
 ├── models/
-│   ├── category.mjs
-│   ├── plugin.mjs
-│   ├── plugin-metadata.mjs
-│   ├── skill.mjs
-│   ├── skill-frontmatter.mjs
-│   ├── skill-requirement.mjs
-│   └── skill-resource.mjs
+│   ├── category.ts
+│   ├── plugin.ts
+│   ├── plugin-metadata.ts
+│   ├── skill.ts
+│   ├── skill-frontmatter.ts
+│   ├── skill-requirement.ts
+│   └── skill-resource.ts
 ├── helpers/
-│   ├── update-claude-plugin.mjs
-│   ├── update-plugin-readme.mjs
-│   └── validate-markdown-links.mjs
+│   ├── update-claude-plugin.ts
+│   ├── update-plugin-readme.ts
+│   └── validate-markdown-links.ts
 └── schemas/
     └── plugin.schema.json
 ```
 
-Every JavaScript module filename uses kebab-case. Command-layer files and the
+Every TypeScript module filename uses kebab-case. Command-layer files and the
 skill composer live at the tool root. Models, schema, and shared helpers are
 grouped by responsibility.
 
@@ -392,24 +392,30 @@ Tests mirror production capability beneath level-specific roots:
 ```text
 tests/tools/plugin-compiler/
 ├── unit-tests/
-│   ├── skill-composer.test.mjs
+│   ├── skill-composer.test.ts
 │   ├── helpers/
-│   │   ├── update-claude-plugin.test.mjs
-│   │   ├── update-plugin-readme.test.mjs
-│   │   └── validate-markdown-links.test.mjs
+│   │   ├── update-claude-plugin.test.ts
+│   │   ├── update-plugin-readme.test.ts
+│   │   └── validate-markdown-links.test.ts
 │   ├── models/
-│   └── plugin-compiler-cli.test.mjs
+│   └── plugin-compiler-cli.test.ts
 └── integration-tests/
-    ├── plugin-validator.test.mjs
-    ├── plugin-generator.test.mjs
-    ├── plugin-checker.test.mjs
-    └── plugin-compiler-repository-workflow.test.mjs
+    ├── plugin-validator.test.ts
+    ├── plugin-generator.test.ts
+    ├── plugin-checker.test.ts
+    └── plugin-compiler-repository-workflow.test.ts
 ```
 
 Every test uses explanatory uppercase phase comments. A phase with one condition
 uses `// GIVEN: One concise sentence.`; a phase with multiple conditions uses an
 uppercase `// GIVEN:` heading followed by punctuated `// - ...` lines. The same
 format applies to `WHEN` and `THEN`.
+
+Every test also belongs to an explicit `describe` suite, even when the file has
+one test. Repeated scenario matrices use Vitest parameterization such as
+`test.each`. Temporary filesystem resources register cleanup through Vitest
+lifecycle hooks; reusable fixture helpers use `onTestFinished` rather than
+manual `try/finally` cleanup.
 
 Run the complete verification set with:
 

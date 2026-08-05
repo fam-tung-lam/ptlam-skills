@@ -2,26 +2,40 @@
   "name": "ptlam-skills",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "Pham Tung Lam's portable agent skill catalog.",
   "scripts": {
-    "catalog:check": "node tools/plugin-compiler/plugin-compiler-cli.mjs check",
-    "catalog:generate": "node tools/plugin-compiler/plugin-compiler-cli.mjs generate",
-    "catalog:validate": "node tools/plugin-compiler/plugin-compiler-cli.mjs validate",
-    "test": "node --test \"tests/**/*.test.mjs\"",
+    "catalog:check": "tsx tools/plugin-compiler/plugin-compiler-cli.ts check",
+    "catalog:generate": "tsx tools/plugin-compiler/plugin-compiler-cli.ts generate",
+    "catalog:validate": "tsx tools/plugin-compiler/plugin-compiler-cli.ts validate",
+    "code:check": "biome check tools/plugin-compiler tests/tools/plugin-compiler vitest.config.ts",
+    "code:format": "biome check --write tools/plugin-compiler tests/tools/plugin-compiler vitest.config.ts",
     "markdown:check": "npm run markdown:format:check && npm run markdown:lint",
     "markdown:format": "prettier --write \"**/*.{md,mdx}\"",
     "markdown:format:check": "prettier --check \"**/*.{md,mdx}\"",
     "markdown:lint": "markdownlint-cli2",
-    "markdown:lint:fix": "markdownlint-cli2 --fix"
+    "markdown:lint:fix": "markdownlint-cli2 --fix",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:plugin-compiler": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --project tsconfig.json"
   },
   "engines": {
     "node": ">=22"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.5.7",
+    "@types/node": "22.20.1",
+    "@vitest/coverage-v8": "4.1.10",
     "ajv": "8.20.0",
     "markdownlint-cli2": "0.23.2",
     "prettier": "3.9.6",
     "string-width": "8.2.1",
+    "tsx": "4.23.7",
+    "typescript": "7.0.2",
+    "vite": "6.4.3",
+    "vitest": "4.1.10",
     "yaml": "2.9.0"
   }
 }
