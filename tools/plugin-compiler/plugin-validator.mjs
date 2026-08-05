@@ -17,7 +17,7 @@ import { Plugin } from "./models/plugin.mjs";
 import { Skill } from "./models/skill.mjs";
 import { SkillRequirement } from "./models/skill-requirement.mjs";
 import { SkillResource } from "./models/skill-resource.mjs";
-import { validateMarkdownLinks } from "./validation/markdown-links.mjs";
+import { validateMarkdownLinks } from "./helpers/validate-markdown-links.mjs";
 
 const validatorDirectory = path.dirname(fileURLToPath(import.meta.url));
 const schemaPath = path.join(

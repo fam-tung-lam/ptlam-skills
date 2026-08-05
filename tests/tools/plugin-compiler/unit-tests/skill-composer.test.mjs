@@ -4,7 +4,7 @@ import test from "node:test";
 import {
   REQUIRED_SKILLS_MARKER,
   composePublishedSkills,
-} from "../../../../../tools/plugin-compiler/composition/skill-composer.mjs";
+} from "../../../../tools/plugin-compiler/skill-composer.mjs";
 
 function makeSkill(overrides) {
   return {
@@ -20,7 +20,7 @@ function makeSkill(overrides) {
 }
 
 test("composes public skills with generated frontmatter and required context", () => {
-  // Given
+  // GIVEN: A validated skill graph for this composition scenario is prepared.
   const base = makeSkill({
     resources: [
       {
@@ -44,11 +44,11 @@ test("composes public skills with generated frontmatter and required context", (
     resources: [],
   });
 
-  // When
+  // WHEN: Published skill trees are composed through the public function.
   const result = composePublishedSkills({ plugin: { skills: [base, flutter] } });
   const files = new Map(result.entries.map((entry) => [entry.path, entry.content]));
 
-  // Then
+  // THEN: The published paths and rendered skill content are verified.
   assert.deepEqual(result.publishedSkillIds, ["flutter-skill"]);
   assert.match(
     files.get("skills/flutter-skill/SKILL.md"),
@@ -79,7 +79,7 @@ test("composes public skills with generated frontmatter and required context", (
 });
 
 test("keeps transitive dependencies recursive and duplicates diamond leaves", () => {
-  // Given
+  // GIVEN: A validated skill graph for this composition scenario is prepared.
   const leaf = makeSkill({ id: "leaf-skill" });
   const left = makeSkill({
     id: "left-skill",
@@ -118,13 +118,13 @@ test("keeps transitive dependencies recursive and duplicates diamond leaves", ()
     ],
   });
 
-  // When
+  // WHEN: Published skill trees are composed through the public function.
   const result = composePublishedSkills({
     plugin: { skills: [leaf, left, right, root] },
   });
   const paths = result.entries.map((entry) => entry.path);
 
-  // Then
+  // THEN: The published paths and rendered skill content are verified.
   assert.ok(
     paths.includes(
       "skills/root-skill/references/required-skills/left-skill/references/required-skills/leaf-skill/SKILL.md",
@@ -138,7 +138,7 @@ test("keeps transitive dependencies recursive and duplicates diamond leaves", ()
 });
 
 test("publishes deprecated skills but excludes internal draft and archived roots", () => {
-  // Given
+  // GIVEN: A validated skill graph for this composition scenario is prepared.
   const skills = [
     makeSkill({ id: "internal-skill" }),
     makeSkill({ id: "draft-skill", visibility: "public", status: "draft" }),
@@ -154,10 +154,10 @@ test("publishes deprecated skills but excludes internal draft and archived roots
     }),
   ];
 
-  // When
+  // WHEN: Published skill trees are composed through the public function.
   const result = composePublishedSkills({ plugin: { skills } });
 
-  // Then
+  // THEN: The published paths and rendered skill content are verified.
   assert.deepEqual(result.publishedSkillIds, ["deprecated-skill"]);
   assert.deepEqual(
     result.entries.map((entry) => entry.path),

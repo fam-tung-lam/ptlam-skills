@@ -180,8 +180,7 @@ tools/plugin-compiler/
 ├── plugin-validator.mjs
 ├── plugin-generator.mjs
 ├── plugin-checker.mjs
-├── composition/
-│   └── skill-composer.mjs
+├── skill-composer.mjs
 ├── models/
 │   ├── category.mjs
 │   ├── plugin.mjs
@@ -190,18 +189,17 @@ tools/plugin-compiler/
 │   ├── skill-frontmatter.mjs
 │   ├── skill-requirement.mjs
 │   └── skill-resource.mjs
-├── output_updaters/
+├── helpers/
 │   ├── update-claude-plugin.mjs
-│   └── update-plugin-readme.mjs
-├── validation/
-│   └── markdown-links.mjs
+│   ├── update-plugin-readme.mjs
+│   └── validate-markdown-links.mjs
 └── schemas/
     └── plugin.schema.json
 ```
 
-Every JavaScript module filename uses kebab-case. Only the four command-layer
-files live at the tool root. Models, composition, schema, and pure output
-helpers are grouped by responsibility.
+Every JavaScript module filename uses kebab-case. Command-layer files and the
+skill composer live at the tool root. Models, schema, and shared helpers are
+grouped by responsibility.
 
 ## Architecture
 
@@ -394,9 +392,13 @@ Tests mirror production capability beneath level-specific roots:
 ```text
 tests/tools/plugin-compiler/
 ├── unit-tests/
-│   ├── composition/
+│   ├── skill-composer.test.mjs
+│   ├── helpers/
+│   │   ├── update-claude-plugin.test.mjs
+│   │   ├── update-plugin-readme.test.mjs
+│   │   └── validate-markdown-links.test.mjs
 │   ├── models/
-│   └── output_updaters/
+│   └── plugin-compiler-cli.test.mjs
 └── integration-tests/
     ├── plugin-validator.test.mjs
     ├── plugin-generator.test.mjs
@@ -404,7 +406,12 @@ tests/tools/plugin-compiler/
     └── plugin-compiler-repository-workflow.test.mjs
 ```
 
-Every test uses Given-When-Then. Run the complete verification set with:
+Every test uses explanatory uppercase phase comments. A phase with one condition
+uses `// GIVEN: One concise sentence.`; a phase with multiple conditions uses an
+uppercase `// GIVEN:` heading followed by punctuated `// - ...` lines. The same
+format applies to `WHEN` and `THEN`.
+
+Run the complete verification set with:
 
 ```bash
 npm test

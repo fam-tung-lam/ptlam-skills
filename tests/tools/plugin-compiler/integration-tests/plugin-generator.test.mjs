@@ -23,16 +23,16 @@ import {
 import { createPluginValidatorFake } from "./test-doubles/plugin-validator-fake.mjs";
 
 test("generate validates once and writes only changed complete outputs", async (t) => {
-  // Given
+  // GIVEN: An isolated output repository and generator scenario are prepared.
   const rootDir = await createOutputRoot(t);
   const plugin = makeOutputPlugin();
   const validator = createPluginValidatorFake(plugin);
   const generator = new PluginGenerator({ validator });
 
-  // When
+  // WHEN: The scenario is exercised through the generator public operation.
   const first = await generator.generatePlugin({ rootDir });
 
-  // Then
+  // THEN: The generated result and repository state are verified.
   assert.equal(first.plugin, plugin);
   assert.deepEqual(first.changedPaths, MANAGED_OUTPUT_PATHS);
   assert.deepEqual(first.unchangedPaths, []);
@@ -44,10 +44,10 @@ test("generate validates once and writes only changed complete outputs", async (
   assert.equal(typeof firstState.skills, "object");
   assert.ok(firstState.skills["review-code-change/SKILL.md"]);
 
-  // When
+  // WHEN: The scenario is exercised through the generator public operation.
   const second = await generator.generatePlugin({ rootDir });
 
-  // Then
+  // THEN: The generated result and repository state are verified.
   assert.deepEqual(second.changedPaths, []);
   assert.deepEqual(second.unchangedPaths, MANAGED_OUTPUT_PATHS);
   assert.deepEqual(await readManagedState(rootDir), firstState);
@@ -55,14 +55,14 @@ test("generate validates once and writes only changed complete outputs", async (
 });
 
 test("expected-output plan is deterministic, ordered, and read-only", async (t) => {
-  // Given
+  // GIVEN: An isolated output repository and generator scenario are prepared.
   const rootDir = await createOutputRoot(t, { missingRootReadme: true });
   const generator = new PluginGenerator({
     validator: createPluginValidatorFake(),
   });
   const before = await readManagedState(rootDir);
 
-  // When
+  // WHEN: The scenario is exercised through the generator public operation.
   const first = await generator.buildExpectedOutputPlan({
     rootDir,
     plugin: makeOutputPlugin(),
@@ -74,7 +74,7 @@ test("expected-output plan is deterministic, ordered, and read-only", async (t) 
     allowMissingReadmes: true,
   });
 
-  // Then
+  // THEN: The generated result and repository state are verified.
   assert.deepEqual(first, second);
   assert.deepEqual(
     first.entries.map((entry) => entry.path),
@@ -98,19 +98,19 @@ test("expected-output plan is deterministic, ordered, and read-only", async (t) 
 });
 
 test("missing README or render failure writes nothing", async (t) => {
-  // Given
+  // GIVEN: An isolated output repository and generator scenario are prepared.
   const missingRoot = await createOutputRoot(t, { missingRootReadme: true });
   const missingGenerator = new PluginGenerator({
     validator: createPluginValidatorFake(),
   });
   const beforeMissing = await readManagedState(missingRoot);
 
-  // When
+  // WHEN: The scenario is exercised through the generator public operation.
   const missingGeneration = missingGenerator.generatePlugin({
     rootDir: missingRoot,
   });
 
-  // Then
+  // THEN: The generated result and repository state are verified.
   await assert.rejects(
     missingGeneration,
     /README\.md: README source file is missing/,
@@ -125,18 +125,18 @@ test("missing README or render failure writes nothing", async (t) => {
   });
   const beforeInvalid = await readManagedState(invalidRoot);
 
-  // When
+  // WHEN: The scenario is exercised through the generator public operation.
   const invalidGeneration = invalidGenerator.generatePlugin({
     rootDir: invalidRoot,
   });
 
-  // Then
+  // THEN: The generated result and repository state are verified.
   await assert.rejects(invalidGeneration, /README\.md: missing start marker/);
   assert.deepEqual(await readManagedState(invalidRoot), beforeInvalid);
 });
 
 test("generation rejects symlinked output parents before any managed write", async (t) => {
-  // Given
+  // GIVEN: An isolated output repository and generator scenario are prepared.
   const rootDir = await createOutputRoot(t);
   const externalRoot = await mkdtemp(
     path.join(tmpdir(), "plugin-generator-external-"),
@@ -148,10 +148,10 @@ test("generation rejects symlinked output parents before any managed write", asy
     validator: createPluginValidatorFake(),
   });
 
-  // When
+  // WHEN: The scenario is exercised through the generator public operation.
   const generation = generator.generatePlugin({ rootDir });
 
-  // Then
+  // THEN: The generated result and repository state are verified.
   await assert.rejects(
     generation,
     /managed output path contains symbolic link/,
@@ -161,8 +161,31 @@ test("generation rejects symlinked output parents before any managed write", asy
   assert.deepEqual(await readManagedState(rootDir), before);
 });
 
+test("generation rejects a symlinked repository root without writes", async (t) => {
+  // GIVEN: A repository path is a symbolic link to an otherwise valid fixture.
+  const realRoot = await createOutputRoot(t);
+  const linkParent = await mkdtemp(path.join(tmpdir(), "plugin-generator-link-"));
+  t.after(() => rm(linkParent, { force: true, recursive: true }));
+  const linkedRoot = path.join(linkParent, "repository");
+  await symlink(realRoot, linkedRoot, "dir");
+  const before = await readManagedState(realRoot);
+  const generator = new PluginGenerator({
+    validator: createPluginValidatorFake(),
+  });
+
+  // WHEN: Generation is requested through the symlinked repository path.
+  const generation = generator.generatePlugin({ rootDir: linkedRoot });
+
+  // THEN: The unsafe root is rejected before any managed output changes.
+  await assert.rejects(
+    generation,
+    /Repository root must be a real directory, not a link/u,
+  );
+  assert.deepEqual(await readManagedState(realRoot), before);
+});
+
 test("generation atomically replaces a stale regular output", async (t) => {
-  // Given
+  // GIVEN: An isolated output repository and generator scenario are prepared.
   const rootDir = await createOutputRoot(t);
   const generator = new PluginGenerator({
     validator: createPluginValidatorFake(),
@@ -171,10 +194,10 @@ test("generation atomically replaces a stale regular output", async (t) => {
   const pluginPath = path.join(rootDir, ".claude-plugin", "plugin.json");
   await writeFile(pluginPath, '{"stale":true}\n', "utf8");
 
-  // When
+  // WHEN: The scenario is exercised through the generator public operation.
   const result = await generator.generatePlugin({ rootDir });
 
-  // Then
+  // THEN: The generated result and repository state are verified.
   assert.deepEqual(result.changedPaths, [".claude-plugin/plugin.json"]);
   assert.equal(
     JSON.parse(await readFile(pluginPath, "utf8")).name,
@@ -189,7 +212,7 @@ test("generation atomically replaces a stale regular output", async (t) => {
 });
 
 test("a skills staging failure leaves every managed output unchanged", async (t) => {
-  // Given
+  // GIVEN: An isolated output repository and generator scenario are prepared.
   const rootDir = await createOutputRoot(t);
   const plugin = makeOutputPlugin();
   const generator = new PluginGenerator({
@@ -205,10 +228,10 @@ test("a skills staging failure leaves every managed output unchanged", async (t)
     },
   ];
 
-  // When
+  // WHEN: The scenario is exercised through the generator public operation.
   const generation = generator.generatePlugin({ rootDir });
 
-  // Then
+  // THEN: The generated result and repository state are verified.
   await assert.rejects(generation, /ENAMETOOLONG|name too long/iu);
   assert.deepEqual(await readManagedState(rootDir), before);
   assert.deepEqual(
@@ -220,7 +243,7 @@ test("a skills staging failure leaves every managed output unchanged", async (t)
 });
 
 test("generation preserves multiline dependency context verbatim", async (t) => {
-  // Given
+  // GIVEN: An isolated output repository and generator scenario are prepared.
   const rootDir = await createOutputRoot(t);
   const plugin = makeOutputPlugin();
   plugin.skills.unshift({
@@ -245,14 +268,14 @@ test("generation preserves multiline dependency context verbatim", async (t) => 
     validator: createPluginValidatorFake(plugin),
   });
 
-  // When
+  // WHEN: The scenario is exercised through the generator public operation.
   await generator.generatePlugin({ rootDir });
   const generated = await readFile(
     path.join(rootDir, "skills", "review-code-change", "SKILL.md"),
     "utf8",
   );
 
-  // Then
+  // THEN: The generated result and repository state are verified.
   assert.match(
     generated,
     /\*\*Instructions:\*\* Apply step one\.\nApply step two\./u,
@@ -260,7 +283,7 @@ test("generation preserves multiline dependency context verbatim", async (t) => 
 });
 
 test("generated-link validation runs before any managed output changes", async (t) => {
-  // Given
+  // GIVEN: An isolated output repository and generator scenario are prepared.
   const rootDir = await createOutputRoot(t);
   const plugin = makeOutputPlugin();
   const generator = new PluginGenerator({
@@ -272,10 +295,10 @@ test("generated-link validation runs before any managed output changes", async (
   plugin.skills[0].source_body =
     "# Review code change\n\n<!-- PLUGIN-COMPILER:REQUIRED-SKILLS -->\n\nRead [missing](references/missing.md).\n";
 
-  // When
+  // WHEN: The scenario is exercised through the generator public operation.
   const generation = generator.generatePlugin({ rootDir });
 
-  // Then
+  // THEN: The generated result and repository state are verified.
   await assert.rejects(
     generation,
     /Generated skills validation failed[\s\S]*local link target does not exist/u,

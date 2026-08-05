@@ -13,7 +13,7 @@ import {
 import { createPluginValidatorFake } from "./test-doubles/plugin-validator-fake.mjs";
 
 test("check reports deterministic drift and never repairs files", async (t) => {
-  // Given
+  // GIVEN: An isolated plugin output repository and checker scenario are prepared.
   const rootDir = await createOutputRoot(t);
   const plugin = makeOutputPlugin();
   const validator = createPluginValidatorFake(plugin);
@@ -21,10 +21,10 @@ test("check reports deterministic drift and never repairs files", async (t) => {
   const checker = new PluginChecker({ validator, generator });
   const before = await readManagedState(rootDir);
 
-  // When
+  // WHEN: The scenario is exercised through the checker or generator public operation.
   const result = await checker.checkPlugin({ rootDir });
 
-  // Then
+  // THEN: The reported drift and resulting filesystem state are verified.
   assert.equal(result.plugin, plugin);
   assert.equal(result.isCurrent, false);
   assert.deepEqual(result.drift, [
@@ -42,7 +42,7 @@ test("check reports deterministic drift and never repairs files", async (t) => {
 });
 
 test("check is current after generation and reuses the generator plan", async (t) => {
-  // Given
+  // GIVEN: An isolated plugin output repository and checker scenario are prepared.
   const rootDir = await createOutputRoot(t);
   const plugin = makeOutputPlugin();
   const validator = createPluginValidatorFake(plugin);
@@ -51,10 +51,10 @@ test("check is current after generation and reuses the generator plan", async (t
   const checker = new PluginChecker({ validator, generator });
   const before = await readManagedState(rootDir);
 
-  // When
+  // WHEN: The scenario is exercised through the checker or generator public operation.
   const result = await checker.checkPlugin({ rootDir });
 
-  // Then
+  // THEN: The reported drift and resulting filesystem state are verified.
   assert.deepEqual(result, {
     plugin,
     diagnostics: [],
@@ -65,7 +65,7 @@ test("check is current after generation and reuses the generator plan", async (t
 });
 
 test("check reports missing README and stale JSON together without writes", async (t) => {
-  // Given
+  // GIVEN: An isolated plugin output repository and checker scenario are prepared.
   const rootDir = await createOutputRoot(t);
   const validator = createPluginValidatorFake();
   const generator = new PluginGenerator({ validator });
@@ -76,10 +76,10 @@ test("check reports missing README and stale JSON together without writes", asyn
   const before = await readManagedState(rootDir);
   const checker = new PluginChecker({ validator, generator });
 
-  // When
+  // WHEN: The scenario is exercised through the checker or generator public operation.
   const result = await checker.checkPlugin({ rootDir });
 
-  // Then
+  // THEN: The reported drift and resulting filesystem state are verified.
   assert.equal(result.isCurrent, false);
   assert.deepEqual(result.drift, [
     { path: ".claude-plugin/plugin.json", reason: "content differs" },
@@ -89,7 +89,7 @@ test("check reports missing README and stale JSON together without writes", asyn
 });
 
 test("checker passes validated Plugin to the narrow generator collaboration", async () => {
-  // Given
+  // GIVEN: An isolated plugin output repository and checker scenario are prepared.
   const plugin = makeOutputPlugin();
   const validator = createPluginValidatorFake(plugin);
   const calls = [];
@@ -111,10 +111,10 @@ test("checker passes validated Plugin to the narrow generator collaboration", as
   };
   const checker = new PluginChecker({ validator, generator });
 
-  // When
+  // WHEN: The scenario is exercised through the checker or generator public operation.
   const result = await checker.checkPlugin({ rootDir: "/fixture/root" });
 
-  // Then
+  // THEN: The reported drift and resulting filesystem state are verified.
   assert.deepEqual(calls, [
     {
       rootDir: "/fixture/root",
@@ -131,7 +131,7 @@ test("checker passes validated Plugin to the narrow generator collaboration", as
 });
 
 test("check reports and generation removes unexpected files in skills", async (t) => {
-  // Given
+  // GIVEN: An isolated plugin output repository and checker scenario are prepared.
   const rootDir = await createOutputRoot(t);
   const plugin = makeOutputPlugin();
   const validator = createPluginValidatorFake(plugin);
@@ -141,18 +141,18 @@ test("check reports and generation removes unexpected files in skills", async (t
   await writeFile(stalePath, "stale\n", "utf8");
   const checker = new PluginChecker({ validator, generator });
 
-  // When
+  // WHEN: The scenario is exercised through the checker or generator public operation.
   const stale = await checker.checkPlugin({ rootDir });
 
-  // Then
+  // THEN: The reported drift and resulting filesystem state are verified.
   assert.deepEqual(stale.drift, [
     { path: "skills/stale.txt", reason: "unexpected file" },
   ]);
 
-  // When
+  // WHEN: The scenario is exercised through the checker or generator public operation.
   const regenerated = await generator.generatePlugin({ rootDir });
 
-  // Then
+  // THEN: The reported drift and resulting filesystem state are verified.
   assert.deepEqual(regenerated.changedPaths, ["skills"]);
   await assert.rejects(readFile(stalePath), { code: "ENOENT" });
 });

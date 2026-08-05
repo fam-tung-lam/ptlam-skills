@@ -141,44 +141,44 @@ async function readOutputs(rootDir, paths = outputPaths) {
 }
 
 test("the repository catalog validates and generated outputs are current", async () => {
-  // Given
+  // GIVEN: An isolated repository workflow scenario is prepared.
   const { validator, checker } = createCompiler();
 
-  // When
+  // WHEN: The compiler workflow is exercised through its public command boundary.
   const validation = await validator.validatePlugin({
     rootDir: repositoryRoot,
   });
 
-  // Then
+  // THEN: The command result and managed repository state are verified.
   assert.deepEqual(validation.diagnostics, []);
 
-  // When
+  // WHEN: The compiler workflow is exercised through its public command boundary.
   const current = await checker.checkPlugin({ rootDir: repositoryRoot });
 
-  // Then
+  // THEN: The command result and managed repository state are verified.
   assert.equal(current.isCurrent, true);
   assert.deepEqual(current.drift, []);
 });
 
 test("a fixture repository generates all outputs and checks current", async (t) => {
-  // Given
+  // GIVEN: An isolated repository workflow scenario is prepared.
   const rootDir = await createFixtureRepository(t);
   const { validator, generator, checker } = createCompiler();
 
-  // When
+  // WHEN: The compiler workflow is exercised through its public command boundary.
   const validation = await validator.validatePlugin({ rootDir });
 
-  // Then
+  // THEN: The command result and managed repository state are verified.
   assert.deepEqual(validation.diagnostics, []);
   assert.deepEqual(
     validation.plugin.skills.map((skill) => skill.id),
     ["fixture-skill"],
   );
 
-  // When
+  // WHEN: The compiler workflow is exercised through its public command boundary.
   const generation = await generator.generatePlugin({ rootDir });
 
-  // Then
+  // THEN: The command result and managed repository state are verified.
   assert.deepEqual(generation.changedPaths, [
     ".claude-plugin/plugin.json",
     ".claude-plugin/marketplace.json",
@@ -187,26 +187,26 @@ test("a fixture repository generates all outputs and checks current", async (t) 
   ]);
   assert.deepEqual(generation.unchangedPaths, []);
 
-  // When
+  // WHEN: The compiler workflow is exercised through its public command boundary.
   const generated = await readOutputs(rootDir);
   const claudePlugin = JSON.parse(generated[".claude-plugin/plugin.json"]);
 
-  // Then
+  // THEN: The command result and managed repository state are verified.
   assert.equal(claudePlugin.name, "fixture-skills");
   assert.deepEqual(claudePlugin.skills, ["./skills/fixture-skill"]);
   assert.match(generated["README.md"], /`fixture-skill`/u);
   assert.match(generated["skills/README.md"], /`engineering`/u);
 
-  // When
+  // WHEN: The compiler workflow is exercised through its public command boundary.
   const current = await checker.checkPlugin({ rootDir });
 
-  // Then
+  // THEN: The command result and managed repository state are verified.
   assert.equal(current.isCurrent, true);
   assert.deepEqual(current.drift, []);
 });
 
 test("a source change creates drift and check never mutates outputs", async (t) => {
-  // Given
+  // GIVEN: An isolated repository workflow scenario is prepared.
   const rootDir = await createFixtureRepository(t);
   const { generator, checker } = createCompiler();
   await generator.generatePlugin({ rootDir });
@@ -223,10 +223,10 @@ test("a source change creates drift and check never mutates outputs", async (t) 
     "utf8",
   );
 
-  // When
+  // WHEN: The compiler workflow is exercised through its public command boundary.
   const stale = await checker.checkPlugin({ rootDir });
 
-  // Then
+  // THEN: The command result and managed repository state are verified.
   assert.equal(stale.isCurrent, false);
   assert.deepEqual(stale.drift, [
     { path: "README.md", reason: "content differs" },
@@ -236,7 +236,7 @@ test("a source change creates drift and check never mutates outputs", async (t) 
 });
 
 test("invalid source prevents generation from changing existing outputs", async (t) => {
-  // Given
+  // GIVEN: An isolated repository workflow scenario is prepared.
   const rootDir = await createFixtureRepository(t);
   const { generator } = createCompiler();
   await generator.generatePlugin({ rootDir });
@@ -253,10 +253,10 @@ test("invalid source prevents generation from changing existing outputs", async 
     "utf8",
   );
 
-  // When
+  // WHEN: The compiler workflow is exercised through its public command boundary.
   const generation = generator.generatePlugin({ rootDir });
 
-  // Then
+  // THEN: The command result and managed repository state are verified.
   await assert.rejects(
     generation,
     (error) => error instanceof PluginValidationError,
@@ -265,7 +265,7 @@ test("invalid source prevents generation from changing existing outputs", async 
 });
 
 test("a missing root README prevents partial regeneration", async (t) => {
-  // Given
+  // GIVEN: An isolated repository workflow scenario is prepared.
   const rootDir = await createFixtureRepository(t);
   const { generator } = createCompiler();
   await generator.generatePlugin({ rootDir });
@@ -285,10 +285,10 @@ test("a missing root README prevents partial regeneration", async (t) => {
     "utf8",
   );
 
-  // When
+  // WHEN: The compiler workflow is exercised through its public command boundary.
   const generation = generator.generatePlugin({ rootDir });
 
-  // Then
+  // THEN: The command result and managed repository state are verified.
   await assert.rejects(generation, /README\.md|missing|ENOENT/iu);
   assert.deepEqual(await readOutputs(rootDir, preservedPaths), beforeFailure);
   await assert.rejects(readFile(rootReadmePath, "utf8"), { code: "ENOENT" });

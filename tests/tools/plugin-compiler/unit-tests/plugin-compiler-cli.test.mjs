@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { PluginCompilerCLI } from "../../../../tools/plugin-compiler/plugin-compiler-cli.mjs";
+import { PluginValidationError } from "../../../../tools/plugin-compiler/plugin-validator.mjs";
 
 function createOutput() {
   const stdout = [];
@@ -29,7 +30,7 @@ function unused(name) {
 }
 
 test("returns usage error for an unknown command without delegating", async () => {
-  // Given
+  // GIVEN: Command collaborators and captured output streams are prepared.
   const output = createOutput();
   const cli = new PluginCompilerCLI({
     validator: unused("validator"),
@@ -37,17 +38,17 @@ test("returns usage error for an unknown command without delegating", async () =
     checker: unused("checker"),
   });
 
-  // When
+  // WHEN: The compiler CLI runs the requested command.
   const exitCode = await cli.run("unknown", output.options);
 
-  // Then
+  // THEN: The exit code, delegation, and user-facing output are verified.
   assert.equal(exitCode, 2);
   assert.deepEqual(output.stdout, []);
   assert.match(output.stderr[0], /<validate\|generate\|check>/u);
 });
 
 test("validate delegates only to PluginValidator", async () => {
-  // Given
+  // GIVEN: Command collaborators and captured output streams are prepared.
   const output = createOutput();
   const requests = [];
   const cli = new PluginCompilerCLI({
@@ -64,10 +65,10 @@ test("validate delegates only to PluginValidator", async () => {
     checker: unused("checker"),
   });
 
-  // When
+  // WHEN: The compiler CLI runs the requested command.
   const exitCode = await cli.run("validate", output.options);
 
-  // Then
+  // THEN: The exit code, delegation, and user-facing output are verified.
   assert.equal(exitCode, 0);
   assert.deepEqual(requests, [{ rootDir: "/repository" }]);
   assert.deepEqual(output.stderr, [
@@ -80,7 +81,7 @@ test("validate delegates only to PluginValidator", async () => {
 });
 
 test("generate presents changed and unchanged paths from PluginGenerator", async () => {
-  // Given
+  // GIVEN: Command collaborators and captured output streams are prepared.
   const output = createOutput();
   const requests = [];
   const cli = new PluginCompilerCLI({
@@ -99,10 +100,10 @@ test("generate presents changed and unchanged paths from PluginGenerator", async
     checker: unused("checker"),
   });
 
-  // When
+  // WHEN: The compiler CLI runs the requested command.
   const exitCode = await cli.run("generate", output.options);
 
-  // Then
+  // THEN: The exit code, delegation, and user-facing output are verified.
   assert.equal(exitCode, 0);
   assert.deepEqual(requests, [{ rootDir: "/repository" }]);
   assert.deepEqual(output.stderr, ["Plugin warnings:", "- generation warning"]);
@@ -114,7 +115,7 @@ test("generate presents changed and unchanged paths from PluginGenerator", async
 });
 
 test("check returns success when PluginChecker reports current outputs", async () => {
-  // Given
+  // GIVEN: Command collaborators and captured output streams are prepared.
   const output = createOutput();
   const cli = new PluginCompilerCLI({
     validator: unused("validator"),
@@ -131,17 +132,17 @@ test("check returns success when PluginChecker reports current outputs", async (
     },
   });
 
-  // When
+  // WHEN: The compiler CLI runs the requested command.
   const exitCode = await cli.run("check", output.options);
 
-  // Then
+  // THEN: The exit code, delegation, and user-facing output are verified.
   assert.equal(exitCode, 0);
   assert.deepEqual(output.stderr, ["Plugin warnings:", "- check warning"]);
   assert.deepEqual(output.stdout, ["Plugin outputs are current."]);
 });
 
 test("check reports every drift item without invoking a write path", async () => {
-  // Given
+  // GIVEN: Command collaborators and captured output streams are prepared.
   const output = createOutput();
   const cli = new PluginCompilerCLI({
     validator: unused("validator"),
@@ -160,10 +161,10 @@ test("check reports every drift item without invoking a write path", async () =>
     },
   });
 
-  // When
+  // WHEN: The compiler CLI runs the requested command.
   const exitCode = await cli.run("check", output.options);
 
-  // Then
+  // THEN: The exit code, delegation, and user-facing output are verified.
   assert.equal(exitCode, 1);
   assert.deepEqual(output.stdout, []);
   assert.deepEqual(output.stderr, [
@@ -175,7 +176,7 @@ test("check reports every drift item without invoking a write path", async () =>
 });
 
 test("maps command failures to exit code one", async () => {
-  // Given
+  // GIVEN: Command collaborators and captured output streams are prepared.
   const output = createOutput();
   const cli = new PluginCompilerCLI({
     validator: {
@@ -187,11 +188,36 @@ test("maps command failures to exit code one", async () => {
     checker: unused("checker"),
   });
 
-  // When
+  // WHEN: The compiler CLI runs the requested command.
   const exitCode = await cli.run("validate", output.options);
 
-  // Then
+  // THEN: The exit code, delegation, and user-facing output are verified.
   assert.equal(exitCode, 1);
   assert.deepEqual(output.stdout, []);
   assert.deepEqual(output.stderr, ["Plugin command failed: boom"]);
+});
+
+test("labels validation failures separately from command failures", async () => {
+  // GIVEN: A validator rejects the source with one public validation diagnostic.
+  const output = createOutput();
+  const cli = new PluginCompilerCLI({
+    validator: {
+      async validatePlugin() {
+        throw new PluginValidationError(["plugin/plugin.yml: invalid fixture"]);
+      },
+    },
+    generator: unused("generator"),
+    checker: unused("checker"),
+  });
+
+  // WHEN: The compiler CLI runs validation against the rejected source.
+  const exitCode = await cli.run("validate", output.options);
+
+  // THEN: The failure uses the validation-specific prefix and exit code.
+  assert.equal(exitCode, 1);
+  assert.deepEqual(output.stdout, []);
+  assert.deepEqual(output.stderr, [
+    "Plugin validation failed: Plugin validation failed with 1 diagnostic:\n" +
+      "- plugin/plugin.yml: invalid fixture",
+  ]);
 });

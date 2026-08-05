@@ -14,7 +14,7 @@ import {
   ROOT_README_START_MARKER,
   SKILLS_README_END_MARKER,
   SKILLS_README_START_MARKER,
-} from "../../../../../tools/plugin-compiler/output_updaters/update-plugin-readme.mjs";
+} from "../../../../../tools/plugin-compiler/helpers/update-plugin-readme.mjs";
 import { MANAGED_OUTPUT_PATHS } from "../../../../../tools/plugin-compiler/plugin-generator.mjs";
 
 export const staleRootReadme =

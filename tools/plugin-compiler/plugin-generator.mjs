@@ -12,17 +12,17 @@ import {
 import path from "node:path";
 import { format } from "prettier";
 
-import { composePublishedSkills } from "./composition/skill-composer.mjs";
+import { composePublishedSkills } from "./skill-composer.mjs";
 import {
   ROOT_README_END_MARKER,
   ROOT_README_START_MARKER,
   SKILLS_README_END_MARKER,
   SKILLS_README_START_MARKER,
   updatePluginReadme,
-} from "./output_updaters/update-plugin-readme.mjs";
-import { updateClaudePlugin } from "./output_updaters/update-claude-plugin.mjs";
+} from "./helpers/update-plugin-readme.mjs";
+import { updateClaudePlugin } from "./helpers/update-claude-plugin.mjs";
 import { PluginValidator } from "./plugin-validator.mjs";
-import { validateMarkdownLinks } from "./validation/markdown-links.mjs";
+import { validateMarkdownLinks } from "./helpers/validate-markdown-links.mjs";
 
 /** Compiler-owned repository outputs. `skills` denotes the complete directory. */
 export const MANAGED_OUTPUT_PATHS = Object.freeze([

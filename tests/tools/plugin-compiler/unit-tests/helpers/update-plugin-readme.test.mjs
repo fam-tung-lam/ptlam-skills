@@ -9,11 +9,11 @@ import {
   SKILLS_README_END_MARKER,
   SKILLS_README_START_MARKER,
   updatePluginReadme,
-} from "../../../../../tools/plugin-compiler/output_updaters/update-plugin-readme.mjs";
+} from "../../../../../tools/plugin-compiler/helpers/update-plugin-readme.mjs";
 import { makePluginCatalogFixture } from "./test-fixtures/plugin-catalog-fixture.mjs";
 
 test("README updater replaces only ordered managed regions", () => {
-  // Given
+  // GIVEN: A plugin catalog and managed README sources are prepared.
   const plugin = makePluginCatalogFixture();
   const rootReadme =
     `prefix\r\n${ROOT_README_START_MARKER}\r\nstale\r\n` +
@@ -22,10 +22,10 @@ test("README updater replaces only ordered managed regions", () => {
     `skills prefix\r\n${SKILLS_README_START_MARKER}\r\nstale\r\n` +
     `${SKILLS_README_END_MARKER}\r\nskills suffix`;
 
-  // When
+  // WHEN: The README updater renders the managed regions.
   const result = updatePluginReadme({ plugin, rootReadme, skillsReadme });
 
-  // Then
+  // THEN: The complete README outputs or reported failures are verified.
   assert.equal(
     result.rootReadme,
     `prefix\r\n${ROOT_README_START_MARKER}
@@ -56,7 +56,7 @@ ${SKILLS_README_END_MARKER}\r\nskills suffix`,
 });
 
 test("README updater excludes internal draft and archived skills", () => {
-  // Given
+  // GIVEN: A plugin catalog and managed README sources are prepared.
   const plugin = makePluginCatalogFixture();
   plugin.skills.push({
     id: "archived-skill",
@@ -69,10 +69,10 @@ test("README updater excludes internal draft and archived skills", () => {
   const rootReadme = `${ROOT_README_START_MARKER}\nold\n${ROOT_README_END_MARKER}`;
   const skillsReadme = `${SKILLS_README_START_MARKER}\nold\n${SKILLS_README_END_MARKER}`;
 
-  // When
+  // WHEN: The README updater renders the managed regions.
   const result = updatePluginReadme({ plugin, rootReadme, skillsReadme });
 
-  // Then
+  // THEN: The complete README outputs or reported failures are verified.
   assert.match(result.rootReadme, /## Available skills/u);
   assert.doesNotMatch(result.rootReadme, /review-code-change/u);
   assert.doesNotMatch(result.rootReadme, /plan-task/u);
@@ -80,7 +80,7 @@ test("README updater excludes internal draft and archived skills", () => {
 });
 
 test("README updater emits pinned-Prettier-compatible Unicode tables", async () => {
-  // Given
+  // GIVEN: A plugin catalog and managed README sources are prepared.
   const plugin = makePluginCatalogFixture();
   plugin.categories[1].name = "工具";
   plugin.skills[2].description = "创建一个可移植的视觉作品。";
@@ -91,10 +91,10 @@ test("README updater emits pinned-Prettier-compatible Unicode tables", async () 
     `# Skills\n\n${SKILLS_README_START_MARKER}\nold\n` +
     `${SKILLS_README_END_MARKER}\n`;
 
-  // When
+  // WHEN: The README updater renders the managed regions.
   const result = updatePluginReadme({ plugin, rootReadme, skillsReadme });
 
-  // Then
+  // THEN: The complete README outputs or reported failures are verified.
   assert.equal(
     await format(result.rootReadme, { parser: "markdown" }),
     result.rootReadme,
@@ -106,23 +106,31 @@ test("README updater emits pinned-Prettier-compatible Unicode tables", async () 
 });
 
 test("README updater rejects missing, duplicate, reversed, nested, and reserved markers", () => {
-  // Given
+  // GIVEN: A plugin catalog and managed README sources are prepared.
   const plugin = makePluginCatalogFixture();
   const validRoot = `${ROOT_README_START_MARKER}\nold\n${ROOT_README_END_MARKER}`;
   const validSkills = `${SKILLS_README_START_MARKER}\nold\n${SKILLS_README_END_MARKER}`;
 
-  // When
+  // WHEN: The README updater renders the managed regions.
   const update = (rootReadme) =>
     updatePluginReadme({ plugin, rootReadme, skillsReadme: validSkills });
 
-  // Then
+  // THEN: The complete README outputs or reported failures are verified.
   assert.throws(
     () => update(validRoot.replace(ROOT_README_START_MARKER, "")),
     /README\.md: missing start marker/,
   );
   assert.throws(
+    () => update(validRoot.replace(ROOT_README_END_MARKER, "")),
+    /README\.md: missing end marker/,
+  );
+  assert.throws(
     () => update(`${validRoot}\n${ROOT_README_START_MARKER}`),
     /README\.md: duplicate start marker/,
+  );
+  assert.throws(
+    () => update(`${validRoot}\n${ROOT_README_END_MARKER}`),
+    /README\.md: duplicate end marker/,
   );
   assert.throws(
     () => update(`${ROOT_README_END_MARKER}\n${ROOT_README_START_MARKER}`),
@@ -146,7 +154,7 @@ test("README updater rejects missing, duplicate, reversed, nested, and reserved 
 });
 
 test("README updater rejects characters that can corrupt generated tables", () => {
-  // Given
+  // GIVEN: A plugin catalog and managed README sources are prepared.
   const validRoot = `${ROOT_README_START_MARKER}\nold\n${ROOT_README_END_MARKER}`;
   const validSkills = `${SKILLS_README_START_MARKER}\nold\n${SKILLS_README_END_MARKER}`;
   const unsafeDescriptions = [
@@ -155,7 +163,7 @@ test("README updater rejects characters that can corrupt generated tables", () =
     "bad\ud800value",
   ];
 
-  // When
+  // WHEN: The README updater renders the managed regions.
   const updateWithDescription = (description) => {
     const plugin = makePluginCatalogFixture();
     plugin.skills[2].description = description;
@@ -167,7 +175,7 @@ test("README updater rejects characters that can corrupt generated tables", () =
       });
   };
 
-  // Then
+  // THEN: The complete README outputs or reported failures are verified.
   for (const description of unsafeDescriptions) {
     assert.throws(
       updateWithDescription(description),

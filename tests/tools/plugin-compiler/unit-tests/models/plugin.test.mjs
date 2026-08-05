@@ -10,7 +10,7 @@ import { SkillRequirement } from "../../../../../tools/plugin-compiler/models/sk
 import { SkillResource } from "../../../../../tools/plugin-compiler/models/skill-resource.mjs";
 
 test("Plugin snapshots the complete v2 source model as immutable values", () => {
-  // Given
+  // GIVEN: Mutable validated values for a complete plugin are prepared.
   const input = {
     schema_version: 2,
     name: "fixture-skills",
@@ -58,13 +58,13 @@ test("Plugin snapshots the complete v2 source model as immutable values", () => 
     ],
   };
 
-  // When
+  // WHEN: A Plugin snapshot is created from those values.
   const plugin = new Plugin(input);
   input.author.name = "Changed";
   input.keywords.push("changed");
   input.skills[0].required_skills[0].reason = "Changed";
 
-  // Then
+  // THEN: The immutable public snapshot is verified after source mutation.
   const skill = plugin.skills[0];
   assert.ok(plugin.metadata instanceof PluginMetadata);
   assert.ok(plugin.categories[0] instanceof Category);

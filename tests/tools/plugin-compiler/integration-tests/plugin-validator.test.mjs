@@ -19,7 +19,7 @@ import {
 const validator = new PluginValidator();
 
 test("validatePlugin returns an ordered immutable v2 source snapshot", async () => {
-  // Given
+  // GIVEN: An isolated plugin source fixture for this validation scenario is prepared.
   const rootDir = await createFixture({
     manifest: makeManifest(),
     resources: {
@@ -32,10 +32,10 @@ test("validatePlugin returns an ordered immutable v2 source snapshot", async () 
   });
 
   try {
-    // When
+    // WHEN: The fixture is validated through the public validator boundary.
     const result = await validator.validatePlugin({ rootDir });
 
-    // Then
+    // THEN: The returned plugin model or diagnostics are verified.
     assert.ok(result.plugin instanceof Plugin);
     assert.ok(result.plugin.metadata instanceof PluginMetadata);
     assert.equal(result.plugin.schema_version, 2);
@@ -94,7 +94,7 @@ test("validatePlugin returns an ordered immutable v2 source snapshot", async () 
 });
 
 test("schema is closed and models lifecycle metadata conditionally", async () => {
-  // Given
+  // GIVEN: An isolated plugin source fixture for this validation scenario is prepared.
   const manifest = makeManifest();
   manifest.unexpected = true;
   manifest.categories[0].title = "Old field";
@@ -103,10 +103,10 @@ test("schema is closed and models lifecycle metadata conditionally", async () =>
   const rootDir = await createFixture({ manifest });
 
   try {
-    // When
+    // WHEN: The fixture is validated through the public validator boundary.
     const validation = validator.validatePlugin({ rootDir });
 
-    // Then
+    // THEN: The returned plugin model or diagnostics are verified.
     await expectValidationError(validation, [
       "plugin/plugin.yml#/unexpected: must NOT have additional properties",
       "plugin/plugin.yml/categories/0/title: must NOT have additional properties",
@@ -119,7 +119,7 @@ test("schema is closed and models lifecycle metadata conditionally", async () =>
 });
 
 test("deprecation and archive metadata are present only for their lifecycle state", async (t) => {
-  // Given
+  // GIVEN: An isolated plugin source fixture for this validation scenario is prepared.
   const cases = [
     {
       name: "archived skill without archive metadata",
@@ -154,18 +154,18 @@ test("deprecation and archive metadata are present only for their lifecycle stat
     },
   ];
 
-  // When
+  // WHEN: The fixture is validated through the public validator boundary.
   for (const fixture of cases) {
     await t.test(fixture.name, async () => {
-      // Given
+      // GIVEN: An isolated plugin source fixture for this validation scenario is prepared.
       const manifest = oneSkillManifest();
       fixture.change(manifest.skills[0]);
       const rootDir = await createFixture({ manifest });
       try {
-        // When
+        // WHEN: The fixture is validated through the public validator boundary.
         const validation = validator.validatePlugin({ rootDir });
 
-        // Then
+        // THEN: The returned plugin model or diagnostics are verified.
         await expectValidationError(validation, fixture.diagnostics);
       } finally {
         await removeFixture(rootDir);
@@ -173,11 +173,11 @@ test("deprecation and archive metadata are present only for their lifecycle stat
     });
   }
 
-  // Then: every status owns exactly its agreed lifecycle metadata.
+  // THEN: The returned plugin model or diagnostics are verified.
 });
 
 test("strict YAML 1.2 accepts comments and rejects non-portable features", async (t) => {
-  // Given
+  // GIVEN: An isolated plugin source fixture for this validation scenario is prepared.
   const base = JSON.stringify(makeManifest(), null, 2);
   const validSource = `# Schema contract\n${base.replace('"version": "1.2.3+1",', '"version": "1.2.3+1", # Plugin release')}`;
   const validRoot = await createFixture({
@@ -185,10 +185,10 @@ test("strict YAML 1.2 accepts comments and rejects non-portable features", async
     manifestSource: validSource,
   });
   try {
-    // When
+    // WHEN: The fixture is validated through the public validator boundary.
     const result = await validator.validatePlugin({ rootDir: validRoot });
 
-    // Then
+    // THEN: The returned plugin model or diagnostics are verified.
     assert.equal(result.plugin.version, "1.2.3+1");
   } finally {
     await removeFixture(validRoot);
@@ -250,19 +250,19 @@ test("strict YAML 1.2 accepts comments and rejects non-portable features", async
     },
   ];
 
-  // When
+  // WHEN: The fixture is validated through the public validator boundary.
   for (const fixture of cases) {
     await t.test(fixture.name, async () => {
-      // Given
+      // GIVEN: An isolated plugin source fixture for this validation scenario is prepared.
       const rootDir = await createFixture({
         manifest: makeManifest(),
         manifestSource: fixture.source,
       });
       try {
-        // When
+        // WHEN: The fixture is validated through the public validator boundary.
         const validation = validator.validatePlugin({ rootDir });
 
-        // Then
+        // THEN: The returned plugin model or diagnostics are verified.
         await expectValidationError(validation, fixture.diagnostics);
       } finally {
         await removeFixture(rootDir);
@@ -270,11 +270,11 @@ test("strict YAML 1.2 accepts comments and rejects non-portable features", async
     });
   }
 
-  // Then: each subtest verifies its own public diagnostic.
+  // THEN: The returned plugin model or diagnostics are verified.
 });
 
 test("manifest and flat source directories have a fail-closed one-to-one mapping", async () => {
-  // Given
+  // GIVEN: An isolated plugin source fixture for this validation scenario is prepared.
   const manifest = makeManifest();
   manifest.skills = [manifest.skills[0]];
   manifest.skills[0].required_skills = [];
@@ -286,10 +286,10 @@ test("manifest and flat source directories have a fail-closed one-to-one mapping
   await writeFile(path.join(rootDir, "plugin", "skills", "notes.txt"), "nope");
 
   try {
-    // When
+    // WHEN: The fixture is validated through the public validator boundary.
     const validation = validator.validatePlugin({ rootDir });
 
-    // Then
+    // THEN: The returned plugin model or diagnostics are verified.
     await expectValidationError(validation, [
       "plugin/skills/orphan-skill: source skill is not listed",
       "expected plugin/skills/alpha-skill/SKILL.md",
@@ -301,7 +301,7 @@ test("manifest and flat source directories have a fail-closed one-to-one mapping
 });
 
 test("source SKILL.md has no frontmatter and exactly one compiler marker", async (t) => {
-  // Given
+  // GIVEN: An isolated plugin source fixture for this validation scenario is prepared.
   const manifest = oneSkillManifest();
   const cases = [
     {
@@ -321,19 +321,19 @@ test("source SKILL.md has no frontmatter and exactly one compiler marker", async
     },
   ];
 
-  // When
+  // WHEN: The fixture is validated through the public validator boundary.
   for (const fixture of cases) {
     await t.test(fixture.name, async () => {
-      // Given
+      // GIVEN: An isolated plugin source fixture for this validation scenario is prepared.
       const rootDir = await createFixture({
         manifest,
         skillSources: { "alpha-skill": fixture.source },
       });
       try {
-        // When
+        // WHEN: The fixture is validated through the public validator boundary.
         const validation = validator.validatePlugin({ rootDir });
 
-        // Then
+        // THEN: The returned plugin model or diagnostics are verified.
         await expectValidationError(validation, fixture.diagnostics);
       } finally {
         await removeFixture(rootDir);
@@ -341,11 +341,11 @@ test("source SKILL.md has no frontmatter and exactly one compiler marker", async
     });
   }
 
-  // Then: each subtest verifies the source-document contract.
+  // THEN: The returned plugin model or diagnostics are verified.
 });
 
 test("skill resources reject compiler-owned paths, symlinks, escapes, and missing links", async () => {
-  // Given
+  // GIVEN: An isolated plugin source fixture for this validation scenario is prepared.
   const manifest = oneSkillManifest();
   const rootDir = await createFixture({
     manifest,
@@ -372,10 +372,10 @@ test("skill resources reject compiler-owned paths, symlinks, escapes, and missin
   );
 
   try {
-    // When
+    // WHEN: The fixture is validated through the public validator boundary.
     const validation = validator.validatePlugin({ rootDir });
 
-    // Then
+    // THEN: The returned plugin model or diagnostics are verified.
     await expectValidationError(validation, [
       "references/required-skills/ is owned by the plugin compiler",
       "symbolic links are not supported in skill sources",
@@ -388,7 +388,7 @@ test("skill resources reject compiler-owned paths, symlinks, escapes, and missin
 });
 
 test("category, dependency, lifecycle, replacement, and DAG errors aggregate", async () => {
-  // Given
+  // GIVEN: An isolated plugin source fixture for this validation scenario is prepared.
   const manifest = makeManifest();
   manifest.skills[0].category_id = "missing-category";
   manifest.skills[0].required_skills = [
@@ -406,10 +406,10 @@ test("category, dependency, lifecycle, replacement, and DAG errors aggregate", a
   const rootDir = await createFixture({ manifest });
 
   try {
-    // When
+    // WHEN: The fixture is validated through the public validator boundary.
     const validation = validator.validatePlugin({ rootDir });
 
-    // Then
+    // THEN: The returned plugin model or diagnostics are verified.
     await expectValidationError(validation, [
       'unknown category "missing-category"',
       'skill "alpha-skill" cannot require itself',
@@ -423,7 +423,7 @@ test("category, dependency, lifecycle, replacement, and DAG errors aggregate", a
 });
 
 test("category IDs, skill IDs, and direct requirement IDs are unique", async () => {
-  // Given
+  // GIVEN: An isolated plugin source fixture for this validation scenario is prepared.
   const manifest = makeManifest();
   manifest.categories.push({ ...manifest.categories[0] });
   manifest.skills.push({
@@ -434,10 +434,10 @@ test("category IDs, skill IDs, and direct requirement IDs are unique", async () 
   const rootDir = await createFixture({ manifest });
 
   try {
-    // When
+    // WHEN: The fixture is validated through the public validator boundary.
     const validation = validator.validatePlugin({ rootDir });
 
-    // Then
+    // THEN: The returned plugin model or diagnostics are verified.
     await expectValidationError(validation, [
       'duplicate category id "engineering"',
       'duplicate skill id "beta-skill"',
@@ -449,7 +449,7 @@ test("category IDs, skill IDs, and direct requirement IDs are unique", async () 
 });
 
 test("active outputs cannot depend on draft or archived skills", async () => {
-  // Given
+  // GIVEN: An isolated plugin source fixture for this validation scenario is prepared.
   const manifest = makeManifest();
   manifest.skills.push({
     id: "archived-skill",
@@ -468,10 +468,10 @@ test("active outputs cannot depend on draft or archived skills", async () => {
   const rootDir = await createFixture({ manifest });
 
   try {
-    // When
+    // WHEN: The fixture is validated through the public validator boundary.
     const validation = validator.validatePlugin({ rootDir });
 
-    // Then
+    // THEN: The returned plugin model or diagnostics are verified.
     await expectValidationError(validation, [
       'active skill "alpha-skill" cannot require draft skill "beta-skill"',
       'non-archived skill "alpha-skill" cannot require archived skill "archived-skill"',
@@ -482,7 +482,7 @@ test("active outputs cannot depend on draft or archived skills", async () => {
 });
 
 test("deprecated dependencies and unreachable internal skills are non-failing diagnostics", async () => {
-  // Given
+  // GIVEN: An isolated plugin source fixture for this validation scenario is prepared.
   const manifest = makeManifest();
   manifest.skills[1].status = "deprecated";
   manifest.skills[1].deprecation = {
@@ -500,10 +500,10 @@ test("deprecated dependencies and unreachable internal skills are non-failing di
   const rootDir = await createFixture({ manifest });
 
   try {
-    // When
+    // WHEN: The fixture is validated through the public validator boundary.
     const result = await validator.validatePlugin({ rootDir });
 
-    // Then
+    // THEN: The returned plugin model or diagnostics are verified.
     assert.equal(result.diagnostics.length, 2);
     assert.ok(
       result.diagnostics.some((message) =>
@@ -521,9 +521,9 @@ test("deprecated dependencies and unreachable internal skills are non-failing di
 });
 
 test("manifest and nested source paths reject symbolic links", async (t) => {
-  // Given: both manifest and nested-resource links can escape the trusted tree.
+  // GIVEN: An isolated plugin source fixture for this validation scenario is prepared.
   await t.test("plugin directory", async () => {
-    // Given
+    // GIVEN: An isolated plugin source fixture for this validation scenario is prepared.
     const rootDir = await mkdtemp(
       path.join(os.tmpdir(), "ptlam-plugin-validator-"),
     );
@@ -534,10 +534,10 @@ test("manifest and nested source paths reject symbolic links", async (t) => {
       "dir",
     );
     try {
-      // When
+      // WHEN: The fixture is validated through the public validator boundary.
       const validation = validator.validatePlugin({ rootDir });
 
-      // Then
+      // THEN: The returned plugin model or diagnostics are verified.
       await expectValidationError(validation, [
         "plugin: symbolic links are not supported in plugin paths",
       ]);
@@ -546,7 +546,7 @@ test("manifest and nested source paths reject symbolic links", async (t) => {
     }
   });
 
-  // Then: the public validation boundary rejects the path before reading it.
+  // THEN: The returned plugin model or diagnostics are verified.
 });
 
 function makeManifest() {
