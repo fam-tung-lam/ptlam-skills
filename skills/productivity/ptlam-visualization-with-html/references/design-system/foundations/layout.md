@@ -40,3 +40,10 @@ svg {
 
 Never clip meaningful content to hide overflow. Reflow first; allow a contained
 code block to scroll only when wrapping would corrupt its meaning.
+
+Use Material's compact, medium, expanded, large, and extra-large breakpoints as
+decision inputs, not as device labels. Prefer feed, list-detail, or supporting
+pane structures before inventing a custom layout. See the official
+[layout overview](https://m3.material.io/foundations/layout/layout-overview/overview)
+and
+[canonical examples](https://m3.material.io/foundations/layout/canonical-examples/overview).

@@ -21,7 +21,9 @@ skill, or external asset at runtime.
 1. Identify the learner's question, the smallest complete system that answers
    it, and the important relationships, states, and transitions.
 2. Choose the minimum component and pattern set from the catalog below. Prefer
-   one strong interactive visual over repeated prose.
+   M3 Expressive color, motion, shape, type, and adaptive components when they
+   clarify hierarchy or state. Prefer one strong interactive visual over
+   repeated prose.
 3. Read the [design-system index](references/design-system/design-system.md),
    the complete
    [foundations index](references/design-system/foundations/foundations.md),
@@ -76,34 +78,31 @@ as a behavior and quality reference, not as a content template.
 
 ## Design-system catalog
 
-The organization follows Material 3's distinction between foundations, visual
-styles, and named component families. Learning-specific assemblies are patterns,
-not components. Read only the selected files plus every required foundation
-file.
+The organization follows the current Material 3 distinction between foundations,
+visual styles, and named component families, with M3 Expressive as the preferred
+visual direction. Learning-specific assemblies are patterns, not components.
+Read only the selected files plus every required foundation file.
 
 ### Foundations, tokens, and styles
 
-- [foundations.md](references/design-system/foundations/foundations.md):
-  accessibility, interaction states, and responsive containment.
+- [foundations.md](references/design-system/foundations/foundations.md): the
+  complete portable-HTML foundation catalog, including accessibility,
+  interaction, layout, usability, content, customization, and adaptation.
 - [tokens.md](references/design-system/tokens/tokens.md): semantic color,
-  typography, spacing, shape, and elevation values.
+  typography, spacing, shape, elevation, motion, and state values.
 - [styles.md](references/design-system/styles/styles.md): color, typography,
-  shape, elevation, and motion application.
+  shape, elevation, icons, spacing, and expressive motion application.
 
 ### Components
 
-- [components.md](references/design-system/components/components.md): standard
-  reusable component families.
+- [components.md](references/design-system/components/components.md): the
+  complete current Material 3 component catalog plus visualization components.
 - [buttons.md](references/design-system/components/buttons/buttons.md):
   elevated, filled, filled tonal, outlined, and text buttons.
 - [icon-buttons.md](references/design-system/components/buttons/icon-buttons/icon-buttons.md):
   standard, filled, filled tonal, and outlined icon buttons.
 - [floating-action-buttons.md](references/design-system/components/buttons/floating-action-buttons/floating-action-buttons.md):
   default, small, large, and extended FABs.
-- [state-panel.md](references/design-system/components/state-panel/state-panel.md):
-  observable state, frames, counters, and change emphasis.
-- [control-plane.md](references/design-system/components/control-plane/control-plane.md):
-  synchronized controls, step counter, caption, and keyboard behavior.
 - [flowchart.md](references/design-system/components/diagrams/flowchart.md):
   pure directed flow.
 - [c4-diagram.md](references/design-system/components/diagrams/c4-diagram.md):
@@ -114,8 +113,6 @@ file.
   participants, messages, and interactive frames.
 - [erd.md](references/design-system/components/diagrams/erd.md): entities,
   fields, keys, cardinality, and relationship paths.
-- [analogy-twin.md](references/design-system/components/diagrams/analogy-twin.md):
-  synchronized real-life and literal diagrams with one topology.
 
 ### Patterns
 
@@ -131,6 +128,12 @@ file.
   visible everyday-to-literal mapping without a dense table.
 - [layered-lifetimes.md](references/design-system/patterns/content/layered-lifetimes.md):
   stable, contextual, and volatile layers paired with an everyday system.
+- [state-panel.md](references/design-system/patterns/state-panel/state-panel.md):
+  observable state, frames, counters, and change emphasis.
+- [control-plane.md](references/design-system/patterns/control-plane/control-plane.md):
+  synchronized controls, step counter, caption, and keyboard behavior.
+- [analogy-twin.md](references/design-system/patterns/analogy-twin/analogy-twin.md):
+  synchronized real-life and literal diagrams with one topology.
 - [flowchart-with-state.md](references/design-system/patterns/interactive-flows/flowchart-with-state.md):
   flow on the left, synchronized state on the right.
 - [flowchart-with-state-and-control-plane.md](references/design-system/patterns/interactive-flows/flowchart-with-state-and-control-plane.md):

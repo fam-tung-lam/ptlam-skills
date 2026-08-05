@@ -1,9 +1,11 @@
 # HTML visualization design system
 
-Use this index as the entry point. The taxonomy follows Material 3's separation
-of foundations, styles, and named component families, while retaining a separate
-token layer for portable HTML implementation and a pattern layer for
-learning-specific compositions.
+Use this index as the entry point. The taxonomy follows the current Material 3
+separation of foundations, styles, and named component families, while retaining
+a separate token layer for portable HTML implementation and a pattern layer for
+learning-specific compositions. Prefer M3 Expressive color, flexible type,
+contrasting shape, motion physics, and adaptive components when they make the
+learning state clearer.
 
 Read in this order:
 
@@ -19,3 +21,7 @@ Read in this order:
 
 Do not name a base component after one artifact's workflow. Put a reusable UI
 primitive under `components/`; put a goal-specific assembly under `patterns/`.
+
+Material is adaptable rather than a requirement to imitate one Google product.
+Preserve Material roles, anatomy, states, accessibility, and hierarchy while
+expressing the subject's own visual identity.

@@ -1,4 +1,4 @@
-# State panel
+# State-panel pattern
 
 Show observable state beside the diagram. Use state cards for small values and
 frames for message or code-like content. Highlight only values that changed on
