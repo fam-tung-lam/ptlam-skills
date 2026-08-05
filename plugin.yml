@@ -58,6 +58,11 @@ skills:
     kind: product
     summary: Teach connected ideas through one visual, interactive real-life analogy.
     required_skill_ids: []
+  - id: ptlam-visualization-with-html
+    category: productivity
+    kind: product
+    summary: Build portable interactive HTML explainers from reusable visual patterns.
+    required_skill_ids: []
   - id: ptlam-visualization
     category: productivity
     kind: product

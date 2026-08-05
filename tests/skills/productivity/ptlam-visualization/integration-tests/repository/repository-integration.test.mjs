@@ -1,5 +1,4 @@
 import assert from "node:assert/strict";
-import { createHash } from "node:crypto";
 import { readFile, readdir } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -9,16 +8,8 @@ const testDirectory = dirname(fileURLToPath(import.meta.url));
 const repositoryRoot = resolve(testDirectory, "../../../../../..");
 const unifiedIdentity = "ptlam-visualization";
 const legacyIdentities = [
-  ["ptlam", "visualization", "with", "html"].join("-"),
   ["ptlam", "visualization", "with", "mermaid"].join("-"),
 ];
-const historicalPrd = join(
-  repositoryRoot,
-  "docs/prds",
-  ["ptlam", "visualization", "with", "html", "v1", "prd.md"].join("-"),
-);
-const historicalPrdSha256 =
-  "dfb1e700be03b1e379c853176e221e936954f07ebd6790bb6d7bbde9b1037974";
 
 async function walkFiles(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -49,7 +40,7 @@ function frontmatterName(source) {
   return frontmatter?.match(/^name:\s*([^\n]+)$/mu)?.[1].trim();
 }
 
-test("active repository surfaces contain no legacy public identity", async () => {
+test("active repository surfaces contain no retired Mermaid-skill identity", async () => {
   const hits = [];
   for (const path of await activeIdentityFiles()) {
     const source = await readFile(path, "utf8");
@@ -60,15 +51,6 @@ test("active repository surfaces contain no legacy public identity", async () =>
     }
   }
   assert.deepEqual(hits, []);
-});
-
-test("the historical HTML PRD remains byte-for-byte unchanged", async () => {
-  const source = await readFile(historicalPrd);
-  assert.equal(
-    createHash("sha256").update(source).digest("hex"),
-    historicalPrdSha256,
-  );
-  assert.match(source.toString("utf8"), /^# PRD:/u);
 });
 
 test("one unified skill is discoverable through every public registration", async () => {
@@ -117,7 +99,8 @@ test("one unified skill is discoverable through every public registration", asyn
     1,
   );
   assert.equal(
-    plugin.skills.filter((entry) => entry.includes(unifiedIdentity)).length,
+    plugin.skills.filter((entry) => entry.endsWith(`/${unifiedIdentity}`))
+      .length,
     1,
   );
   assert.equal(
@@ -159,12 +142,12 @@ test("tracked integration gallery stays bounded to review deliverables", async (
 
   const gallery = await readFile(join(resultRoot, "index.html"), "utf8");
   assert.doesNotMatch(gallery, /(?:\/Users\/|\.ptlam\/)/u);
-  assert.doesNotMatch(
-    gallery,
-    /\b(?:href|src|data)=["']file:\/\//iu,
-  );
+  assert.doesNotMatch(gallery, /\b(?:href|src|data)=["']file:\/\//iu);
   for (const path of files.filter((path) => path !== "index.html")) {
-    assert.match(gallery, new RegExp(path.replaceAll(".", String.raw`\.`), "u"));
+    assert.match(
+      gallery,
+      new RegExp(path.replaceAll(".", String.raw`\.`), "u"),
+    );
   }
 
   const totalBytes = (
