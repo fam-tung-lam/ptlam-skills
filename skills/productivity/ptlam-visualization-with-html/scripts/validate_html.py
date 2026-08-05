@@ -37,17 +37,21 @@ class DocumentParser(HTMLParser):
         self.tags: Counter[str] = Counter()
         self.ids: list[str] = []
         self.hrefs: list[str] = []
+        self.id_text: dict[str, list[str]] = {}
         self.runtime_assets: list[str] = []
         self.attrs: list[tuple[str, dict[str, str]]] = []
         self.steppers: list[tuple[str, list[tuple[str, dict[str, str]]]]] = []
         self.stepper_noscript_text: list[list[str]] = []
         self.stepper_noscript_items: list[int] = []
         self.stepper_count_text: list[list[str]] = []
-        self.svg_accessible = 0
+        self.svg_names: list[tuple[str, str, tuple[str, ...]]] = []
         self.svg_total = 0
-        self.title_text: list[str] = []
+        self.document_title_text: list[str] = []
         self.h1_text: list[str] = []
         self._capture: str | None = None
+        self._head_depth = 0
+        self._active_text_ids: list[str] = []
+        self._id_scope_lengths: list[int] = []
         self._active_stepper: int | None = None
         self._scope_stack: list[int | None] = []
         self._noscript_stepper: int | None = None
@@ -55,6 +59,8 @@ class DocumentParser(HTMLParser):
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         values = {key: value or "" for key, value in attrs}
+        if tag == "head":
+            self._head_depth += 1
         active_stepper = self._active_stepper
         if "data-stepper" in values:
             name = values["data-stepper"].strip() or f"#{len(self.steppers) + 1}"
@@ -74,11 +80,16 @@ class DocumentParser(HTMLParser):
         if tag not in self.VOID_ELEMENTS:
             self._scope_stack.append(self._active_stepper)
             self._active_stepper = active_stepper
+            self._id_scope_lengths.append(len(self._active_text_ids))
 
         self.tags[tag] += 1
         self.attrs.append((tag, values))
-        if values.get("id"):
-            self.ids.append(values["id"])
+        element_id = values.get("id", "").strip()
+        if element_id:
+            self.ids.append(element_id)
+            self.id_text.setdefault(element_id, [])
+            if tag not in self.VOID_ELEMENTS:
+                self._active_text_ids.append(element_id)
         if values.get("href"):
             self.hrefs.append(values["href"])
         runtime_references = [values.get("src", "")]
@@ -95,16 +106,28 @@ class DocumentParser(HTMLParser):
         self.runtime_assets.extend(find_css_assets(values.get("style", "")))
         if tag == "svg":
             self.svg_total += 1
-            if values.get("role") == "img" and (values.get("aria-labelledby") or values.get("aria-label")):
-                self.svg_accessible += 1
-        if tag in {"title", "h1"}:
-            self._capture = tag
+            self.svg_names.append(
+                (
+                    values.get("role", "").strip(),
+                    values.get("aria-label", "").strip(),
+                    tuple(values.get("aria-labelledby", "").split()),
+                )
+            )
+        if tag == "title" and self._head_depth:
+            self._capture = "title"
+        elif tag == "h1":
+            self._capture = "h1"
 
     def handle_endtag(self, tag: str) -> None:
         if tag not in self.VOID_ELEMENTS and self._scope_stack:
             self._active_stepper = self._scope_stack.pop()
+        if tag not in self.VOID_ELEMENTS and self._id_scope_lengths:
+            active_length = self._id_scope_lengths.pop()
+            del self._active_text_ids[active_length:]
         if self._capture == tag:
             self._capture = None
+        if tag == "head" and self._head_depth:
+            self._head_depth -= 1
         if tag == "noscript":
             self._noscript_stepper = None
         if tag == "output":
@@ -112,9 +135,11 @@ class DocumentParser(HTMLParser):
 
     def handle_data(self, data: str) -> None:
         if self._capture == "title":
-            self.title_text.append(data.strip())
+            self.document_title_text.append(data.strip())
         elif self._capture == "h1":
             self.h1_text.append(data.strip())
+        for element_id in self._active_text_ids:
+            self.id_text[element_id].append(data)
         if self._noscript_stepper is not None:
             self.stepper_noscript_text[self._noscript_stepper].append(data)
         if self._count_stepper is not None:
@@ -170,6 +195,22 @@ def scoped_has_tag(attrs: list[tuple[str, dict[str, str]]], tag: str) -> bool:
     return any(found_tag == tag for found_tag, _ in attrs)
 
 
+def accessible_svg_count(parser: DocumentParser) -> int:
+    accessible = 0
+    for role, aria_label, labelled_by in parser.svg_names:
+        if role != "img":
+            continue
+        if aria_label:
+            accessible += 1
+            continue
+        if labelled_by and all(
+            any(text.strip() for text in parser.id_text.get(target, []))
+            for target in labelled_by
+        ):
+            accessible += 1
+    return accessible
+
+
 def validate(path: Path) -> tuple[list[str], list[str]]:
     source = path.read_text(encoding="utf-8")
     parser = DocumentParser()
@@ -185,7 +226,7 @@ def validate(path: Path) -> tuple[list[str], list[str]]:
         errors.append("html element needs a lang attribute")
     if not any(tag == "meta" and attrs.get("name") == "viewport" for tag, attrs in parser.attrs):
         errors.append("missing viewport meta tag")
-    if not any(parser.title_text):
+    if not any(parser.document_title_text):
         errors.append("missing non-empty title")
     if parser.tags["main"] != 1:
         errors.append(f"expected exactly one main element, found {parser.tags['main']}")
@@ -202,8 +243,12 @@ def validate(path: Path) -> tuple[list[str], list[str]]:
         errors.append("missing internal link targets: " + ", ".join(missing_targets))
     if parser.runtime_assets:
         errors.append("runtime assets must be embedded: " + ", ".join(sorted(set(parser.runtime_assets))))
-    if parser.svg_accessible != parser.svg_total:
-        errors.append(f"all SVGs need role=img plus aria-label/aria-labelledby ({parser.svg_accessible}/{parser.svg_total})")
+    svg_accessible = accessible_svg_count(parser)
+    if svg_accessible != parser.svg_total:
+        errors.append(
+            "all SVGs need role=img plus a non-empty aria-label or resolvable "
+            f"aria-labelledby ({svg_accessible}/{parser.svg_total})"
+        )
 
     compact = re.sub(r"\s+", "", source.lower())
     if "overflow-x:hidden" not in compact:

@@ -5,8 +5,6 @@ behavior. They may name a teaching structure, but must not redefine a base
 component family.
 
 - [Content patterns](content/content.md)
-- [Diagram patterns](diagrams/diagrams.md)
+- [Interactive flow patterns](interactive-flows/interactive-flows.md)
 - [Layout patterns](layouts/layouts.md)
-- [Control plane](interaction/control-plane.md)
 - [Field-guide navigation](navigation/field-guide-navigation.md)
-- [State panel](state/state-panel.md)

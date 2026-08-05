@@ -7,3 +7,10 @@ Use for the highest-emphasis icon-only action in a local group.
   <span aria-hidden="true">▶</span>
 </button>
 ```
+
+```css
+.icon-button--filled {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+```

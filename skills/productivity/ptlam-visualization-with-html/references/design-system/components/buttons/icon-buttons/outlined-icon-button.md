@@ -11,3 +11,9 @@ Use when the icon action needs a visible boundary without a filled container.
   <span aria-hidden="true">↺</span>
 </button>
 ```
+
+```css
+.icon-button--outlined {
+  border-color: var(--color-outline-strong);
+}
+```

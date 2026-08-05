@@ -4,6 +4,10 @@ The control plane coordinates one timeline. It sits below the diagram and state
 panel so it controls both. “Control plane” is the correct component name;
 visible copy may simply say “Controls”.
 
+Compose its actions from the [button family](../buttons/buttons.md). The
+following `.button-row` layout belongs to the control plane, not to any button
+variant.
+
 ```html
 <div class="control-plane" data-control-plane>
   <div class="step-readout">
@@ -40,6 +44,12 @@ visible copy may simply say “Controls”.
   max-width: none;
   color: var(--color-on-surface-variant);
   overflow-wrap: anywhere;
+}
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  min-width: 0;
 }
 @media (max-width: 760px) {
   .control-plane {

@@ -20,14 +20,4 @@ Always provide an accessible name. Choose a standard variant by emphasis:
   color: var(--color-on-surface);
   cursor: pointer;
 }
-.icon-button--filled {
-  background: var(--color-primary);
-  color: var(--color-on-primary);
-}
-.icon-button--tonal {
-  background: var(--color-primary-container);
-}
-.icon-button--outlined {
-  border-color: var(--color-outline-strong);
-}
 ```

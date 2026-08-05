@@ -7,3 +7,9 @@ Use for a medium-emphasis icon action with a quiet container.
   <span aria-hidden="true">Ⅱ</span>
 </button>
 ```
+
+```css
+.icon-button--tonal {
+  background: var(--color-primary-container);
+}
+```

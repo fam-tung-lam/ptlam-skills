@@ -96,12 +96,28 @@ file.
   reusable component families.
 - [buttons.md](references/design-system/components/buttons/buttons.md):
   elevated, filled, filled tonal, outlined, and text buttons.
-- [icon-buttons.md](references/design-system/components/icon-buttons/icon-buttons.md):
+- [icon-buttons.md](references/design-system/components/buttons/icon-buttons/icon-buttons.md):
   standard, filled, filled tonal, and outlined icon buttons.
-- [floating-action-buttons.md](references/design-system/components/floating-action-buttons/floating-action-buttons.md):
+- [floating-action-buttons.md](references/design-system/components/buttons/floating-action-buttons/floating-action-buttons.md):
   default, small, large, and extended FABs.
+- [state-panel.md](references/design-system/components/state-panel/state-panel.md):
+  observable state, frames, counters, and change emphasis.
+- [control-plane.md](references/design-system/components/control-plane/control-plane.md):
+  synchronized controls, step counter, caption, and keyboard behavior.
+- [flowchart.md](references/design-system/components/diagrams/flowchart.md):
+  pure directed flow.
+- [c4-diagram.md](references/design-system/components/diagrams/c4-diagram.md):
+  separate connected maps for semantic zoom levels.
+- [state-diagram.md](references/design-system/components/diagrams/state-diagram.md):
+  states, transitions, guards, and terminal states.
+- [sequence-diagram.md](references/design-system/components/diagrams/sequence-diagram.md):
+  participants, messages, and interactive frames.
+- [erd.md](references/design-system/components/diagrams/erd.md): entities,
+  fields, keys, cardinality, and relationship paths.
+- [analogy-twin.md](references/design-system/components/diagrams/analogy-twin.md):
+  synchronized real-life and literal diagrams with one topology.
 
-### Layout and interaction patterns
+### Patterns
 
 - [document-shell.md](references/design-system/patterns/layouts/document-shell.md):
   page skeleton and top-to-bottom section flow.
@@ -109,35 +125,16 @@ file.
   progressive sections, split panels, and responsive containment.
 - [field-guide-navigation.md](references/design-system/patterns/navigation/field-guide-navigation.md):
   anchor navigation and progress without tabs.
-- [control-plane.md](references/design-system/patterns/interaction/control-plane.md):
-  synchronized controls, step counter, caption, and keyboard behavior.
 - [callout.md](references/design-system/patterns/content/callout.md): concise
   insight, caveat, and implementation callouts.
-- [state-panel.md](references/design-system/patterns/state/state-panel.md):
-  observable state, frames, counters, and change emphasis.
 - [analogy-mapping.md](references/design-system/patterns/content/analogy-mapping.md):
   visible everyday-to-literal mapping without a dense table.
 - [layered-lifetimes.md](references/design-system/patterns/content/layered-lifetimes.md):
   stable, contextual, and volatile layers paired with an everyday system.
-
-### Diagram patterns
-
-- [flowchart.md](references/design-system/patterns/diagrams/flowchart.md): pure
-  directed flow.
-- [flowchart-with-state.md](references/design-system/patterns/diagrams/flowchart-with-state.md):
+- [flowchart-with-state.md](references/design-system/patterns/interactive-flows/flowchart-with-state.md):
   flow on the left, synchronized state on the right.
-- [flowchart-with-state-and-control-plane.md](references/design-system/patterns/diagrams/flowchart-with-state-and-control-plane.md):
+- [flowchart-with-state-and-control-plane.md](references/design-system/patterns/interactive-flows/flowchart-with-state-and-control-plane.md):
   flow plus state plus controls below.
-- [c4-diagram.md](references/design-system/patterns/diagrams/c4-diagram.md):
-  separate connected maps for semantic zoom levels.
-- [state-diagram.md](references/design-system/patterns/diagrams/state-diagram.md):
-  states, transitions, guards, and terminal states.
-- [sequence-diagram.md](references/design-system/patterns/diagrams/sequence-diagram.md):
-  participants, messages, and interactive frames.
-- [erd.md](references/design-system/patterns/diagrams/erd.md): entities, fields,
-  keys, cardinality, and relationship paths.
-- [analogy-twin.md](references/design-system/patterns/diagrams/analogy-twin.md):
-  synchronized real-life and literal diagrams with one topology.
 
 ## Selection rules
 

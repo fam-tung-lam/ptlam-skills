@@ -14,7 +14,7 @@ Read in this order:
    shape, elevation, and motion.
 4. [Components](components/components.md) define reusable UI primitives with
    standard family and variant names.
-5. [Patterns](patterns/patterns.md) compose primitives into diagrams and
+5. [Patterns](patterns/patterns.md) compose primitives into case-specific
    interactive learning experiences.
 
 Do not name a base component after one artifact's workflow. Put a reusable UI

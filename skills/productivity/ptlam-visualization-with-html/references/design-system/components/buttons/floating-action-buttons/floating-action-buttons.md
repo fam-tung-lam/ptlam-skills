@@ -15,19 +15,12 @@ reading path and ensure it never obscures content at narrow widths.
 ```css
 .fab {
   display: inline-flex;
-  min-width: 56px;
-  min-height: 56px;
   align-items: center;
   justify-content: center;
   border: 0;
-  border-radius: var(--shape-large);
   background: var(--color-primary-container);
   color: var(--color-on-surface);
   box-shadow: var(--elevation-1);
   cursor: pointer;
-}
-.fab--extended {
-  gap: var(--space-2);
-  padding-inline: var(--space-4);
 }
 ```
