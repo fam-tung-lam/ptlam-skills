@@ -7,32 +7,32 @@
     <style>
       :root {
         color-scheme: dark;
-        --ink-0: #090e15;
-        --ink-1: #0f1622;
-        --ink-2: #151f2d;
-        --ink-3: #1b2838;
-        --ink-panel: #0c131d;
-        --line: #2a3a4f;
-        --line-strong: #63748c;
-        --text: #e7edf5;
-        --muted: #9caabe;
-        --signal: #e8b84c;
-        --signal-soft: #372d19;
-        --signal-ink: #17130a;
-        --cyan: #65c7d9;
-        --green: #69c69a;
-        --orange: #e6874f;
-        --violet: #a997e8;
-        --danger: #ef6b69;
-        --radius-sm: 0.5rem;
-        --radius-md: 0.75rem;
-        --radius-lg: 1rem;
-        --content: 76rem;
-        --gap-1: 0.375rem;
-        --gap-2: 0.625rem;
-        --gap-3: 1rem;
-        --gap-4: 1.5rem;
-        --gap-5: 2.25rem;
+        --color-canvas: #090e15;
+        --color-surface: #0f1622;
+        --color-surface-container: #151f2d;
+        --color-surface-container-high: #1b2838;
+        --color-surface-container-low: #0c131d;
+        --color-outline: #2a3a4f;
+        --color-outline-strong: #63748c;
+        --color-on-surface: #e7edf5;
+        --color-on-surface-variant: #9caabe;
+        --color-primary: #e8b84c;
+        --color-primary-container: #372d19;
+        --color-on-primary: #17130a;
+        --color-secondary: #65c7d9;
+        --color-success: #69c69a;
+        --color-warning: #e6874f;
+        --color-tertiary: #a997e8;
+        --color-error: #ef6b69;
+        --shape-small: 0.5rem;
+        --shape-medium: 0.75rem;
+        --shape-large: 1rem;
+        --content-max: 76rem;
+        --space-1: 0.375rem;
+        --space-2: 0.625rem;
+        --space-3: 1rem;
+        --space-4: 1.5rem;
+        --space-5: 2.25rem;
       }
       * {
         box-sizing: border-box;
@@ -44,8 +44,8 @@
       body {
         margin: 0;
         overflow-x: hidden;
-        background: var(--ink-0);
-        color: var(--text);
+        background: var(--color-canvas);
+        color: var(--color-on-surface);
         font:
           400 clamp(0.98rem, 0.94rem + 0.2vw, 1.08rem)/1.65 ui-sans-serif,
           system-ui,
@@ -72,7 +72,7 @@
       button:focus-visible,
       a:focus-visible,
       [role="button"]:focus-visible {
-        outline: 2px solid var(--cyan);
+        outline: 2px solid var(--color-secondary);
         outline-offset: 3px;
         box-shadow: 0 0 0 0.2rem rgba(101, 199, 217, 0.2);
       }
@@ -99,7 +99,7 @@
       }
       .eyebrow {
         margin: 0;
-        color: var(--signal);
+        color: var(--color-primary);
         font:
           700 0.7rem/1.4 ui-monospace,
           monospace;
@@ -112,8 +112,8 @@
         top: -5rem;
         z-index: 100;
         padding: 0.7rem 1rem;
-        background: var(--signal);
-        color: var(--signal-ink);
+        background: var(--color-primary);
+        color: var(--color-on-primary);
         border-radius: 0.4rem;
       }
       .skip-link:focus {
@@ -123,7 +123,7 @@
       .field-nav,
       main,
       footer {
-        width: min(calc(100% - 2rem), var(--content));
+        width: min(calc(100% - 2rem), var(--content-max));
         margin-inline: auto;
       }
       .hero {
@@ -133,11 +133,11 @@
         width: 4.5rem;
         height: 0.2rem;
         margin-bottom: 1.2rem;
-        background: var(--signal);
+        background: var(--color-primary);
       }
       .lede {
         max-width: 60ch;
-        color: var(--muted);
+        color: var(--color-on-surface-variant);
         font-size: clamp(1.05rem, 2vw, 1.35rem);
       }
       .hero-note {
@@ -145,7 +145,7 @@
         align-items: center;
         gap: 0.55rem;
         margin-top: 1.2rem;
-        color: var(--muted);
+        color: var(--color-on-surface-variant);
         font:
           700 0.76rem/1.4 ui-monospace,
           monospace;
@@ -155,7 +155,7 @@
         width: 0.55rem;
         height: 0.55rem;
         border-radius: 50%;
-        background: var(--green);
+        background: var(--color-success);
         box-shadow: 0 0 0 0.25rem rgba(105, 198, 154, 0.12);
       }
       .field-nav {
@@ -163,8 +163,8 @@
         flex-wrap: wrap;
         gap: 0.4rem;
         padding: 0.75rem;
-        border: 1px solid var(--line);
-        border-radius: var(--radius-md);
+        border: 1px solid var(--color-outline);
+        border-radius: var(--shape-medium);
         background: rgba(15, 22, 34, 0.92);
         scrollbar-width: thin;
       }
@@ -172,17 +172,17 @@
         flex: 1 1 10rem;
         min-width: 0;
         padding: 0.62rem 0.75rem;
-        color: var(--muted);
+        color: var(--color-on-surface-variant);
         text-decoration: none;
-        border-radius: var(--radius-sm);
+        border-radius: var(--shape-small);
         font-size: 0.85rem;
       }
       .field-nav a:hover {
-        color: var(--text);
-        background: var(--ink-2);
+        color: var(--color-on-surface);
+        background: var(--color-surface-container);
       }
       .field-nav span {
-        color: var(--signal);
+        color: var(--color-primary);
         font-family: ui-monospace, monospace;
       }
       main {
@@ -192,29 +192,29 @@
       }
       .guide-section {
         display: grid;
-        gap: var(--gap-4);
+        gap: var(--space-4);
         min-width: 0;
         scroll-margin-top: 1rem;
       }
       .section-head {
         display: grid;
-        gap: var(--gap-2);
+        gap: var(--space-2);
       }
       .section-head p {
         margin: 0;
-        color: var(--muted);
+        color: var(--color-on-surface-variant);
       }
       .visual-stage {
         min-width: 0;
         overflow: hidden;
-        border: 1px solid var(--line);
-        border-radius: var(--radius-lg);
-        background: var(--ink-1);
+        border: 1px solid var(--color-outline);
+        border-radius: var(--shape-large);
+        background: var(--color-surface);
         box-shadow: 0 1.25rem 4rem rgba(0, 0, 0, 0.2);
       }
       .panel-label {
         margin: 0 0 0.9rem;
-        color: var(--muted);
+        color: var(--color-on-surface-variant);
         font:
           700 0.67rem/1.4 ui-monospace,
           monospace;
@@ -231,13 +231,13 @@
         min-width: 0;
         margin: 0;
         padding: 1rem;
-        border: 1px solid var(--line);
-        border-radius: var(--radius-md);
-        background: var(--ink-2);
+        border: 1px solid var(--color-outline);
+        border-radius: var(--shape-medium);
+        background: var(--color-surface-container);
       }
       .twin-grid figcaption {
         margin-bottom: 0.8rem;
-        color: var(--muted);
+        color: var(--color-on-surface-variant);
         font:
           700 0.67rem/1.4 ui-monospace,
           monospace;
@@ -253,13 +253,13 @@
       .twin-state div {
         min-width: 0;
         padding: 0.72rem;
-        border: 1px solid var(--line);
-        border-radius: var(--radius-sm);
-        background: var(--ink-panel);
+        border: 1px solid var(--color-outline);
+        border-radius: var(--shape-small);
+        background: var(--color-surface-container-low);
       }
       .twin-state span {
         display: block;
-        color: var(--muted);
+        color: var(--color-on-surface-variant);
         font-size: 0.7rem;
       }
       .twin-state strong {
@@ -271,11 +271,11 @@
         overflow-wrap: anywhere;
       }
       .twin-state .is-changed {
-        color: var(--signal);
+        color: var(--color-primary);
       }
       .is-changed::before {
         content: "Changed · ";
-        color: var(--signal);
+        color: var(--color-primary);
         font-size: 0.7em;
         text-transform: uppercase;
       }
@@ -288,13 +288,13 @@
         padding: clamp(1rem, 3vw, 2rem);
       }
       .stage-grid > :last-child {
-        border-left: 1px solid var(--line);
+        border-left: 1px solid var(--color-outline);
       }
       .state-panel {
         display: grid;
         align-content: start;
         gap: 1rem;
-        background: var(--ink-panel);
+        background: var(--color-surface-container-low);
       }
       .state-grid {
         display: grid;
@@ -305,12 +305,12 @@
       .state-grid div {
         min-width: 0;
         padding: 0.75rem;
-        border: 1px solid var(--line);
-        border-radius: var(--radius-sm);
-        background: var(--ink-2);
+        border: 1px solid var(--color-outline);
+        border-radius: var(--shape-small);
+        background: var(--color-surface-container);
       }
       .state-grid dt {
-        color: var(--muted);
+        color: var(--color-on-surface-variant);
         font-size: 0.7rem;
       }
       .state-grid dd {
@@ -321,19 +321,19 @@
         overflow-wrap: anywhere;
       }
       .state-grid dd.is-changed {
-        color: var(--signal);
+        color: var(--color-primary);
       }
       .frame {
         min-width: 0;
         min-height: 8rem;
         padding: 0.9rem;
-        border: 1px solid var(--line);
-        border-radius: var(--radius-sm);
-        background: var(--ink-1);
+        border: 1px solid var(--color-outline);
+        border-radius: var(--shape-small);
+        background: var(--color-surface);
         overflow-wrap: anywhere;
       }
       .frame strong {
-        color: var(--signal);
+        color: var(--color-primary);
       }
       .control-plane {
         display: grid;
@@ -342,15 +342,15 @@
         gap: 1rem;
         min-width: 0;
         padding: 1rem;
-        border-top: 1px solid var(--line);
-        background: var(--ink-panel);
+        border-top: 1px solid var(--color-outline);
+        background: var(--color-surface-container-low);
       }
       .step-readout {
         display: grid;
         gap: 0.15rem;
       }
       .step-readout span {
-        color: var(--muted);
+        color: var(--color-on-surface-variant);
         font-size: 0.68rem;
       }
       .step-readout output {
@@ -361,7 +361,7 @@
       .step-caption {
         max-width: none;
         margin: 0;
-        color: var(--muted);
+        color: var(--color-on-surface-variant);
         overflow-wrap: anywhere;
       }
       .button-row {
@@ -374,10 +374,10 @@
         min-height: 44px;
         min-width: 44px;
         padding: 0.62rem 0.82rem;
-        border: 1px solid var(--line);
-        border-radius: var(--radius-sm);
-        background: var(--ink-2);
-        color: var(--text);
+        border: 1px solid var(--color-outline);
+        border-radius: var(--shape-small);
+        background: var(--color-surface-container);
+        color: var(--color-on-surface);
         font:
           700 0.76rem/1 ui-sans-serif,
           system-ui,
@@ -385,20 +385,20 @@
         cursor: pointer;
       }
       .button:hover:not(:disabled) {
-        border-color: var(--line-strong);
-        background: var(--ink-3);
+        border-color: var(--color-outline-strong);
+        background: var(--color-surface-container-high);
       }
-      .button--primary {
-        border-color: var(--signal);
-        background: var(--signal);
-        color: var(--signal-ink);
+      .button--filled {
+        border-color: var(--color-primary);
+        background: var(--color-primary);
+        color: var(--color-on-primary);
       }
-      .button--quiet {
+      .button--text {
         background: transparent;
       }
       .button[aria-pressed="true"] {
-        border-color: var(--cyan);
-        box-shadow: inset 0 0 0 1px var(--cyan);
+        border-color: var(--color-secondary);
+        box-shadow: inset 0 0 0 1px var(--color-secondary);
       }
       .button:disabled {
         opacity: 0.36;
@@ -406,36 +406,36 @@
       }
       .flow-node rect,
       .flow-node polygon {
-        fill: var(--ink-2);
-        stroke: var(--line);
+        fill: var(--color-surface-container);
+        stroke: var(--color-outline);
         stroke-width: 1.5;
       }
       .flow-node text {
-        fill: var(--text);
+        fill: var(--color-on-surface);
         font:
           700 13px ui-monospace,
           monospace;
         text-anchor: middle;
       }
       .flow-node .sub {
-        fill: var(--muted);
+        fill: var(--color-on-surface-variant);
         font-size: 9px;
         font-weight: 400;
       }
       .flow-node.is-active rect,
       .flow-node.is-active polygon {
-        stroke: var(--signal);
+        stroke: var(--color-primary);
         stroke-width: 2.5;
         filter: drop-shadow(0 0 7px rgba(232, 184, 76, 0.3));
       }
       .flow-node.is-complete rect,
       .flow-node.is-complete polygon {
-        stroke: var(--green);
+        stroke: var(--color-success);
         stroke-dasharray: 3 2;
       }
       .flow-node.is-complete.is-active rect,
       .flow-node.is-complete.is-active polygon {
-        stroke: var(--signal);
+        stroke: var(--color-primary);
         stroke-width: 2.5;
         stroke-dasharray: none;
         filter: drop-shadow(0 0 7px rgba(232, 184, 76, 0.3));
@@ -443,30 +443,30 @@
       .flow-edge path,
       .flow-edge line {
         fill: none;
-        stroke: var(--line-strong);
+        stroke: var(--color-outline-strong);
         stroke-width: 1.5;
       }
       .flow-edge text {
-        fill: var(--muted);
+        fill: var(--color-on-surface-variant);
         font:
           10px ui-monospace,
           monospace;
       }
       .flow-edge.is-active path,
       .flow-edge.is-active line {
-        stroke: var(--signal);
+        stroke: var(--color-primary);
         stroke-width: 2.6;
         stroke-dasharray: 7 5;
         animation: edge-flow 1s linear infinite;
       }
       .flow-edge.is-complete path,
       .flow-edge.is-complete line {
-        stroke: var(--green);
+        stroke: var(--color-success);
         stroke-dasharray: 3 2;
       }
       .flow-edge.is-complete.is-active path,
       .flow-edge.is-complete.is-active line {
-        stroke: var(--signal);
+        stroke: var(--color-primary);
         stroke-width: 2.6;
         stroke-dasharray: 7 5;
         animation: edge-flow 1s linear infinite;
@@ -479,13 +479,13 @@
       .callout {
         max-width: 72ch;
         padding: 0.9rem 1rem;
-        border-left: 3px solid var(--signal);
-        border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-        background: var(--ink-2);
-        color: var(--muted);
+        border-left: 3px solid var(--color-primary);
+        border-radius: 0 var(--shape-small) var(--shape-small) 0;
+        background: var(--color-surface-container);
+        color: var(--color-on-surface-variant);
       }
       .callout strong {
-        color: var(--text);
+        color: var(--color-on-surface);
       }
       .lifetime-twin {
         display: grid;
@@ -498,22 +498,22 @@
         gap: 0.65rem;
         min-width: 0;
         padding: 1rem;
-        border: 1px solid var(--line);
-        border-radius: var(--radius-md);
-        background: var(--ink-1);
+        border: 1px solid var(--color-outline);
+        border-radius: var(--shape-medium);
+        background: var(--color-surface);
       }
       .lifetime-layer {
         min-width: 0;
         padding: 1rem;
-        border: 1px solid var(--line);
+        border: 1px solid var(--color-outline);
         border-left-width: 4px;
-        border-radius: var(--radius-sm);
-        background: var(--ink-2);
+        border-radius: var(--shape-small);
+        background: var(--color-surface-container);
       }
       .lifetime-layer span {
         display: block;
         margin-bottom: 0.25rem;
-        color: var(--muted);
+        color: var(--color-on-surface-variant);
         font:
           700 0.68rem/1.4 ui-monospace,
           monospace;
@@ -524,13 +524,13 @@
         overflow-wrap: anywhere;
       }
       .stable {
-        border-left-color: var(--green);
+        border-left-color: var(--color-success);
       }
       .context {
-        border-left-color: var(--cyan);
+        border-left-color: var(--color-secondary);
       }
       .volatile {
-        border-left-color: var(--orange);
+        border-left-color: var(--color-warning);
       }
       .c4 {
         display: grid;
@@ -545,23 +545,23 @@
       .c4-toolbar button {
         min-height: 44px;
         padding: 0.6rem 0.8rem;
-        border: 1px solid var(--line);
-        border-radius: var(--radius-sm);
-        background: var(--ink-2);
-        color: var(--muted);
+        border: 1px solid var(--color-outline);
+        border-radius: var(--shape-small);
+        background: var(--color-surface-container);
+        color: var(--color-on-surface-variant);
         cursor: pointer;
       }
       .c4-toolbar button[aria-pressed="true"] {
-        border-color: var(--signal);
-        background: var(--signal-soft);
-        color: var(--signal);
+        border-color: var(--color-primary);
+        background: var(--color-primary-container);
+        color: var(--color-primary);
       }
       .c4-toolbar button:disabled {
         opacity: 0.4;
       }
       .c4-breadcrumb {
         margin: 0;
-        color: var(--muted);
+        color: var(--color-on-surface-variant);
         font:
           700 0.75rem/1.4 ui-monospace,
           monospace;
@@ -569,41 +569,41 @@
       .c4-map {
         min-width: 0;
         padding: 1rem;
-        border: 1px solid var(--line);
-        border-radius: var(--radius-md);
-        background: var(--ink-2);
+        border: 1px solid var(--color-outline);
+        border-radius: var(--shape-medium);
+        background: var(--color-surface-container);
       }
       .c4-map[hidden] {
         display: none;
       }
       .c4-node rect {
-        fill: var(--ink-1);
-        stroke: var(--line-strong);
+        fill: var(--color-surface);
+        stroke: var(--color-outline-strong);
         stroke-width: 1.5;
       }
       .c4-node.focus rect {
-        stroke: var(--signal);
+        stroke: var(--color-primary);
         stroke-width: 2.5;
       }
       .c4-node text {
-        fill: var(--text);
+        fill: var(--color-on-surface);
         font:
           700 13px ui-monospace,
           monospace;
         text-anchor: middle;
       }
       .c4-node .kind {
-        fill: var(--muted);
+        fill: var(--color-on-surface-variant);
         font-size: 9px;
       }
       .c4-link {
         fill: none;
-        stroke: var(--line-strong);
+        stroke: var(--color-outline-strong);
         stroke-width: 1.3;
         marker-end: url(#c4-arrow);
       }
       .c4-link-label {
-        fill: var(--muted);
+        fill: var(--color-on-surface-variant);
         font:
           9px ui-monospace,
           monospace;
@@ -623,19 +623,19 @@
       .entity {
         min-width: 0;
         overflow: hidden;
-        border: 1px solid var(--line);
-        border-radius: var(--radius-md);
-        background: var(--ink-1);
+        border: 1px solid var(--color-outline);
+        border-radius: var(--shape-medium);
+        background: var(--color-surface);
       }
       .entity header {
         display: flex;
         justify-content: space-between;
         gap: 0.75rem;
         padding: 0.8rem;
-        background: var(--ink-2);
+        background: var(--color-surface-container);
       }
       .entity header span {
-        color: var(--muted);
+        color: var(--color-on-surface-variant);
         font-size: 0.68rem;
         text-align: right;
       }
@@ -647,7 +647,7 @@
         grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
         gap: 0.6rem;
         padding: 0.48rem 0.8rem;
-        border-top: 1px solid var(--line);
+        border-top: 1px solid var(--color-outline);
       }
       .field dt,
       .field dd {
@@ -659,84 +659,84 @@
         font-family: ui-monospace, monospace;
       }
       .field dd {
-        color: var(--muted);
+        color: var(--color-on-surface-variant);
         font-size: 0.78rem;
         text-align: right;
       }
       .field.pk dt {
-        color: var(--signal);
+        color: var(--color-primary);
       }
       .field.fk dt {
-        color: var(--cyan);
+        color: var(--color-secondary);
       }
       .relationship {
-        color: var(--muted);
+        color: var(--color-on-surface-variant);
         font-family: ui-monospace, monospace;
         white-space: nowrap;
       }
       .sequence .participant rect {
-        fill: var(--ink-2);
-        stroke: var(--line);
+        fill: var(--color-surface-container);
+        stroke: var(--color-outline);
       }
       .sequence .participant text {
-        fill: var(--text);
+        fill: var(--color-on-surface);
         font:
           700 12px ui-monospace,
           monospace;
         text-anchor: middle;
       }
       .sequence .participant.is-sender rect {
-        stroke: var(--signal);
+        stroke: var(--color-primary);
         stroke-width: 2.5;
       }
       .sequence .participant.is-receiver rect {
-        stroke: var(--cyan);
+        stroke: var(--color-secondary);
         stroke-width: 2.5;
         stroke-dasharray: 6 3;
       }
       .sequence .lifeline {
-        stroke: var(--line);
+        stroke: var(--color-outline);
         stroke-dasharray: 4 5;
       }
       .sequence-message path {
         fill: none;
-        stroke: var(--line-strong);
+        stroke: var(--color-outline-strong);
         stroke-width: 1.5;
       }
       .sequence-message text {
-        fill: var(--muted);
+        fill: var(--color-on-surface-variant);
         font:
           10px ui-monospace,
           monospace;
         text-anchor: middle;
       }
       .sequence-message.is-active path {
-        stroke: var(--signal);
+        stroke: var(--color-primary);
         stroke-width: 2.6;
         stroke-dasharray: 7 5;
         animation: edge-flow 1s linear infinite;
       }
       .sequence-message.is-active text {
-        fill: var(--signal);
+        fill: var(--color-primary);
       }
       .sequence-message.is-complete path {
-        stroke: var(--green);
+        stroke: var(--color-success);
         stroke-dasharray: 3 2;
       }
       .noscript-summary {
         margin: 1rem;
         padding: 1rem;
-        border: 1px solid var(--line);
-        border-radius: var(--radius-sm);
-        background: var(--ink-2);
+        border: 1px solid var(--color-outline);
+        border-radius: var(--shape-small);
+        background: var(--color-surface-container);
       }
       .noscript-summary li + li {
         margin-top: 0.65rem;
       }
       footer {
-        border-top: 1px solid var(--line);
+        border-top: 1px solid var(--color-outline);
         padding-block: 2rem 4rem;
-        color: var(--muted);
+        color: var(--color-on-surface-variant);
       }
       @media (max-width: 760px) {
         .twin-grid,
@@ -748,7 +748,7 @@
         }
         .stage-grid > :last-child {
           border-left: 0;
-          border-top: 1px solid var(--line);
+          border-top: 1px solid var(--color-outline);
         }
         .control-plane {
           grid-template-columns: minmax(0, 1fr);
@@ -768,7 +768,7 @@
         .field-nav,
         main,
         footer {
-          width: min(calc(100% - 1rem), var(--content));
+          width: min(calc(100% - 1rem), var(--content-max));
         }
         .button-row {
           display: grid;
@@ -850,7 +850,7 @@
                     <path
                       d="M0 0 10 5 0 10Z"
                       fill="currentColor"
-                      style="color: var(--line-strong)"
+                      style="color: var(--color-outline-strong)"
                     />
                   </marker>
                 </defs>
@@ -965,7 +965,7 @@
                     <path
                       d="M0 0 10 5 0 10Z"
                       fill="currentColor"
-                      style="color: var(--line-strong)"
+                      style="color: var(--color-outline-strong)"
                     />
                   </marker>
                 </defs>
@@ -1076,7 +1076,7 @@
             </p>
             <div class="button-row" aria-label="Twin flow controls">
               <button
-                class="button button--primary"
+                class="button button--filled"
                 type="button"
                 data-action="next"
               >
@@ -1091,7 +1091,7 @@
               >
                 Play</button
               ><button
-                class="button button--quiet"
+                class="button button--text"
                 type="button"
                 data-action="reset"
               >
@@ -1213,7 +1213,7 @@
                     <path
                       d="M0 0 10 5 0 10Z"
                       fill="currentColor"
-                      style="color: var(--line-strong)"
+                      style="color: var(--color-outline-strong)"
                     />
                   </marker>
                 </defs>
@@ -1338,7 +1338,7 @@
             </p>
             <div class="button-row" aria-label="Runtime controls">
               <button
-                class="button button--primary"
+                class="button button--filled"
                 type="button"
                 data-action="next"
               >
@@ -1353,7 +1353,7 @@
               >
                 Play</button
               ><button
-                class="button button--quiet"
+                class="button button--text"
                 type="button"
                 data-action="reset"
               >
@@ -1430,7 +1430,7 @@
                   <path
                     d="M0 0 10 5 0 10Z"
                     fill="currentColor"
-                    style="color: var(--line-strong)"
+                    style="color: var(--color-outline-strong)"
                   />
                 </marker>
               </defs>
@@ -1488,13 +1488,13 @@
                 height="430"
                 rx="16"
                 fill="none"
-                stroke="var(--line)"
+                stroke="var(--color-outline)"
                 stroke-width="2"
               />
               <text
                 x="55"
                 y="64"
-                fill="var(--muted)"
+                fill="var(--color-on-surface-variant)"
                 font-family="ui-monospace,monospace"
                 font-size="12"
               >
@@ -1550,13 +1550,13 @@
                 height="430"
                 rx="16"
                 fill="none"
-                stroke="var(--line)"
+                stroke="var(--color-outline)"
                 stroke-width="2"
               />
               <text
                 x="55"
                 y="64"
-                fill="var(--muted)"
+                fill="var(--color-on-surface-variant)"
                 font-family="ui-monospace,monospace"
                 font-size="12"
               >
@@ -1636,7 +1636,7 @@
                     <path
                       d="M0 0 10 5 0 10Z"
                       fill="currentColor"
-                      style="color: var(--line-strong)"
+                      style="color: var(--color-outline-strong)"
                     />
                   </marker>
                 </defs>
@@ -1714,7 +1714,7 @@
             </p>
             <div class="button-row" aria-label="Sequence controls">
               <button
-                class="button button--primary"
+                class="button button--filled"
                 type="button"
                 data-action="next"
               >
@@ -1729,7 +1729,7 @@
               >
                 Play</button
               ><button
-                class="button button--quiet"
+                class="button button--text"
                 type="button"
                 data-action="reset"
               >
