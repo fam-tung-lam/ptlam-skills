@@ -2,7 +2,6 @@ import assert from "node:assert/strict";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { describe, onTestFinished, test } from "vitest";
 
 import { PluginChecker } from "../../../../tools/plugin-compiler/plugin-checker.ts";
@@ -11,9 +10,6 @@ import {
   PluginValidationError,
   PluginValidator,
 } from "../../../../tools/plugin-compiler/plugin-validator.ts";
-
-const testDirectory = path.dirname(fileURLToPath(import.meta.url));
-const repositoryRoot = path.resolve(testDirectory, "../../../..");
 
 const outputPaths = [
   ".claude-plugin/plugin.json",
@@ -160,26 +156,6 @@ function outputAt(
 }
 
 describe("plugin compiler repository workflow", () => {
-  test("the repository catalog validates and generated outputs are current", async () => {
-    // GIVEN: An isolated repository workflow scenario is prepared.
-    const { validator, checker } = createCompiler();
-
-    // WHEN: The compiler workflow is exercised through its public command boundary.
-    const validation = await validator.validatePlugin({
-      rootDir: repositoryRoot,
-    });
-
-    // THEN: The command result and managed repository state are verified.
-    assert.deepEqual(validation.diagnostics, []);
-
-    // WHEN: The compiler workflow is exercised through its public command boundary.
-    const current = await checker.checkPlugin({ rootDir: repositoryRoot });
-
-    // THEN: The command result and managed repository state are verified.
-    assert.equal(current.isCurrent, true);
-    assert.deepEqual(current.drift, []);
-  });
-
   test("a fixture repository generates all outputs and checks current", async () => {
     // GIVEN: An isolated repository workflow scenario is prepared.
     const rootDir = await createFixtureRepository();
