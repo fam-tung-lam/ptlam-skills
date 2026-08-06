@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
-import { describe, test } from "vitest";
+import { describe, it } from "vitest";
 
 import { validateHtmlDocument } from "../../../../../plugin/skills/ptlam-visualization-with-html/scripts/validation/validate-html-document.ts";
 
 describe("validateHtmlDocument", () => {
-  test("accepts a complete portable interactive visualization", () => {
+  it("accepts a complete portable interactive visualization", () => {
     // GIVEN: A document provides the shell, accessible SVG, complete stepper, C4 maps, and valid script.
     const source = validHtmlDocument();
 
@@ -18,7 +18,7 @@ describe("validateHtmlDocument", () => {
     assert.equal(Object.isFrozen(result.warnings), true);
   });
 
-  test.each([
+  it.each([
     {
       name: "HTML5 doctype",
       mutate: (source: string) => source.replace("<!doctype html>", ""),
@@ -89,7 +89,7 @@ describe("validateHtmlDocument", () => {
     assert.equal(result.errors.includes(error), true);
   });
 
-  test("reports duplicate identifiers and missing fragment targets in stable order", () => {
+  it("reports duplicate identifiers and missing fragment targets in stable order", () => {
     // GIVEN: Internal references contain duplicate and unresolved identifiers.
     const source = validHtmlDocument()
       .replace(
@@ -112,7 +112,7 @@ describe("validateHtmlDocument", () => {
     );
   });
 
-  test("reports every external runtime asset while allowing embedded and fragment assets", () => {
+  it("reports every external runtime asset while allowing embedded and fragment assets", () => {
     // GIVEN: Runtime references appear in HTML attributes, srcset, inline CSS, and style blocks.
     const assets = [
       '<link href="theme.css">',
@@ -138,7 +138,7 @@ describe("validateHtmlDocument", () => {
     );
   });
 
-  test("requires every SVG to expose an accessible name", () => {
+  it("requires every SVG to expose an accessible name", () => {
     // GIVEN: One SVG lacks role=img and another points to an empty label.
     const source = validHtmlDocument().replace(
       "</main>",
@@ -157,7 +157,7 @@ describe("validateHtmlDocument", () => {
     );
   });
 
-  test.each(["next", "back", "play", "reset"])(
+  it.each(["next", "back", "play", "reset"])(
     "requires the %s action in every stepper",
     (action) => {
       // GIVEN: A stepper omits one required control action.
@@ -177,7 +177,7 @@ describe("validateHtmlDocument", () => {
     },
   );
 
-  test("does not let an outer stepper borrow a nested stepper's controls", () => {
+  it("does not let an outer stepper borrow a nested stepper's controls", () => {
     // GIVEN: An incomplete outer stepper wraps an independently complete stepper.
     const source = validHtmlDocument()
       .replace(
@@ -212,7 +212,7 @@ describe("validateHtmlDocument", () => {
     );
   });
 
-  test("reports missing synchronized stepper state and play semantics", () => {
+  it("reports missing synchronized stepper state and play semantics", () => {
     // GIVEN: A stepper loses its caption, counter, summary, and pressed state.
     const source = validHtmlDocument()
       .replace("data-step-caption", "data-removed-caption")
@@ -235,7 +235,7 @@ describe("validateHtmlDocument", () => {
     );
   });
 
-  test.each([
+  it.each([
     {
       summary: "Too short",
       count: "1 / 3",
@@ -270,7 +270,7 @@ describe("validateHtmlDocument", () => {
     },
   );
 
-  test("requires multiple C4 maps and an explicit zoom-out control", () => {
+  it("requires multiple C4 maps and an explicit zoom-out control", () => {
     // GIVEN: C4 zoom contains one level and no back control.
     const source = validHtmlDocument()
       .replace('<div data-c4-level="containers"></div>', "")
@@ -294,7 +294,7 @@ describe("validateHtmlDocument", () => {
     );
   });
 
-  test("reports invalid embedded JavaScript with a stable block number", () => {
+  it("reports invalid embedded JavaScript with a stable block number", () => {
     // GIVEN: The second inline script contains invalid JavaScript.
     const source = validHtmlDocument().replace(
       "</body>",
@@ -313,7 +313,7 @@ describe("validateHtmlDocument", () => {
     );
   });
 
-  test("does not interpret comments or raw script text as document elements", () => {
+  it("does not interpret comments or raw script text as document elements", () => {
     // GIVEN: Comments and JavaScript strings contain HTML-looking markup.
     const source = validHtmlDocument()
       .replace("<head>", "<head><!-- <main><h1>Comment</h1></main> -->")

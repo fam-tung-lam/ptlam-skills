@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { describe, test } from "vitest";
+import { describe, it } from "vitest";
 
 import type { PluginCategory } from "../../../../../tools/plugin-compiler/models/category.ts";
 import {
@@ -18,7 +18,7 @@ const categories: readonly PluginCategory[] = [
 ];
 
 describe("validateSkillGraph", () => {
-  test("reports one lifecycle error for one incompatible dependency edge", () => {
+  it("reports one lifecycle error for one incompatible dependency edge", () => {
     // GIVEN: One active skill requires one archived skill.
     const owner = makeSkill({
       id: "active-owner",
@@ -49,7 +49,7 @@ describe("validateSkillGraph", () => {
     ]);
   });
 
-  test("rejects an internal active replacement", () => {
+  it("rejects an internal active replacement", () => {
     // GIVEN: Deprecated public guidance points to an internal active skill.
     const deprecated = makeSkill({
       id: "deprecated-skill",

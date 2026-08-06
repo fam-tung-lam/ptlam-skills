@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { symlink, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { describe, test } from "vitest";
+import { describe, it } from "vitest";
 
 import { renderHtmlScaffold } from "../../../../../plugin/skills/ptlam-visualization-with-html/scripts/scaffolding/render-html-scaffold.ts";
 import { runValidateHtmlCommand } from "../../../../../plugin/skills/ptlam-visualization-with-html/scripts/validation/validate-html.ts";
@@ -16,7 +16,7 @@ const validateScript = path.resolve(
 );
 
 describe("validate HTML command", () => {
-  test("validates a document through the portable Node entry point", async () => {
+  it("validates a document through the portable Node entry point", async () => {
     // GIVEN: A valid portable document exists outside the skill installation.
     const root = await temporaryDirectory();
     const htmlPath = path.join(root, "guide.html");
@@ -31,7 +31,7 @@ describe("validate HTML command", () => {
     assert.equal(result.stderr, "");
   });
 
-  test("runs the validation entry point through a symbolic link", async () => {
+  it("runs the validation entry point through a symbolic link", async () => {
     // GIVEN: A skill installer exposes the portable command through a symlink.
     const root = await temporaryDirectory();
     const linkedScript = path.join(root, "validate-html.ts");
@@ -48,7 +48,7 @@ describe("validate HTML command", () => {
     assert.equal(result.stderr, "");
   });
 
-  test("reports help, invalid documents, and missing files", async () => {
+  it("reports help, invalid documents, and missing files", async () => {
     // GIVEN: One invalid document and one absent path are addressed by the CLI.
     const root = await temporaryDirectory();
     const invalidPath = path.join(root, "invalid.html");

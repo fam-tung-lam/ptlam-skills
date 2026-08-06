@@ -1,11 +1,11 @@
 import assert from "node:assert/strict";
-import { describe, test } from "vitest";
+import { describe, it } from "vitest";
 
 import { selectPublishedSkills } from "../../../../../tools/plugin-compiler/publication/select-published-skills.ts";
 import { makeUnsafeMutablePluginSnapshotFixture } from "./test-fixtures/unsafe-mutable-plugin-snapshot-fixture.ts";
 
 describe("selectPublishedSkills", () => {
-  test("selects eligible roots in manifest order without mutating input", () => {
+  it("selects eligible roots in manifest order without mutating input", () => {
     // GIVEN: A manifest-ordered catalog covers every visibility and lifecycle case.
     const plugin = makeUnsafeMutablePluginSnapshotFixture();
     const originalSkillIds = plugin.skills.map((skill) => skill.id);

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { describe, test } from "vitest";
+import { describe, it } from "vitest";
 
 import {
   createPluginSnapshot,
@@ -12,7 +12,7 @@ import {
 } from "../../../../../tools/plugin-compiler/models/skill.ts";
 
 describe("createPluginSnapshot", () => {
-  test("snapshots the complete validated source graph as immutable values", () => {
+  it("snapshots the complete validated source graph as immutable values", () => {
     // GIVEN: Mutable validated plugin metadata and one inspected skill exist.
     const input = {
       schema_version: PluginSchemaVersion.V1,

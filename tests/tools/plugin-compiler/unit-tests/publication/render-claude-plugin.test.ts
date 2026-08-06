@@ -1,11 +1,11 @@
 import assert from "node:assert/strict";
-import { describe, test } from "vitest";
+import { describe, it } from "vitest";
 
 import { renderClaudePluginArtifacts } from "../../../../../tools/plugin-compiler/publication/render-claude-plugin.ts";
 import { makeUnsafeMutablePluginSnapshotFixture } from "./test-fixtures/unsafe-mutable-plugin-snapshot-fixture.ts";
 
 describe("renderClaudePluginArtifacts", () => {
-  test("renders exact host manifests without internal dependency metadata", () => {
+  it("renders exact host manifests without internal dependency metadata", () => {
     // GIVEN: A validated-looking catalog contains public and internal skills.
     const plugin = makeUnsafeMutablePluginSnapshotFixture();
 

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { format } from "prettier";
-import { describe, test } from "vitest";
+import { describe, it } from "vitest";
 import {
   SkillStatus,
   SkillVisibility,
@@ -19,7 +19,7 @@ function itemAt<T>(items: readonly T[], index: number): T {
 }
 
 describe("renderPluginReadme", () => {
-  test("replaces only the ordered managed catalog region", () => {
+  it("replaces only the ordered managed catalog region", () => {
     // GIVEN: A README surrounds one stale managed region with human-owned bytes.
     const plugin = makeUnsafeMutablePluginSnapshotFixture();
     const rootReadme =
@@ -41,7 +41,7 @@ describe("renderPluginReadme", () => {
     assert.doesNotMatch(result, /review-code-change|plan-task/u);
   });
 
-  test("excludes archived public roots from the catalog", () => {
+  it("excludes archived public roots from the catalog", () => {
     // GIVEN: A public archived skill is appended to the catalog.
     const plugin = makeUnsafeMutablePluginSnapshotFixture();
     plugin.skills.push({
@@ -66,7 +66,7 @@ describe("renderPluginReadme", () => {
     assert.doesNotMatch(result, /archived-skill/u);
   });
 
-  test("renders Unicode tables accepted by the pinned formatter", async () => {
+  it("renders Unicode tables accepted by the pinned formatter", async () => {
     // GIVEN: Catalog labels and descriptions contain wide Unicode characters.
     const plugin = makeUnsafeMutablePluginSnapshotFixture();
     itemAt(plugin.categories, 1).name = "工具";
@@ -84,7 +84,7 @@ describe("renderPluginReadme", () => {
     assert.equal(await format(result, { parser: "markdown" }), result);
   });
 
-  test.each([
+  it.each([
     {
       name: "missing start",
       source: `${ROOT_README_END_MARKER}`,
@@ -120,7 +120,7 @@ describe("renderPluginReadme", () => {
     assert.throws(render, expected);
   });
 
-  test.each([
+  it.each([
     { name: "control", description: "ANSI \u001b[31m" },
     { name: "format", description: "zero\u200bwidth" },
     { name: "surrogate", description: "bad\ud800value" },

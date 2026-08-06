@@ -38,7 +38,9 @@ updated_at: 2026-08-06
   formatting. The root package manifest and lockfile own exact versions.
 - Put the production or capability scope before the test level. Use the
   repository names `unit-tests/` and `integration-tests/`, then mirror deeper
-  capability folders such as `validation/` or `publication/` when useful.
+  capability folders such as `validation/` or `publication/` when useful. This
+  documented repository layout is an explicit project-local override of the
+  TypeScript specialization's general source-adjacent placement preference.
 - Use explicit `GIVEN`, `WHEN`, and `THEN` comments in every test.
 - Keep reusable semantic fakes beside their nearest common test scope. Use
   `vi.fn` or `vi.spyOn` for one-off observable interactions.
@@ -57,6 +59,8 @@ For TypeScript production code and tests across the repository:
 
 - Group every test in an explicit `describe` suite, including a suite with one
   test.
+- Declare cases and modifiers with `it`, such as `it.each`; do not use the
+  equivalent `test` alias.
 - Prefer Vitest parameterized APIs when multiple cases exercise the same
   behavior contract and data shape.
 - Use Vitest hooks for lifecycle setup and cleanup. Prefer `onTestFinished` for

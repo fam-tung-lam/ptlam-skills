@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { describe, test } from "vitest";
+import { describe, it } from "vitest";
 
 import {
   compareReleaseTags,
@@ -7,7 +7,7 @@ import {
 } from "../../../../../../.github/scripts/release/validation/release-tag.ts";
 
 describe("parseReleaseTag", () => {
-  test.each([
+  it.each([
     ["v0.1.0", "0.1.0", false],
     ["v2.4.1-beta.2", "2.4.1-beta.2", true],
     ["v2.4.1+build.7", "2.4.1+build.7", false],
@@ -29,7 +29,7 @@ describe("parseReleaseTag", () => {
     },
   );
 
-  test.each(["0.1.0", "v1.2", "v1.2.3/unsafe", "vx.y.z"])(
+  it.each(["0.1.0", "v1.2", "v1.2.3/unsafe", "vx.y.z"])(
     "rejects unsafe release tag %s",
     (value) => {
       // GIVEN: A tag that is not v-prefixed semantic versioning.
@@ -41,7 +41,7 @@ describe("parseReleaseTag", () => {
     },
   );
 
-  test("requires the tag to equal the expected plugin version", () => {
+  it("requires the tag to equal the expected plugin version", () => {
     // GIVEN: A semantic tag for a different plugin version.
     // WHEN: It is parsed against the manifest version.
     const parse = () => parseReleaseTag("v1.2.4", "1.2.3");
@@ -50,7 +50,7 @@ describe("parseReleaseTag", () => {
     assert.throws(parse, /must equal plugin version v1\.2\.3/u);
   });
 
-  test.each([
+  it.each([
     ["v1.0.0-alpha", "v1.0.0-alpha.1", -1],
     ["v1.0.0-alpha.1", "v1.0.0-alpha.beta", -1],
     ["v1.0.0-beta.2", "v1.0.0-beta.11", -1],

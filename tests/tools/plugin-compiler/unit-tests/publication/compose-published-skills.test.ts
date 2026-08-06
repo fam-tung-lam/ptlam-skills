@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { describe, test } from "vitest";
+import { describe, it } from "vitest";
 import {
   REQUIRED_SKILLS_MARKER,
   type SkillSnapshot,
@@ -33,7 +33,7 @@ function stringContent(
 }
 
 describe("composePublishedSkills", () => {
-  test("composes public skills with generated frontmatter and required context", () => {
+  it("composes public skills with generated frontmatter and required context", () => {
     // GIVEN: A public skill requires one internal skill with a byte resource.
     const base = makeSkill({
       resources: [
@@ -96,7 +96,7 @@ describe("composePublishedSkills", () => {
     );
   });
 
-  test("keeps transitive dependencies recursive and duplicates diamond leaves", () => {
+  it("keeps transitive dependencies recursive and duplicates diamond leaves", () => {
     // GIVEN: A public root reaches one leaf through both sides of a diamond.
     const leaf = makeSkill({ id: "leaf-skill" });
     const left = makeSkill({
@@ -155,7 +155,7 @@ describe("composePublishedSkills", () => {
     );
   });
 
-  test("publishes deprecated skills but excludes internal draft and archived roots", () => {
+  it("publishes deprecated skills but excludes internal draft and archived roots", () => {
     // GIVEN: Non-active roots and one deprecated public root share a catalog.
     const skills = [
       makeSkill({ id: "internal-skill" }),
@@ -187,7 +187,7 @@ describe("composePublishedSkills", () => {
     );
   });
 
-  test("orders Unicode resource paths by code point", () => {
+  it("orders Unicode resource paths by code point", () => {
     // GIVEN: One public skill has resources whose locale order differs by host.
     const skill = makeSkill({
       visibility: SkillVisibility.Public,

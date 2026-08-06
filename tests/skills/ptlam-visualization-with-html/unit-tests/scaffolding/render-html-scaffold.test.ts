@@ -1,11 +1,11 @@
 import assert from "node:assert/strict";
-import { describe, test } from "vitest";
+import { describe, it } from "vitest";
 
 import { renderHtmlScaffold } from "../../../../../plugin/skills/ptlam-visualization-with-html/scripts/scaffolding/render-html-scaffold.ts";
 import { validateHtmlDocument } from "../../../../../plugin/skills/ptlam-visualization-with-html/scripts/validation/validate-html-document.ts";
 
 describe("renderHtmlScaffold", () => {
-  test("renders a valid portable document with an escaped title", () => {
+  it("renders a valid portable document with an escaped title", () => {
     // GIVEN: A title contains every character that can enter HTML markup.
     const title = `<Architecture & "flow's">`;
 
@@ -21,7 +21,7 @@ describe("renderHtmlScaffold", () => {
     assert.deepEqual(validateHtmlDocument(source).errors, []);
   });
 
-  test.each([undefined, "", "   "])(
+  it.each([undefined, "", "   "])(
     "uses the default title when the requested title is %s",
     (title) => {
       // GIVEN: The caller does not supply a meaningful title.

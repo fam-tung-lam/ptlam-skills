@@ -9,7 +9,7 @@ import {
 } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { describe, onTestFinished, test } from "vitest";
+import { describe, it, onTestFinished } from "vitest";
 
 import {
   type PluginAuthor,
@@ -94,7 +94,7 @@ function itemAt<T>(items: T[], index: number, label: string): T {
 }
 
 describe("validatePlugin", () => {
-  test("validatePlugin returns an ordered immutable v1 source snapshot", async () => {
+  it("validatePlugin returns an ordered immutable v1 source snapshot", async () => {
     // GIVEN: A valid v1 manifest has one dependency and binary resources.
     const rootDir = await createFixture({
       manifest: makeManifest(),
@@ -165,7 +165,7 @@ describe("validatePlugin", () => {
     }
   });
 
-  test("orders Unicode resource paths by locale-independent code points", async () => {
+  it("orders Unicode resource paths by locale-independent code points", async () => {
     // GIVEN: One skill contains resource names whose locale order can differ.
     const rootDir = await createFixture({
       manifest: oneSkillManifest(),
@@ -187,7 +187,7 @@ describe("validatePlugin", () => {
     );
   });
 
-  test("schema is closed and models lifecycle metadata conditionally", async () => {
+  it("schema is closed and models lifecycle metadata conditionally", async () => {
     // GIVEN: A manifest violates closed-schema and lifecycle shape rules.
     const manifest = makeManifest();
     manifest.unexpected = true;
@@ -212,7 +212,7 @@ describe("validatePlugin", () => {
     ]);
   });
 
-  test("schema fields stay synchronized with manifest model fields", async () => {
+  it("schema fields stay synchronized with manifest model fields", async () => {
     // GIVEN: The authoritative schema and compile-checked model field lists exist.
     const pluginFields = [
       "schema_version",
@@ -277,7 +277,7 @@ describe("validatePlugin", () => {
     assert.deepEqual(schemaSkillFields, [...skillFields].sort());
   });
 
-  test.each([
+  it.each([
     {
       name: "HTTP homepage",
       change(manifest: FixtureManifest) {
@@ -320,7 +320,7 @@ describe("validatePlugin", () => {
     await expectValidationError(validation, [expected]);
   });
 
-  test.each<{
+  it.each<{
     name: string;
     change: (skill: FixtureSkill) => void;
     errors: string[];
@@ -371,7 +371,7 @@ describe("validatePlugin", () => {
 
   const baseManifestSource = JSON.stringify(makeManifest(), null, 2);
 
-  test("strict YAML 1.2 accepts comments", async () => {
+  it("strict YAML 1.2 accepts comments", async () => {
     // GIVEN: A portable manifest contains YAML comments.
     const manifestSource = `# Schema contract\n${baseManifestSource.replace('"version": "1.2.3+1",', '"version": "1.2.3+1", # Plugin release')}`;
     const rootDir = await createFixture({
@@ -386,7 +386,7 @@ describe("validatePlugin", () => {
     assert.equal(result.plugin.version, "1.2.3+1");
   });
 
-  test.each([
+  it.each([
     {
       name: "duplicate keys",
       source: baseManifestSource.replace(
@@ -457,7 +457,7 @@ describe("validatePlugin", () => {
     await expectValidationError(validation, errors);
   });
 
-  test("manifest and flat source directories have a fail-closed one-to-one mapping", async () => {
+  it("manifest and flat source directories have a fail-closed one-to-one mapping", async () => {
     // GIVEN: The manifest omits one source while the tree adds an orphan and a file.
     const manifest = makeManifest();
     const alphaSkill = itemAt(manifest.skills, 0, "alpha skill");
@@ -484,7 +484,7 @@ describe("validatePlugin", () => {
     ]);
   });
 
-  test.each([
+  it.each([
     {
       name: "frontmatter",
       source: `---\nname: alpha-skill\n---\n\n${REQUIRED_SKILLS_MARKER}\n`,
@@ -514,7 +514,7 @@ describe("validatePlugin", () => {
     await expectValidationError(validation, errors);
   });
 
-  test("skill resources reject compiler-owned paths, symlinks, escapes, and missing links", async () => {
+  it("skill resources reject compiler-owned paths, symlinks, escapes, and missing links", async () => {
     // GIVEN: A skill contains a compiler-owned path, symlink, escape, and missing link.
     const manifest = oneSkillManifest();
     const rootDir = await createFixture({
@@ -558,7 +558,7 @@ describe("validatePlugin", () => {
     ]);
   });
 
-  test("category, dependency, lifecycle, replacement, and DAG errors aggregate", async () => {
+  it("category, dependency, lifecycle, replacement, and DAG errors aggregate", async () => {
     // GIVEN: One graph contains independent category, edge, replacement, and cycle errors.
     const manifest = makeManifest();
     const alphaSkill = itemAt(manifest.skills, 0, "alpha skill");
@@ -591,7 +591,7 @@ describe("validatePlugin", () => {
     ]);
   });
 
-  test("category IDs, skill IDs, and direct requirement IDs are unique", async () => {
+  it("category IDs, skill IDs, and direct requirement IDs are unique", async () => {
     // GIVEN: Category, skill, and direct-requirement IDs are duplicated.
     const manifest = makeManifest();
     manifest.categories.push({ ...itemAt(manifest.categories, 0, "category") });
@@ -615,7 +615,7 @@ describe("validatePlugin", () => {
     ]);
   });
 
-  test("active outputs cannot depend on draft or archived skills", async () => {
+  it("active outputs cannot depend on draft or archived skills", async () => {
     // GIVEN: An active skill depends on draft and archived skills.
     const manifest = makeManifest();
     manifest.skills.push({
@@ -644,7 +644,7 @@ describe("validatePlugin", () => {
     ]);
   });
 
-  test("deprecated dependencies and unreachable internal skills are warnings", async () => {
+  it("deprecated dependencies and unreachable internal skills are warnings", async () => {
     // GIVEN: A public root requires a deprecated skill while another internal skill is unused.
     const manifest = makeManifest();
     const betaSkill = itemAt(manifest.skills, 1, "beta skill");
@@ -680,7 +680,7 @@ describe("validatePlugin", () => {
     );
   });
 
-  test("manifest and nested source paths reject symbolic links", async () => {
+  it("manifest and nested source paths reject symbolic links", async () => {
     // GIVEN: The canonical plugin path is replaced by a directory symlink.
     const rootDir = await createTemporaryDirectory("ptlam-validate-plugin-");
     const externalRoot = await createFixture({ manifest: makeManifest() });

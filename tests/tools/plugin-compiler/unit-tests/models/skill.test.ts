@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { describe, test } from "vitest";
+import { describe, it } from "vitest";
 
 import {
   createSkillSnapshot,
@@ -8,7 +8,7 @@ import {
 } from "../../../../../tools/plugin-compiler/models/skill.ts";
 
 describe("createSkillSnapshot", () => {
-  test("protects requirements lifecycle metadata and resource bytes", () => {
+  it("protects requirements lifecycle metadata and resource bytes", () => {
     // GIVEN: Mutable validated skill values and one binary resource exist.
     const requirement = {
       skill_id: "core-skill",

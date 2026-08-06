@@ -3,7 +3,7 @@ import { spawn } from "node:child_process";
 import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { describe, test } from "vitest";
+import { describe, it } from "vitest";
 
 import {
   PluginCompilerCommand,
@@ -48,7 +48,7 @@ function runCli(command: string): Promise<ProcessResult> {
 }
 
 describe("plugin compiler CLI process", () => {
-  test("validate succeeds through the real tsx entrypoint", async () => {
+  it("validate succeeds through the real tsx entrypoint", async () => {
     // GIVEN: The repository's real CLI entrypoint and canonical sources exist.
 
     // WHEN: A child Node process executes the validate command through tsx.
@@ -63,7 +63,7 @@ describe("plugin compiler CLI process", () => {
     assert.equal(result.stderr, "");
   });
 
-  test("unknown command returns process exit code two and usage", async () => {
+  it("unknown command returns process exit code two and usage", async () => {
     // GIVEN: The repository's real CLI entrypoint is executed as a process.
 
     // WHEN: The process receives an unsupported command.

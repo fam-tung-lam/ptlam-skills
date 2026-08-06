@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { describe, onTestFinished, test } from "vitest";
+import { describe, it, onTestFinished } from "vitest";
 
 import type {
   CommandOptions,
@@ -74,7 +74,7 @@ function newReleaseResults(remoteTags = ""): readonly CommandResult[] {
 }
 
 describe("planRelease", () => {
-  test.each([
+  it.each([
     ['version: "1.2.3"', "v1.2.3"],
     ["version: '1.2.3-beta.1'", "v1.2.3-beta.1"],
     ["version: 1.2.3+build.4", "v1.2.3+build.4"],
@@ -98,7 +98,7 @@ describe("planRelease", () => {
     },
   );
 
-  test.each([
+  it.each([
     ["name: plugin", "exactly one top-level version"],
     ["version: 1.2.3\nversion: 2.0.0", "exactly one top-level version"],
     ["  version: 1.2.3", "exactly one top-level version"],
@@ -117,7 +117,7 @@ describe("planRelease", () => {
     assert.equal(commands.calls.length, 0);
   });
 
-  test("plans a version newer than every remote release tag", async () => {
+  it("plans a version newer than every remote release tag", async () => {
     // GIVEN: The candidate follows the greatest stable and prerelease tags.
     const repositoryRoot = await createManifest();
     const commands = new ScriptedCommandRunner(
@@ -134,7 +134,7 @@ describe("planRelease", () => {
     assert.equal(result.tag, "v1.2.3");
   });
 
-  test.each(["v2.0.0", "v1.2.3+build.7"])(
+  it.each(["v2.0.0", "v1.2.3+build.7"])(
     "rejects candidate v1.2.3 when remote tag %s is not older",
     async (remoteTag) => {
       // GIVEN: A remote release tag with equal or greater Semantic Version precedence.
@@ -151,7 +151,7 @@ describe("planRelease", () => {
     },
   );
 
-  test("skips a plugin version that already has an immutable release", async () => {
+  it("skips a plugin version that already has an immutable release", async () => {
     // GIVEN: Main still declares a version whose immutable release exists.
     const repositoryRoot = await createManifest();
     const commands = new ScriptedCommandRunner([
@@ -173,7 +173,7 @@ describe("planRelease", () => {
     });
   });
 
-  test.each([notFound(), success("true\tfalse")])(
+  it.each([notFound(), success("true\tfalse")])(
     "resumes an approved candidate whose matching tag already exists",
     async (releaseState) => {
       // GIVEN: A prior publication attempt created the exact tag at this commit.
@@ -198,7 +198,7 @@ describe("planRelease", () => {
     },
   );
 
-  test("rejects an existing candidate tag at another commit", async () => {
+  it("rejects an existing candidate tag at another commit", async () => {
     // GIVEN: The manifest tag already points outside the successful CI commit.
     const repositoryRoot = await createManifest();
     const commands = new ScriptedCommandRunner([
@@ -217,7 +217,7 @@ describe("planRelease", () => {
     await assert.rejects(planning, /points to another commit/u);
   });
 
-  test("rejects a successful CI event for another checkout", async () => {
+  it("rejects a successful CI event for another checkout", async () => {
     // GIVEN: The checked-out commit differs from the completed CI run.
     const repositoryRoot = await createManifest();
     const commands = new ScriptedCommandRunner([
@@ -232,7 +232,7 @@ describe("planRelease", () => {
     assert.equal(commands.calls.length, 1);
   });
 
-  test("rejects a release commit outside main history", async () => {
+  it("rejects a release commit outside main history", async () => {
     // GIVEN: The successful CI commit is not reachable from current main.
     const repositoryRoot = await createManifest();
     const commands = new ScriptedCommandRunner([
@@ -248,7 +248,7 @@ describe("planRelease", () => {
     await assert.rejects(planning, /must be reachable from origin\/main/u);
   });
 
-  test("rejects an existing mutable release", async () => {
+  it("rejects an existing mutable release", async () => {
     // GIVEN: The manifest tag already names a published mutable release.
     const repositoryRoot = await createManifest();
     const commands = new ScriptedCommandRunner([

@@ -2,7 +2,7 @@ import { execFileSync, spawnSync } from "node:child_process";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { describe, expect, onTestFinished, test } from "vitest";
+import { describe, expect, it, onTestFinished } from "vitest";
 
 import { ReleaseAutomation } from "../../../../../.github/scripts/release/release-automation.ts";
 
@@ -19,7 +19,7 @@ function archiveEntries(archivePath: string): readonly string[] {
 }
 
 describe("release automation repository workflow", () => {
-  test("starts through Node's strip-only TypeScript runtime", () => {
+  it("starts through Node's strip-only TypeScript runtime", () => {
     // GIVEN: The exact native Node invocation used by GitHub Actions.
     const cliPath = path.resolve(
       import.meta.dirname,
@@ -39,7 +39,7 @@ describe("release automation repository workflow", () => {
     expect(result.stderr).not.toContain("ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX");
   });
 
-  test("packages the complete coverage directory", async () => {
+  it("packages the complete coverage directory", async () => {
     // GIVEN: A generated HTML and JSON coverage report.
     const repositoryRoot = await createTemporaryDirectory("coverage-source-");
     const outputDirectory = await createTemporaryDirectory("coverage-output-");
@@ -72,7 +72,7 @@ describe("release automation repository workflow", () => {
     );
   });
 
-  test("packages only committed installable plugin outputs", async () => {
+  it("packages only committed installable plugin outputs", async () => {
     // GIVEN: A Git repository with plugin manifests, skills, docs, and tooling.
     const repositoryRoot = await createTemporaryDirectory("plugin-source-");
     const outputDirectory = await createTemporaryDirectory("plugin-output-");
@@ -138,7 +138,7 @@ describe("release automation repository workflow", () => {
     );
   });
 
-  test("writes sorted SHA-256 checksums for release archives", async () => {
+  it("writes sorted SHA-256 checksums for release archives", async () => {
     // GIVEN: Coverage and plugin archives with known literal bytes.
     const assetsDirectory = await createTemporaryDirectory("release-assets-");
     await writeFile(

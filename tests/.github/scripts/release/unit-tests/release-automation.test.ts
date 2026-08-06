@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { describe, test } from "vitest";
+import { describe, it } from "vitest";
 
 import type {
   CommandOptions,
@@ -68,7 +68,7 @@ function publishRequest(assetsDirectory = "release-assets") {
 }
 
 describe("ReleaseAutomation", () => {
-  test("creates the approved tag and publishes complete verified assets", async () => {
+  it("creates the approved tag and publishes complete verified assets", async () => {
     // GIVEN: A protected approval environment and no existing tag or release.
     const commands = new ScriptedCommandRunner([
       success("1"),
@@ -113,7 +113,7 @@ describe("ReleaseAutomation", () => {
     assert.equal(Object.isFrozen(result), true);
   });
 
-  test("publishes a prerelease without marking it latest", async () => {
+  it("publishes a prerelease without marking it latest", async () => {
     // GIVEN: An approved prerelease candidate with no tag or GitHub Release.
     const commands = new ScriptedCommandRunner([
       success("1"),
@@ -150,7 +150,7 @@ describe("ReleaseAutomation", () => {
     ]);
   });
 
-  test("treats an existing immutable release as a verified safe rerun", async () => {
+  it("treats an existing immutable release as a verified safe rerun", async () => {
     // GIVEN: The verified tag already has an immutable published release.
     const commands = new ScriptedCommandRunner([
       success("1"),
@@ -177,7 +177,7 @@ describe("ReleaseAutomation", () => {
     );
   });
 
-  test("resumes a matching draft without overwriting promoted bytes", async ({
+  it("resumes a matching draft without overwriting promoted bytes", async ({
     onTestFinished,
   }) => {
     // GIVEN: An interrupted draft has one matching asset and two missing assets.
@@ -225,7 +225,7 @@ describe("ReleaseAutomation", () => {
     );
   });
 
-  test.each([
+  it.each([
     [releaseState(false, false), "without immutability"],
     [
       { status: 1, stdout: "", stderr: "HTTP 403: Resource not accessible" },
@@ -251,7 +251,7 @@ describe("ReleaseAutomation", () => {
     },
   );
 
-  test("rejects a remote tag that no longer identifies the gated commit", async () => {
+  it("rejects a remote tag that no longer identifies the gated commit", async () => {
     // GIVEN: The remote tag resolves to a different commit before publication.
     const commands = new ScriptedCommandRunner([
       success("1"),
@@ -267,7 +267,7 @@ describe("ReleaseAutomation", () => {
     assert.equal(commands.calls.length, 2);
   });
 
-  test("fails before tag creation when the environment has no required reviewer", async () => {
+  it("fails before tag creation when the environment has no required reviewer", async () => {
     // GIVEN: The referenced release environment has no approval protection.
     const commands = new ScriptedCommandRunner([success("0")]);
     const automation = new ReleaseAutomation({ commands });
@@ -280,7 +280,7 @@ describe("ReleaseAutomation", () => {
     assert.equal(commands.calls.length, 1);
   });
 
-  test("reuses an existing annotated tag only when it points to the approved commit", async () => {
+  it("reuses an existing annotated tag only when it points to the approved commit", async () => {
     // GIVEN: A protected environment and an annotated tag from a partial attempt.
     const commands = new ScriptedCommandRunner([
       success("1"),

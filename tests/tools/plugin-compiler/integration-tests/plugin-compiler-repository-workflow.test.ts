@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { describe, onTestFinished, test } from "vitest";
+import { describe, it, onTestFinished } from "vitest";
 
 import { PluginCompiler } from "../../../../tools/plugin-compiler/plugin-compiler.ts";
 import { PluginPublicationDriftReason } from "../../../../tools/plugin-compiler/publication/plugin-publication.ts";
@@ -122,7 +122,7 @@ function outputAt(
 }
 
 describe("plugin compiler repository workflow", () => {
-  test("a fixture repository generates all outputs and checks current", async () => {
+  it("a fixture repository generates all outputs and checks current", async () => {
     // GIVEN: A valid repository has stale generated outputs.
     const rootDir = await createFixtureRepository();
     const compiler = new PluginCompiler();
@@ -174,7 +174,7 @@ describe("plugin compiler repository workflow", () => {
     assert.equal(Object.isFrozen(current.drift), true);
   });
 
-  test("a source change creates drift and check never mutates outputs", async () => {
+  it("a source change creates drift and check never mutates outputs", async () => {
     // GIVEN: Generated outputs are current before one source description changes.
     const rootDir = await createFixtureRepository();
     const compiler = new PluginCompiler();
@@ -210,7 +210,7 @@ describe("plugin compiler repository workflow", () => {
     assert.deepEqual(await readOutputs(rootDir), beforeDriftCheck);
   });
 
-  test("invalid source prevents generation from changing existing outputs", async () => {
+  it("invalid source prevents generation from changing existing outputs", async () => {
     // GIVEN: Current outputs exist before the manifest becomes invalid.
     const rootDir = await createFixtureRepository();
     const compiler = new PluginCompiler();
@@ -239,7 +239,7 @@ describe("plugin compiler repository workflow", () => {
     assert.deepEqual(await readOutputs(rootDir), beforeFailure);
   });
 
-  test("a missing root README prevents partial regeneration", async () => {
+  it("a missing root README prevents partial regeneration", async () => {
     // GIVEN: Current outputs exist before the required root README is removed.
     const rootDir = await createFixtureRepository();
     const compiler = new PluginCompiler();

@@ -1,11 +1,11 @@
 import assert from "node:assert/strict";
 import path from "node:path";
-import { describe, test } from "vitest";
+import { describe, it } from "vitest";
 
 import { createReleaseAssetPlan } from "../../../../../../.github/scripts/release/publication/release-assets.ts";
 
 describe("createReleaseAssetPlan", () => {
-  test("resolves every durable release asset from the exact tag", () => {
+  it("resolves every durable release asset from the exact tag", () => {
     // GIVEN: A release asset directory and a semantic release tag.
     // WHEN: The complete publication plan is created.
     const plan = createReleaseAssetPlan("release-assets", "v1.2.3");

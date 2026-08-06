@@ -1,14 +1,14 @@
 import assert from "node:assert/strict";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { describe, test } from "vitest";
+import { describe, it } from "vitest";
 
 import { createHtmlScaffold } from "../../../../../plugin/skills/ptlam-visualization-with-html/scripts/scaffolding/create-html-scaffold.ts";
 import { validateHtmlDocument } from "../../../../../plugin/skills/ptlam-visualization-with-html/scripts/validation/validate-html-document.ts";
 import { temporaryDirectory } from "../test-fixtures/cli-command-fixture.ts";
 
 describe("createHtmlScaffold", () => {
-  test("creates missing directories and writes a valid escaped document", async () => {
+  it("creates missing directories and writes a valid escaped document", async () => {
     // GIVEN: A nested output path does not exist yet.
     const root = await temporaryDirectory();
     const outputPath = path.join(root, "nested", "guide.html");
@@ -27,7 +27,7 @@ describe("createHtmlScaffold", () => {
     assert.deepEqual(validateHtmlDocument(source).errors, []);
   });
 
-  test("refuses to replace an existing document by default", async () => {
+  it("refuses to replace an existing document by default", async () => {
     // GIVEN: The requested output already contains user content.
     const root = await temporaryDirectory();
     const outputPath = path.join(root, "guide.html");
@@ -44,7 +44,7 @@ describe("createHtmlScaffold", () => {
     assert.equal(await readFile(outputPath, "utf8"), "keep me");
   });
 
-  test("replaces an existing document only when overwrite is explicit", async () => {
+  it("replaces an existing document only when overwrite is explicit", async () => {
     // GIVEN: An existing document may be intentionally replaced.
     const root = await temporaryDirectory();
     const outputPath = path.join(root, "guide.html");
@@ -59,7 +59,7 @@ describe("createHtmlScaffold", () => {
     assert.deepEqual(validateHtmlDocument(source).errors, []);
   });
 
-  test("rejects a non-HTML output before writing it", async () => {
+  it("rejects a non-HTML output before writing it", async () => {
     // GIVEN: The requested output has a different extension.
     const root = await temporaryDirectory();
 

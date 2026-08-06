@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { describe, onTestFinished, test } from "vitest";
+import { describe, it, onTestFinished } from "vitest";
 
 import {
   ReleaseAutomationCLI,
@@ -51,7 +51,7 @@ function createOutput(): {
 }
 
 describe("ReleaseAutomationCLI", () => {
-  test("returns usage error for an unknown command without delegating", async () => {
+  it("returns usage error for an unknown command without delegating", async () => {
     // GIVEN: An unknown command and release automation that must remain idle.
     const output = createOutput();
     const cli = new ReleaseAutomationCLI({ automation: automationDouble() });
@@ -65,7 +65,7 @@ describe("ReleaseAutomationCLI", () => {
     assert.match(output.stderr[0] ?? "", /<plan-release\|/u);
   });
 
-  test("plans a new release and writes the workflow outputs", async () => {
+  it("plans a new release and writes the workflow outputs", async () => {
     // GIVEN: The facade returns one release candidate and a writable output file.
     const output = createOutput();
     const outputDirectory = await mkdtemp(path.join(tmpdir(), "release-cli-"));
@@ -117,7 +117,7 @@ describe("ReleaseAutomationCLI", () => {
     assert.deepEqual(output.stdout, ["Planned v1.2.3 at commit abc123."]);
   });
 
-  test.each([
+  it.each([
     [
       ReleaseAutomationCommand.PackageCoverage,
       "packageCoverage",
@@ -175,7 +175,7 @@ describe("ReleaseAutomationCLI", () => {
     },
   );
 
-  test("generates checksums and publishes a verified release", async () => {
+  it("generates checksums and publishes a verified release", async () => {
     // GIVEN: The facade records preparation and publication requests.
     const output = createOutput();
     const calls: unknown[] = [];
@@ -239,7 +239,7 @@ describe("ReleaseAutomationCLI", () => {
     ]);
   });
 
-  test("reports invalid options and facade failures without throwing", async () => {
+  it("reports invalid options and facade failures without throwing", async () => {
     // GIVEN: One malformed invocation and one failing facade operation.
     const malformedOutput = createOutput();
     const failureOutput = createOutput();

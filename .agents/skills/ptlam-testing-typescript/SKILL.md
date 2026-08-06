@@ -25,7 +25,13 @@ here.
 
 **Reason:** Provides the universal testing workflow and mandatory rules.
 
-**Instructions:** Read and apply ptlam-testing first. Let it own the testing mode, primary test level, public seam, behavior rules, test doubles, TDD activation, audit authority, and verification depth. Use this specialization's explicit source-adjacent file placement instead of the foundation's generic test-root placement. Apply this skill only to framework-free, browser-free TypeScript, Vite, Vitest, and coverage mechanics that the foundation leaves open.
+**Instructions:** Read and apply ptlam-testing first.
+Let it own scope, level, public seam, behavior, doubles, TDD, audit
+authority, and verification depth.
+Use this skill's source-adjacent placement instead of the foundation's
+generic test-root placement.
+Apply it only to framework-free, browser-free TypeScript, Vite, Vitest,
+and coverage mechanics left open by the foundation.
 
 Read [ptlam-testing](references/required-skills/ptlam-testing/SKILL.md).
 

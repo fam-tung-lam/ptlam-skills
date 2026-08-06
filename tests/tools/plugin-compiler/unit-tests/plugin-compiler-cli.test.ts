@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { describe, test } from "vitest";
+import { describe, it } from "vitest";
 import {
   createPluginSnapshot,
   PluginSchemaVersion,
@@ -95,7 +95,7 @@ function compilerDouble(
 }
 
 describe("PluginCompilerCLI", () => {
-  test("returns usage error for an unknown command without delegating", async () => {
+  it("returns usage error for an unknown command without delegating", async () => {
     // GIVEN: An unknown command and a compiler that must remain idle.
     const output = createOutput();
     const cli = new PluginCompilerCLI({ compiler: compilerDouble() });
@@ -109,7 +109,7 @@ describe("PluginCompilerCLI", () => {
     assert.match(output.stderr[0] ?? "", /<validate\|generate\|check>/u);
   });
 
-  test("validate delegates to the compiler workflow", async () => {
+  it("validate delegates to the compiler workflow", async () => {
     // GIVEN: The compiler records validation requests.
     const output = createOutput();
     const requests: { rootDir: string }[] = [];
@@ -143,7 +143,7 @@ describe("PluginCompilerCLI", () => {
     ]);
   });
 
-  test("generate presents changed and unchanged paths", async () => {
+  it("generate presents changed and unchanged paths", async () => {
     // GIVEN: The compiler returns a publication result.
     const output = createOutput();
     const requests: { rootDir: string }[] = [];
@@ -181,7 +181,7 @@ describe("PluginCompilerCLI", () => {
     ]);
   });
 
-  test("generate reports when every output is already current", async () => {
+  it("generate reports when every output is already current", async () => {
     // GIVEN: Generation finds no changed managed paths.
     const output = createOutput();
     const cli = new PluginCompilerCLI({
@@ -209,7 +209,7 @@ describe("PluginCompilerCLI", () => {
     assert.deepEqual(output.stderr, []);
   });
 
-  test("validate uses singular labels for one skill and category", async () => {
+  it("validate uses singular labels for one skill and category", async () => {
     // GIVEN: The validated plugin has one skill in one category.
     const output = createOutput();
     const cli = new PluginCompilerCLI({
@@ -236,7 +236,7 @@ describe("PluginCompilerCLI", () => {
     ]);
   });
 
-  test("check reports both current and stale publication states", async () => {
+  it("check reports both current and stale publication states", async () => {
     // GIVEN: Two compiler results represent current and stale outputs.
     const currentOutput = createOutput();
     const staleOutput = createOutput();
@@ -301,7 +301,7 @@ describe("PluginCompilerCLI", () => {
     ]);
   });
 
-  test("maps validation and unexpected failures to distinct messages", async () => {
+  it("maps validation and unexpected failures to distinct messages", async () => {
     // GIVEN: Two compiler collaborators reject with distinct error kinds.
     const validationOutput = createOutput();
     const commandOutput = createOutput();
@@ -339,7 +339,7 @@ describe("PluginCompilerCLI", () => {
     assert.deepEqual(commandOutput.stderr, ["Plugin command failed: boom"]);
   });
 
-  test("does not catch output callback failures after successful execution", async () => {
+  it("does not catch output callback failures after successful execution", async () => {
     // GIVEN: Validation succeeds but its stdout adapter throws.
     const callbackError = new Error("stdout unavailable");
     const cli = new PluginCompilerCLI({
@@ -362,7 +362,7 @@ describe("PluginCompilerCLI", () => {
     await assert.rejects(execution, (error) => error === callbackError);
   });
 
-  test("does not catch output callback failures while presenting compiler errors", async () => {
+  it("does not catch output callback failures while presenting compiler errors", async () => {
     // GIVEN: Compilation fails and its stderr adapter also throws.
     const callbackError = new Error("stderr unavailable");
     const cli = new PluginCompilerCLI({

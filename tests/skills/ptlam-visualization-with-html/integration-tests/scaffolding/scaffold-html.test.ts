@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile, symlink, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { describe, test } from "vitest";
+import { describe, it } from "vitest";
 
 import { runScaffoldHtmlCommand } from "../../../../../plugin/skills/ptlam-visualization-with-html/scripts/scaffolding/scaffold-html.ts";
 import {
@@ -15,7 +15,7 @@ const scaffoldScript = path.resolve(
 );
 
 describe("scaffold HTML command", () => {
-  test("scaffolds a document through the portable Node entry point", async () => {
+  it("scaffolds a document through the portable Node entry point", async () => {
     // GIVEN: The command runs from a directory unrelated to the skill installation.
     const root = await temporaryDirectory();
     const outputPath = path.join(root, "guide.html");
@@ -39,7 +39,7 @@ describe("scaffold HTML command", () => {
     );
   });
 
-  test("runs the scaffold entry point through a symbolic link", async () => {
+  it("runs the scaffold entry point through a symbolic link", async () => {
     // GIVEN: A skill installer exposes the portable command through a symlink.
     const root = await temporaryDirectory();
     const linkedScript = path.join(root, "scaffold-html.ts");
@@ -65,7 +65,7 @@ describe("scaffold HTML command", () => {
     );
   });
 
-  test("reports help, usage errors, replacement protection, and forced replacement", async () => {
+  it("reports help, usage errors, replacement protection, and forced replacement", async () => {
     // GIVEN: CLI output is captured and one destination already exists.
     const root = await temporaryDirectory();
     const outputPath = path.join(root, "guide.html");
