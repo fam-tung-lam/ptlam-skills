@@ -20,6 +20,7 @@
     "./skills/ptlam-git",
     "./skills/ptlam-testing",
     "./skills/ptlam-grilling",
+    "./skills/ptlam-creating-atomic-note",
     "./skills/ptlam-explaining-with-analogy",
     "./skills/ptlam-visualization-with-html"
   ]

@@ -1,0 +1,4 @@
+interface:
+  display_name: "PTLam Creating Atomic Notes"
+  short_description: "Create and refine self-contained atomic notes"
+  default_prompt: "Use $ptlam-creating-atomic-note to turn this idea into a self-contained, linkable note."
