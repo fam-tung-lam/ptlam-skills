@@ -1,0 +1,7 @@
+interface:
+  display_name: "PTLam Testing TypeScript"
+  short_description: "Test browser-free TypeScript with Vitest"
+  default_prompt:
+    "Use $ptlam-testing-typescript to apply the PTLam testing foundation and
+    test this framework-free, browser-free TypeScript codebase with Vite,
+    Vitest, and V8 coverage."

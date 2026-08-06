@@ -23,7 +23,7 @@
       "source": "fam-tung-lam/ptlam-skills",
       "sourceType": "github",
       "skillPath": "skills/ptlam-git/SKILL.md",
-      "computedHash": "086a9ca609cf2638d34909cecd05729d695a59e7016335c23de0d973716e3de0"
+      "computedHash": "6b9375d212431d947bc5cb09dde3d4e10001e0491ac9e55ffe6b762c05cde940"
     },
     "ptlam-grilling": {
       "source": "fam-tung-lam/ptlam-skills",
@@ -35,7 +35,13 @@
       "source": "fam-tung-lam/ptlam-skills",
       "sourceType": "github",
       "skillPath": "skills/ptlam-testing/SKILL.md",
-      "computedHash": "3bd2f30334cd3b66579df05e12194c6d7cea41fc4364db4718f201d26f97e6a4"
+      "computedHash": "da04d77738db4766280e9cf7429c6a177b68fae782e8d26f00639de10e39e829"
+    },
+    "ptlam-testing-typescript": {
+      "source": "fam-tung-lam/ptlam-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ptlam-testing-typescript/SKILL.md",
+      "computedHash": "020d9fbeb9e6c3dd44223048178d72247ab6b1f1ed11c01bb43dcbbbf7fdb211"
     },
     "ptlam-visualization-with-html": {
       "source": "fam-tung-lam/ptlam-skills",
