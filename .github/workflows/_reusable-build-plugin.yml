@@ -1,0 +1,45 @@
+name: Build plugin
+
+on:
+  workflow_call:
+    outputs:
+      plugin-artifact-id:
+        description: Immutable ID of the uploaded plugin artifact.
+        value: ${{ jobs.build_plugin.outputs.plugin_artifact_id }}
+      plugin-artifact-digest:
+        description: SHA-256 digest of the uploaded plugin artifact.
+        value: ${{ jobs.build_plugin.outputs.plugin_artifact_digest }}
+
+permissions:
+  contents: read
+
+jobs:
+  build_plugin:
+    name: Build plugin
+    outputs:
+      plugin_artifact_id: ${{ steps.upload_plugin.outputs.artifact-id }}
+      plugin_artifact_digest: ${{ steps.upload_plugin.outputs.artifact-digest }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - name: Set up Node.js runtime
+        uses: ./.github/actions/set-up-node-runtime
+      - name: Package compiled plugin
+        run:
+          node --experimental-strip-types
+          .github/scripts/release/release-automation-cli.ts package-plugin
+          --repository-root "$GITHUB_WORKSPACE" --output-directory
+          "$GITHUB_WORKSPACE/release-assets" --tag "$GITHUB_REF_NAME"
+      - name: Upload plugin artifact
+        id: upload_plugin
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          path: release-assets/ptlam-skills-${{ github.ref_name }}.tar.gz
+          if-no-files-found: error
+          retention-days: 14
+          archive: false

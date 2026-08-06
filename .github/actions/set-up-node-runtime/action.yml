@@ -1,0 +1,28 @@
+name: Set up Node.js runtime
+description: Set up the pinned Node.js runtime, optionally with npm caching.
+
+inputs:
+  node-version:
+    description: Node.js version to install.
+    required: false
+    default: "22"
+  npm-cache:
+    description: Whether to restore the npm dependency cache.
+    required: false
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Node.js with npm cache
+      if: inputs.npm-cache == 'true'
+      uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: npm
+        cache-dependency-path: package-lock.json
+    - name: Set up Node.js without npm cache
+      if: inputs.npm-cache != 'true'
+      uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+      with:
+        node-version: ${{ inputs.node-version }}

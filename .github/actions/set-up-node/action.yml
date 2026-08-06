@@ -1,4 +1,4 @@
-name: Setup Node.js
+name: Set up Node.js and install dependencies
 description: Set up Node.js with npm caching and install locked dependencies.
 
 inputs:
@@ -10,12 +10,11 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Set up Node.js
-      uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+    - name: Set up Node.js runtime
+      uses: ./.github/actions/set-up-node-runtime
       with:
         node-version: ${{ inputs.node-version }}
-        cache: npm
-        cache-dependency-path: package-lock.json
+        npm-cache: "true"
     - name: Install dependencies
       shell: bash
       run: npm ci

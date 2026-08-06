@@ -1,0 +1,58 @@
+name: Test code
+
+on:
+  workflow_call:
+    inputs:
+      upload-coverage:
+        description: Package and upload coverage for release promotion.
+        required: false
+        type: boolean
+        default: false
+    outputs:
+      coverage-artifact-id:
+        description: Immutable ID of the uploaded coverage artifact.
+        value: ${{ jobs.test_code.outputs.coverage_artifact_id }}
+      coverage-artifact-digest:
+        description: SHA-256 digest of the uploaded coverage artifact.
+        value: ${{ jobs.test_code.outputs.coverage_artifact_digest }}
+
+permissions:
+  contents: read
+
+jobs:
+  test_code:
+    name: Test code and collect coverage
+    if: >-
+      github.event_name != 'pull_request' || !github.event.pull_request.draft
+    outputs:
+      coverage_artifact_id: ${{ steps.upload_coverage.outputs.artifact-id }}
+      coverage_artifact_digest:
+        ${{ steps.upload_coverage.outputs.artifact-digest }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - name: Set up Node.js and dependencies
+        uses: ./.github/actions/set-up-node
+      - name: Run tests with coverage
+        run: npm run test:coverage
+      - name: Package coverage report
+        if: inputs.upload-coverage
+        run:
+          node --experimental-strip-types
+          .github/scripts/release/release-automation-cli.ts package-coverage
+          --repository-root "$GITHUB_WORKSPACE" --output-directory
+          "$GITHUB_WORKSPACE/release-assets" --tag "$GITHUB_REF_NAME"
+      - name: Upload coverage artifact
+        if: inputs.upload-coverage
+        id: upload_coverage
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          path: release-assets/test-coverage-${{ github.ref_name }}.tar.gz
+          if-no-files-found: error
+          retention-days: 14
+          archive: false

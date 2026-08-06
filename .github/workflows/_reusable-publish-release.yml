@@ -1,0 +1,120 @@
+name: Publish release
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        description: Existing release tag to publish.
+        required: true
+        type: string
+      expected-commit:
+        description: Commit SHA verified by the release gate.
+        required: true
+        type: string
+      coverage-artifact-id:
+        description: Immutable ID of the coverage artifact.
+        required: true
+        type: string
+      plugin-artifact-id:
+        description: Immutable ID of the plugin artifact.
+        required: true
+        type: string
+
+jobs:
+  attest_release_assets:
+    name: Attest release assets
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      attestations: write
+      artifact-metadata: write
+    outputs:
+      checksums_artifact_id: ${{ steps.upload_checksums.outputs.artifact-id }}
+    steps:
+      - name: Check out release automation
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+          sparse-checkout: |
+            .github/actions/set-up-node-runtime
+            .github/scripts
+      - name: Set up Node.js runtime
+        uses: ./.github/actions/set-up-node-runtime
+      - name: Download coverage artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          artifact-ids: ${{ inputs.coverage-artifact-id }}
+          path: release-assets
+      - name: Download plugin artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          artifact-ids: ${{ inputs.plugin-artifact-id }}
+          path: release-assets
+      - name: Generate asset checksums
+        run:
+          node --experimental-strip-types
+          .github/scripts/release/release-automation-cli.ts generate-checksums
+          --assets-directory "$GITHUB_WORKSPACE/release-assets"
+      - name: Upload checksums artifact
+        id: upload_checksums
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          path: release-assets/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 14
+          archive: false
+      - name: Attest plugin and coverage artifacts
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
+        with:
+          subject-path: release-assets/*.tar.gz
+
+  publish_release:
+    name: Publish and verify GitHub Release
+    needs: attest_release_assets
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - name: Check out release automation
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+          sparse-checkout: |
+            .github/actions/set-up-node-runtime
+            .github/scripts
+      - name: Set up Node.js runtime
+        uses: ./.github/actions/set-up-node-runtime
+      - name: Download coverage artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          artifact-ids: ${{ inputs.coverage-artifact-id }}
+          path: release-assets
+      - name: Download plugin artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          artifact-ids: ${{ inputs.plugin-artifact-id }}
+          path: release-assets
+      - name: Download checksums artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          artifact-ids:
+            ${{ needs.attest_release_assets.outputs.checksums_artifact_id }}
+          path: release-assets
+      - name: Publish and verify immutable release
+        env:
+          EXPECTED_COMMIT: ${{ inputs.expected-commit }}
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run:
+          node --experimental-strip-types
+          .github/scripts/release/release-automation-cli.ts publish-release
+          --repository "$GITHUB_REPOSITORY" --tag "$RELEASE_TAG"
+          --assets-directory "$GITHUB_WORKSPACE/release-assets"
+          --expected-commit "$EXPECTED_COMMIT"

@@ -20,55 +20,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  plugin_verification:
-    name: Plugin verification
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-        with:
-          persist-credentials: false
-      - name: Set up Node.js and dependencies
-        uses: ./.github/actions/setup-node
-      - name: Validate plugin input
-        run: npm run plugin:validate
-      - name: Check generated plugin artifacts
-        run: npm run plugin:check
+  verify_plugin:
+    name: Verify plugin
+    uses: ./.github/workflows/_reusable-verify-plugin.yml
 
-  code_quality:
-    name: Code quality
-    needs: plugin_verification
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-        with:
-          persist-credentials: false
-      - name: Set up Node.js and dependencies
-        uses: ./.github/actions/setup-node
-      - name: Type-check project code
-        run: npm run code:typecheck
-      - name: Check project code quality
-        run: npm run code:check
-      - name: Check Markdown quality
-        run: npm run markdown:check
+  analyze_code:
+    name: Analyze code
+    needs: verify_plugin
+    uses: ./.github/workflows/_reusable-analyze-code.yml
 
-  tests:
-    name: Tests
-    needs: code_quality
-    if: >-
-      needs.code_quality.result == 'success' && (github.event_name !=
-      'pull_request' || !github.event.pull_request.draft)
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-        with:
-          persist-credentials: false
-      - name: Set up Node.js and dependencies
-        uses: ./.github/actions/setup-node
-      - name: Run tests with coverage
-        run: npm run test:coverage
+  test_code:
+    name: Test code and collect coverage
+    needs: analyze_code
+    uses: ./.github/workflows/_reusable-test-code.yml

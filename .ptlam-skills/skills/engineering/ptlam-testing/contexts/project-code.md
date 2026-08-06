@@ -7,7 +7,8 @@ updated_at: 2026-08-06
 
 # Project code testing context
 
-- Scope: TypeScript production code and tests across the repository.
+- Scope: TypeScript production code and tests across the repository, including
+  GitHub automation under `.github/scripts/`.
 - Runtime: Node.js 22.6 or newer, ESM package. The visualization skill's
   portable TypeScript tools use Node's native type stripping, introduced in
   Node.js 22.6.
@@ -15,7 +16,8 @@ updated_at: 2026-08-06
 - Framework: Vitest for tests, lifecycle, spies, and mocks.
 - Test root: `tests/`; use `unit-tests/` for one public unit and
   `integration-tests/` for filesystem or collaborator workflows within each
-  capability scope.
+  capability scope. Mirror capability folders such as `validation/` and
+  `publication/` below the test level when they improve locality.
 - Test structure: explicit `GIVEN`, `WHEN`, and `THEN` comments.
 - Suite structure: every test is nested in an explicit `describe` suite, even
   when it is the suite's only test.
@@ -32,10 +34,11 @@ updated_at: 2026-08-06
 - Test discovery: `npm test` and `npm run test:coverage` discover
   `tests/**/*.test.ts`.
 - Coverage: `npm run test:coverage` measures canonical project TypeScript under
-  `plugin/` and `tools/`. It excludes tests, configuration, and
-  compiler-generated `skills/` copies because `plugin:check` verifies those
-  against the tested `plugin/skills` sources. Global gates are 90% statements,
-  lines, and functions and 80% branches.
+  `.github/scripts/release/`, `plugin/`, and `tools/`. It excludes tests,
+  configuration, and compiler-generated `skills/` copies because `plugin:check`
+  verifies those against the tested `plugin/skills` sources. CLI adapters remain
+  in coverage and are tested through their command interface. Global gates are
+  90% statements, lines, and functions and 80% branches.
 - Full gate order: run plugin validation and generated-output checks, then
   project typecheck, code and Markdown checks, then coverage as explicit
   commands.

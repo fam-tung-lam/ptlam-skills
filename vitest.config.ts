@@ -9,7 +9,7 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       exclude: ["tests/**", "**/*.config.ts"],
-      include: ["{plugin,tools}/**/*.ts"],
+      include: ["{.github/scripts/release,plugin,tools}/**/*.ts"],
       reporter: ["text", "json-summary", "html"],
       reportsDirectory: "coverage",
       thresholds: {

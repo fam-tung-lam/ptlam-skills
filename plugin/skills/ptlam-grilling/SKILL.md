@@ -19,9 +19,9 @@ projects. Store every grilling session at:
 
 Use the session's creation date and a short, filesystem-safe, descriptive title.
 Prefer words that identify the actual decision over generic titles such as
-`planning` or `discussion`. Create the directory and file once the topic and intended outcome are clear,
-then tell the user the path. Keep updating the same file; do not create one file
-per turn.
+`planning` or `discussion`. Create the directory and file once the topic and
+intended outcome are clear, then tell the user the path. Keep updating the same
+file; do not create one file per turn.
 
 Before starting a new file, inspect existing session filenames and relevant
 contents when the user asks to resume, refers to an earlier grilling session, or
