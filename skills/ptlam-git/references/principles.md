@@ -36,7 +36,7 @@ Apply this authority order:
 2. Explicit user intent caps scope and effect; silence is not permission.
 3. Applicable repository or collaboration policy may narrow authority or add
    preconditions, but cannot expand the user's authorization.
-4. A verified project profile may narrow or select otherwise unconstrained
+4. Verified project Git context may narrow or select otherwise unconstrained
    mechanics. It cannot override current evidence or policy, or expand the
    user's authorization.
 5. Skill defaults fill only unconstrained mechanics.

@@ -55,9 +55,10 @@ skills:
       staging and commits; branches, worktrees, and refs; fetch, pull, merge,
       rebase, cherry-pick, revert, and history editing; pushes and deletions;
       tags; pull or merge request lifecycle work; conflicts, interrupted
-      operations; recovery; and optional project-local Git profiles. Resolve
-      repository policy, authority, custody, targets, and proof before mutation
-      instead of assuming a topology or convention.
+      operations; recovery; and maintenance of project-local Git context and
+      workflow preferences. Resolve repository policy, authority, custody,
+      targets, and proof before mutation instead of assuming a topology or
+      convention.
     category_id: engineering
     visibility: public
     status: active
