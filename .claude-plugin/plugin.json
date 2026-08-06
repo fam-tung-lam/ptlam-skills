@@ -19,6 +19,7 @@
   "skills": [
     "./skills/ptlam-git",
     "./skills/ptlam-testing",
+    "./skills/ptlam-grilling",
     "./skills/ptlam-explain-with-analogy",
     "./skills/ptlam-visualization-with-html"
   ]
