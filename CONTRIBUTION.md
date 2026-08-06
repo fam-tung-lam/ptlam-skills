@@ -46,10 +46,13 @@ why an existing skill does not cover it, and one or two representative requests.
 3. Run `npm ci` from the repository root.
 4. Edit authored sources, tests, or documentation. Do not edit generated files
    by hand.
-5. Add or update tests for behavior changes.
-6. Run focused checks while working, then the complete
+5. Add a concise entry under `Unreleased` in [CHANGELOG.md](CHANGELOG.md) for a
+   notable user-visible change. Omit test-only, generated-only, and internal
+   refactoring changes that do not affect users.
+6. Add or update tests for behavior changes.
+7. Run focused checks while working, then the complete
    [quality gates](docs/DEVELOPMENT.md#quality-gates).
-7. If the authored catalog changed, include the reviewed output from
+8. If the authored catalog changed, include the reviewed output from
    `npm run plugin:compile` in the same pull request.
 
 Do not change the plugin version during normal feature or maintenance work. The
@@ -83,6 +86,7 @@ Before requesting review, confirm that:
 - [ ] the change is focused and contains no unrelated files;
 - [ ] authored and generated files are in sync;
 - [ ] tests cover changed behavior;
+- [ ] the changelog records any notable user-visible change;
 - [ ] all local quality gates pass;
 - [ ] documentation and examples match the implemented behavior; and
 - [ ] the pull request contains no secrets or private data.

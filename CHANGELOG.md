@@ -1,0 +1,48 @@
+# Changelog
+
+All notable changes to this project are documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project follows
+[Semantic Versioning](https://semver.org/spec/v2.0.0.html). Versions refer to
+the plugin version in `plugin/plugin.yml` and its matching `v<version>` release
+tag, not the private tooling version in `package.json`.
+
+<!-- markdownlint-disable MD024 -->
+
+## [Unreleased]
+
+### Added
+
+- Added `ptlam-testing-typescript`, a testing skill for framework-free,
+  browser-free TypeScript projects using Vite, Vitest, and V8 coverage.
+- Added contribution, development, and plugin-release guides.
+
+### Changed
+
+- Changed `ptlam-git` and `ptlam-testing` to maintain durable project knowledge
+  in one project-local `CONTEXT.md` file per skill.
+- Changed release promotion to detect a new plugin version after successful
+  `main` CI and create the approved tag and immutable GitHub Release
+  automatically.
+
+### Fixed
+
+- Hardened plugin publication checks to reject unexpected directories and
+  invalid external HTTPS links.
+
+## [0.1.0-alpha.1] - 2026-08-06
+
+### Added
+
+- Published the first prerelease of the plugin with seven portable skills:
+  `ptlam-git`, `ptlam-testing`, `ptlam-creating-skill`, `ptlam-grilling`,
+  `ptlam-creating-atomic-note`, `ptlam-explaining-with-analogy`, and
+  `ptlam-visualization-with-html`.
+- Added compiled Claude Code plugin metadata and standalone public skill output
+  for other Agent Skills-compatible ecosystems.
+
+[unreleased]:
+  https://github.com/fam-tung-lam/ptlam-skills/compare/v0.1.0-alpha.1...HEAD
+[0.1.0-alpha.1]:
+  https://github.com/fam-tung-lam/ptlam-skills/releases/tag/v0.1.0-alpha.1

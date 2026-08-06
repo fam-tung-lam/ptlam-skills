@@ -6,7 +6,7 @@ attestation, tag creation, release creation, and verification.
 
 ## Release a new version
 
-### 1. Update the plugin version
+### 1. Update the version and changelog
 
 Change the top-level `version` in `plugin/plugin.yml`. It must be a Semantic
 Version that is newer than every existing `v*` release tag.
@@ -20,6 +20,13 @@ version: "0.2.0-alpha.1"
 The resulting release tag will be `v0.2.0-alpha.1`. Do not change the root
 `package.json` version; that version belongs to repository tooling.
 
+In `CHANGELOG.md`, move the relevant entries from `Unreleased` into a
+`[0.2.0-alpha.1] - YYYY-MM-DD` section and leave an empty `Unreleased` section
+at the top. Update the comparison links at the bottom so:
+
+- `Unreleased` compares `v0.2.0-alpha.1` with `HEAD`; and
+- `0.2.0-alpha.1` compares the preceding release tag with `v0.2.0-alpha.1`.
+
 ### 2. Compile and commit the generated plugin
 
 Run:
@@ -30,10 +37,12 @@ git status --short
 ```
 
 Review and commit `plugin/plugin.yml` together with the compiler-owned changes
-under `.claude-plugin/`, `README.md`, and `skills/`:
+under `.claude-plugin/`, `README.md`, and `skills/`, plus the authored
+`CHANGELOG.md` update:
 
 ```sh
 git add -- \
+  CHANGELOG.md \
   plugin/plugin.yml \
   .claude-plugin/plugin.json \
   .claude-plugin/marketplace.json \
