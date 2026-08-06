@@ -59,6 +59,7 @@ function verificationResults(): readonly CommandResult[] {
 
 function publishRequest(assetsDirectory = "release-assets") {
   return {
+    approvalEnvironment: "release",
     assetsDirectory,
     expectedCommit: releaseCommit,
     repository: "owner/repository",
@@ -67,13 +68,14 @@ function publishRequest(assetsDirectory = "release-assets") {
 }
 
 describe("ReleaseAutomation", () => {
-  test("publishes and verifies complete assets from an annotated tag", async () => {
-    // GIVEN: An annotated tag, no existing release, and successful verification.
+  test("creates the approved tag and publishes complete verified assets", async () => {
+    // GIVEN: A protected approval environment and no existing tag or release.
     const commands = new ScriptedCommandRunner([
-      success(`tag\t${annotatedTag}`),
-      success(`commit\t${releaseCommit}`),
+      success("1"),
+      { status: 1, stdout: "", stderr: "gh: Not Found (HTTP 404)" },
       { status: 1, stdout: "", stderr: "gh: Not Found (HTTP 404)" },
       success(),
+      success(`commit\t${releaseCommit}`),
       ...verificationResults(),
     ]);
     const automation = new ReleaseAutomation({ commands });
@@ -81,19 +83,15 @@ describe("ReleaseAutomation", () => {
     // WHEN: The public release workflow is executed.
     const result = await automation.publishRelease(publishRequest());
 
-    // THEN: The tag is peeled, exact assets are created, and the result is immutable.
-    assert.ok(
-      commands.calls[1]?.args.includes(
-        `repos/owner/repository/git/tags/${annotatedTag}`,
-      ),
-    );
+    // THEN: GitHub creates the tag at the approved commit before verification.
     assert.deepEqual(commands.calls[3]?.args, [
       "release",
       "create",
       "v1.2.3",
-      "--verify-tag",
       "--generate-notes",
       "--fail-on-no-commits",
+      "--target",
+      releaseCommit,
       "--repo",
       "owner/repository",
       "release-assets/test-coverage-v1.2.3.tar.gz",
@@ -116,11 +114,13 @@ describe("ReleaseAutomation", () => {
   });
 
   test("publishes a prerelease without marking it latest", async () => {
-    // GIVEN: A verified prerelease tag with no existing GitHub Release.
+    // GIVEN: An approved prerelease candidate with no tag or GitHub Release.
     const commands = new ScriptedCommandRunner([
-      success(`commit\t${releaseCommit}`),
+      success("1"),
+      { status: 1, stdout: "", stderr: "gh: Not Found (HTTP 404)" },
       { status: 1, stdout: "", stderr: "gh: Not Found (HTTP 404)" },
       success(),
+      success(`commit\t${releaseCommit}`),
       ...verificationResults(),
     ]);
     const automation = new ReleaseAutomation({ commands });
@@ -132,13 +132,14 @@ describe("ReleaseAutomation", () => {
     });
 
     // THEN: GitHub receives prerelease controls before the immutable assets.
-    assert.deepEqual(commands.calls[2]?.args, [
+    assert.deepEqual(commands.calls[3]?.args, [
       "release",
       "create",
       "v2.0.0-rc.1",
-      "--verify-tag",
       "--generate-notes",
       "--fail-on-no-commits",
+      "--target",
+      releaseCommit,
       "--prerelease",
       "--latest=false",
       "--repo",
@@ -152,8 +153,10 @@ describe("ReleaseAutomation", () => {
   test("treats an existing immutable release as a verified safe rerun", async () => {
     // GIVEN: The verified tag already has an immutable published release.
     const commands = new ScriptedCommandRunner([
+      success("1"),
       success(`commit\t${releaseCommit}`),
       releaseState(false, true),
+      success(`commit\t${releaseCommit}`),
       ...verificationResults(),
     ]);
     const automation = new ReleaseAutomation({ commands });
@@ -163,7 +166,7 @@ describe("ReleaseAutomation", () => {
 
     // THEN: It skips mutation but repeats complete release verification.
     assert.deepEqual(
-      commands.calls.slice(2).map((call) => call.args.slice(0, 3)),
+      commands.calls.slice(-5).map((call) => call.args.slice(0, 3)),
       [
         ["release", "view", "v1.2.3"],
         ["release", "verify", "v1.2.3"],
@@ -192,6 +195,7 @@ describe("ReleaseAutomation", () => {
       writeFileSync(path.join(assetsDirectory, name), bytes);
     }
     const commands = new ScriptedCommandRunner([
+      success("1"),
       success(`commit\t${releaseCommit}`),
       releaseState(true, false, [
         {
@@ -202,6 +206,7 @@ describe("ReleaseAutomation", () => {
       success(),
       success(),
       success(),
+      success(`commit\t${releaseCommit}`),
       ...verificationResults(),
     ]);
     const automation = new ReleaseAutomation({ commands });
@@ -211,7 +216,7 @@ describe("ReleaseAutomation", () => {
 
     // THEN: Only missing assets are uploaded before publish and verification.
     assert.deepEqual(
-      commands.calls.slice(2, 5).map((call) => call.args.slice(0, 3)),
+      commands.calls.slice(3, 6).map((call) => call.args.slice(0, 3)),
       [
         ["release", "upload", "v1.2.3"],
         ["release", "upload", "v1.2.3"],
@@ -231,6 +236,7 @@ describe("ReleaseAutomation", () => {
     async (state, message) => {
       // GIVEN: A stable tag and an unsafe or inconclusive release lookup.
       const commands = new ScriptedCommandRunner([
+        success("1"),
         success(`commit\t${releaseCommit}`),
         state,
       ]);
@@ -241,13 +247,14 @@ describe("ReleaseAutomation", () => {
 
       // THEN: It never mutates public release assets.
       await assert.rejects(publication, new RegExp(message, "u"));
-      assert.equal(commands.calls.length, 2);
+      assert.equal(commands.calls.length, 3);
     },
   );
 
   test("rejects a remote tag that no longer identifies the gated commit", async () => {
     // GIVEN: The remote tag resolves to a different commit before publication.
     const commands = new ScriptedCommandRunner([
+      success("1"),
       success("commit\t2222222222222222222222222222222222222222"),
     ]);
     const automation = new ReleaseAutomation({ commands });
@@ -257,6 +264,48 @@ describe("ReleaseAutomation", () => {
 
     // THEN: It stops before looking up or creating a release.
     await assert.rejects(publication, /no longer points/u);
+    assert.equal(commands.calls.length, 2);
+  });
+
+  test("fails before tag creation when the environment has no required reviewer", async () => {
+    // GIVEN: The referenced release environment has no approval protection.
+    const commands = new ScriptedCommandRunner([success("0")]);
+    const automation = new ReleaseAutomation({ commands });
+
+    // WHEN: Publication reaches its final protected operation.
+    const publication = automation.publishRelease(publishRequest());
+
+    // THEN: It fails closed before resolving, creating, or publishing a tag.
+    await assert.rejects(publication, /must require at least one reviewer/u);
     assert.equal(commands.calls.length, 1);
+  });
+
+  test("reuses an existing annotated tag only when it points to the approved commit", async () => {
+    // GIVEN: A protected environment and an annotated tag from a partial attempt.
+    const commands = new ScriptedCommandRunner([
+      success("1"),
+      success(`tag\t${annotatedTag}`),
+      success(`commit\t${releaseCommit}`),
+      { status: 1, stdout: "", stderr: "gh: Not Found (HTTP 404)" },
+      success(),
+      success(`tag\t${annotatedTag}`),
+      success(`commit\t${releaseCommit}`),
+      ...verificationResults(),
+    ]);
+    const automation = new ReleaseAutomation({ commands });
+
+    // WHEN: Publication resumes with the pre-existing approved tag.
+    await automation.publishRelease(publishRequest());
+
+    // THEN: Release creation verifies rather than recreates that tag.
+    assert.deepEqual(commands.calls[4]?.args.slice(0, 7), [
+      "release",
+      "create",
+      "v1.2.3",
+      "--generate-notes",
+      "--fail-on-no-commits",
+      "--verify-tag",
+      "--repo",
+    ]);
   });
 });

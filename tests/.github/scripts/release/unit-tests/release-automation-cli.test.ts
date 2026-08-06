@@ -24,7 +24,7 @@ function automationDouble(
   overrides: Partial<AutomationDouble> = {},
 ): AutomationDouble {
   return {
-    validateRelease: () => unexpectedCall("automation.validateRelease"),
+    planRelease: () => unexpectedCall("automation.planRelease"),
     packageCoverage: () => unexpectedCall("automation.packageCoverage"),
     packagePlugin: () => unexpectedCall("automation.packagePlugin"),
     generateChecksums: () => unexpectedCall("automation.generateChecksums"),
@@ -62,11 +62,11 @@ describe("ReleaseAutomationCLI", () => {
     // THEN: Usage is reported without release execution.
     assert.equal(exitCode, ReleaseAutomationExitCode.Usage);
     assert.deepEqual(output.stdout, []);
-    assert.match(output.stderr[0] ?? "", /<validate-tag\|/u);
+    assert.match(output.stderr[0] ?? "", /<plan-release\|/u);
   });
 
-  test("validates a tag and writes the workflow output", async () => {
-    // GIVEN: The facade returns one validated commit and a writable output file.
+  test("plans a new release and writes the workflow outputs", async () => {
+    // GIVEN: The facade returns one release candidate and a writable output file.
     const output = createOutput();
     const outputDirectory = await mkdtemp(path.join(tmpdir(), "release-cli-"));
     onTestFinished(() => rm(outputDirectory, { force: true, recursive: true }));
@@ -74,39 +74,47 @@ describe("ReleaseAutomationCLI", () => {
     const requests: unknown[] = [];
     const cli = new ReleaseAutomationCLI({
       automation: automationDouble({
-        async validateRelease(request) {
+        async planRelease(request) {
           requests.push(request);
-          return { releaseCommit: "abc123" };
+          return {
+            releaseCommit: "abc123",
+            releaseRequired: true,
+            tag: "v1.2.3",
+          };
         },
       }),
     });
 
-    // WHEN: The validation command runs through the CLI adapter.
+    // WHEN: The planning command runs through the CLI adapter.
     const exitCode = await cli.run(
-      ReleaseAutomationCommand.ValidateTag,
+      ReleaseAutomationCommand.PlanRelease,
       [
         "--repository-root",
         "/repository",
-        "--tag",
-        "v1.2.3",
+        "--repository",
+        "owner/repository",
+        "--expected-commit",
+        "abc123",
         "--github-output",
         githubOutput,
       ],
       output.options,
     );
 
-    // THEN: The facade request and GitHub output use the same validated commit.
+    // THEN: The facade request and GitHub outputs identify the same candidate.
     assert.equal(exitCode, ReleaseAutomationExitCode.Success);
     assert.deepEqual(requests, [
-      { repositoryRoot: "/repository", tag: "v1.2.3" },
+      {
+        repositoryRoot: "/repository",
+        repository: "owner/repository",
+        expectedCommit: "abc123",
+      },
     ]);
     assert.equal(
       await readFile(githubOutput, "utf8"),
-      "release_commit=abc123\n",
+      "release_commit=abc123\nrelease_required=true\nrelease_tag=v1.2.3\n",
     );
-    assert.deepEqual(output.stdout, [
-      "Validated release tag at commit abc123.",
-    ]);
+    assert.deepEqual(output.stdout, ["Planned v1.2.3 at commit abc123."]);
   });
 
   test.each([
@@ -204,6 +212,8 @@ describe("ReleaseAutomationCLI", () => {
         "abc123",
         "--assets-directory",
         "/assets",
+        "--approval-environment",
+        "release",
       ],
       output.options,
     );
@@ -219,6 +229,7 @@ describe("ReleaseAutomationCLI", () => {
           tag: "v1.2.3",
           expectedCommit: "abc123",
           assetsDirectory: "/assets",
+          approvalEnvironment: "release",
         },
       },
     ]);

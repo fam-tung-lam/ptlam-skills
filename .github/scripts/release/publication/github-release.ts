@@ -9,6 +9,7 @@ import {
 } from "./release-assets.ts";
 
 export interface PublishGitHubReleaseRequest {
+  readonly approvalEnvironment: string;
   readonly assetsDirectory: string;
   readonly expectedCommit: string;
   readonly repository: string;
@@ -151,11 +152,24 @@ function resolveRemoteReleaseCommit(
   repository: string,
   tag: ReleaseTag,
   commands: CommandRunner,
-): string {
-  let object = readGitObject(
-    `repos/${repository}/git/ref/tags/${encodeURIComponent(tag.value)}`,
-    commands,
-  );
+): string | null {
+  const endpoint = `repos/${repository}/git/ref/tags/${encodeURIComponent(tag.value)}`;
+  const lookup = commands.run("gh", [
+    "api",
+    endpoint,
+    "--jq",
+    ".object | [.type, .sha] | @tsv",
+  ]);
+  if (lookup.status !== 0 && lookup.stderr.toLowerCase().includes("http 404")) {
+    return null;
+  }
+  if (lookup.status !== 0) {
+    const detail = lookup.stderr.trim() || lookup.stdout.trim();
+    throw new Error(
+      detail || `Could not resolve remote release tag ${tag.value}.`,
+    );
+  }
+  let object = parseGitObject(lookup.stdout.trim());
   const visitedTags = new Set<string>();
   while (object.type === "tag") {
     if (visitedTags.has(object.sha)) {
@@ -175,27 +189,47 @@ function resolveRemoteReleaseCommit(
   return object.sha;
 }
 
+function verifyApprovalEnvironment(
+  request: PublishGitHubReleaseRequest,
+  commands: CommandRunner,
+): void {
+  const reviewerCount = requireCommand(commands, "gh", [
+    "api",
+    `repos/${request.repository}/environments/${encodeURIComponent(request.approvalEnvironment)}`,
+    "--jq",
+    '[.protection_rules[] | select(.type == "required_reviewers") | .reviewers | length] | add // 0',
+  ]);
+  if (!/^[1-9][0-9]*$/u.test(reviewerCount)) {
+    throw new Error(
+      `Release environment ${request.approvalEnvironment} must require at least one reviewer.`,
+    );
+  }
+}
+
 function createGitHubReleaseArguments(
-  repository: string,
+  request: PublishGitHubReleaseRequest,
   tag: ReleaseTag,
   assetPaths: readonly string[],
+  tagExists: boolean,
 ): readonly string[] {
   const args = [
     "release",
     "create",
     tag.value,
-    "--verify-tag",
     "--generate-notes",
     "--fail-on-no-commits",
   ];
+  if (tagExists) args.push("--verify-tag");
+  else args.push("--target", request.expectedCommit);
   if (tag.prerelease) args.push("--prerelease", "--latest=false");
-  return Object.freeze([...args, "--repo", repository, ...assetPaths]);
+  return Object.freeze([...args, "--repo", request.repository, ...assetPaths]);
 }
 
 function createOrResumeRelease(
   request: PublishGitHubReleaseRequest,
   tag: ReleaseTag,
   assets: ReleaseAssetPlan,
+  tagExists: boolean,
   commands: CommandRunner,
 ): void {
   const releaseLookup = commands.run("gh", [
@@ -227,7 +261,7 @@ function createOrResumeRelease(
   requireCommand(
     commands,
     "gh",
-    createGitHubReleaseArguments(request.repository, tag, assets.paths),
+    createGitHubReleaseArguments(request, tag, assets.paths, tagExists),
   );
 }
 
@@ -276,18 +310,38 @@ export function publishGitHubRelease(
 ): PublishGitHubReleaseResult {
   const tag = parseReleaseTag(request.tag);
   const assets = createReleaseAssetPlan(request.assetsDirectory, request.tag);
-  const remoteCommit = resolveRemoteReleaseCommit(
+  verifyApprovalEnvironment(request, commands);
+  const existingTagCommit = resolveRemoteReleaseCommit(
     request.repository,
     tag,
     commands,
   );
-  if (remoteCommit !== request.expectedCommit) {
+  if (
+    existingTagCommit !== null &&
+    existingTagCommit !== request.expectedCommit
+  ) {
     throw new Error(
       "Remote release tag no longer points to the verified commit.",
     );
   }
 
-  createOrResumeRelease(request, tag, assets, commands);
+  createOrResumeRelease(
+    request,
+    tag,
+    assets,
+    existingTagCommit !== null,
+    commands,
+  );
+  const publishedTagCommit = resolveRemoteReleaseCommit(
+    request.repository,
+    tag,
+    commands,
+  );
+  if (publishedTagCommit !== request.expectedCommit) {
+    throw new Error(
+      "Published release tag does not point to the approved commit.",
+    );
+  }
   verifyRelease(request, assets, commands);
   return Object.freeze({
     assetPaths: assets.paths,

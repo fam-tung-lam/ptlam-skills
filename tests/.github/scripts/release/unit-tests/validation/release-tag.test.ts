@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
 import { describe, test } from "vitest";
 
-import { parseReleaseTag } from "../../../../../../.github/scripts/release/validation/release-tag.ts";
+import {
+  compareReleaseTags,
+  parseReleaseTag,
+} from "../../../../../../.github/scripts/release/validation/release-tag.ts";
 
 describe("parseReleaseTag", () => {
   test.each([
@@ -46,4 +49,27 @@ describe("parseReleaseTag", () => {
     // THEN: The release is rejected before any artifact is built.
     assert.throws(parse, /must equal plugin version v1\.2\.3/u);
   });
+
+  test.each([
+    ["v1.0.0-alpha", "v1.0.0-alpha.1", -1],
+    ["v1.0.0-alpha.1", "v1.0.0-alpha.beta", -1],
+    ["v1.0.0-beta.2", "v1.0.0-beta.11", -1],
+    ["v1.0.0-rc.1", "v1.0.0", -1],
+    ["v1.9.9", "v2.0.0", -1],
+    ["v2.0.0+build.1", "v2.0.0+build.2", 0],
+    ["v10.0.0", "v2.0.0", 1],
+  ] as const)(
+    "orders %s against %s by semantic precedence",
+    (left, right, expected) => {
+      // GIVEN: Two validated release tags with known Semantic Version order.
+      const leftTag = parseReleaseTag(left);
+      const rightTag = parseReleaseTag(right);
+
+      // WHEN: Their release precedence is compared.
+      const result = compareReleaseTags(leftTag, rightTag);
+
+      // THEN: Numeric, prerelease, and build metadata rules are preserved.
+      assert.equal(result, expected);
+    },
+  );
 });

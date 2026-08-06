@@ -1,70 +1,97 @@
 name: CD
 
 on:
-  push:
-    tags:
-      - "v*"
+  workflow_run:
+    workflows:
+      - CI
+    types:
+      - completed
+    branches:
+      - main
 
 permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-main
   cancel-in-progress: false
 
 jobs:
-  verify_release_tag:
-    name: Verify release tag
+  plan_release:
+    name: Plan release
     if: >-
-      github.ref_type == 'tag' && github.event.created && !github.event.deleted
-      && !github.event.forced
+      github.event.workflow_run.conclusion == 'success'
+      && github.event.workflow_run.event == 'push'
     outputs:
-      release_commit: ${{ steps.verify_release_tag.outputs.release_commit }}
+      release_commit: ${{ steps.plan_release.outputs.release_commit }}
+      release_required: ${{ steps.plan_release.outputs.release_required }}
+      release_tag: ${{ steps.plan_release.outputs.release_tag }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - name: Check out tagged commit
+      - name: Check out successful CI commit
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           fetch-depth: 0
           persist-credentials: false
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.workflow_run.head_sha }}
       - name: Set up Node.js runtime
         uses: ./.github/actions/set-up-node-runtime
-      - name: Verify release tag and commit
-        id: verify_release_tag
+      - name: Detect a new plugin version
+        id: plan_release
+        env:
+          EXPECTED_COMMIT: ${{ github.event.workflow_run.head_sha }}
+          GH_TOKEN: ${{ github.token }}
         run:
           node --experimental-strip-types
-          .github/scripts/release/release-automation-cli.ts validate-tag
-          --repository-root "$GITHUB_WORKSPACE" --tag "$GITHUB_REF_NAME"
+          .github/scripts/release/release-automation-cli.ts plan-release
+          --repository-root "$GITHUB_WORKSPACE"
+          --repository "$GITHUB_REPOSITORY"
+          --expected-commit "$EXPECTED_COMMIT"
           --github-output "$GITHUB_OUTPUT"
 
   verify_plugin:
     name: Verify plugin
-    needs: verify_release_tag
+    if: needs.plan_release.outputs.release_required == 'true'
+    needs: plan_release
     uses: ./.github/workflows/_reusable-verify-plugin.yml
+    with:
+      checkout-ref: ${{ needs.plan_release.outputs.release_commit }}
 
   analyze_code:
     name: Analyze code
-    needs: verify_plugin
+    needs:
+      - plan_release
+      - verify_plugin
     uses: ./.github/workflows/_reusable-analyze-code.yml
+    with:
+      checkout-ref: ${{ needs.plan_release.outputs.release_commit }}
 
   test_code:
     name: Test code and collect coverage
-    needs: analyze_code
+    needs:
+      - plan_release
+      - analyze_code
     uses: ./.github/workflows/_reusable-test-code.yml
     with:
+      checkout-ref: ${{ needs.plan_release.outputs.release_commit }}
+      artifact-tag: ${{ needs.plan_release.outputs.release_tag }}
       upload-coverage: true
 
   build_plugin:
     name: Build plugin
-    needs: test_code
+    needs:
+      - plan_release
+      - test_code
     uses: ./.github/workflows/_reusable-build-plugin.yml
+    with:
+      checkout-ref: ${{ needs.plan_release.outputs.release_commit }}
+      artifact-tag: ${{ needs.plan_release.outputs.release_tag }}
 
   publish_release:
     name: Publish release
     needs:
-      - verify_release_tag
+      - plan_release
       - test_code
       - build_plugin
     permissions:
@@ -75,7 +102,7 @@ jobs:
       artifact-metadata: write
     uses: ./.github/workflows/_reusable-publish-release.yml
     with:
-      tag: ${{ github.ref_name }}
-      expected-commit: ${{ needs.verify_release_tag.outputs.release_commit }}
+      tag: ${{ needs.plan_release.outputs.release_tag }}
+      expected-commit: ${{ needs.plan_release.outputs.release_commit }}
       coverage-artifact-id: ${{ needs.test_code.outputs.coverage-artifact-id }}
       plugin-artifact-id: ${{ needs.build_plugin.outputs.plugin-artifact-id }}

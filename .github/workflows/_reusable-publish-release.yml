@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       tag:
-        description: Existing release tag to publish.
+        description: Approved release tag to create and publish.
         required: true
         type: string
       expected-commit:
@@ -38,7 +38,7 @@ jobs:
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
-          ref: ${{ github.sha }}
+          ref: ${{ inputs.expected-commit }}
           sparse-checkout: |
             .github/actions/set-up-node-runtime
             .github/scripts
@@ -73,8 +73,11 @@ jobs:
           subject-path: release-assets/*.tar.gz
 
   publish_release:
-    name: Publish and verify GitHub Release
+    name: Approve, publish, and verify GitHub Release
     needs: attest_release_assets
+    environment:
+      name: release
+      url: https://github.com/${{ github.repository }}/releases/tag/${{ inputs.tag }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
@@ -85,7 +88,7 @@ jobs:
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
-          ref: ${{ github.sha }}
+          ref: ${{ inputs.expected-commit }}
           sparse-checkout: |
             .github/actions/set-up-node-runtime
             .github/scripts
@@ -118,3 +121,4 @@ jobs:
           --repository "$GITHUB_REPOSITORY" --tag "$RELEASE_TAG"
           --assets-directory "$GITHUB_WORKSPACE/release-assets"
           --expected-commit "$EXPECTED_COMMIT"
+          --approval-environment "release"

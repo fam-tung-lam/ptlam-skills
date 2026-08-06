@@ -11,10 +11,10 @@ import {
   packagePluginAsset,
 } from "./publication/package-release-assets.ts";
 import {
-  type ValidateReleaseTagRequest,
-  type ValidateReleaseTagResult,
-  validateReleaseTag,
-} from "./validation/validate-release-tag.ts";
+  type PlanReleaseRequest,
+  type PlanReleaseResult,
+  planRelease,
+} from "./validation/plan-release.ts";
 
 export interface ReleaseAssetResult {
   readonly path: string;
@@ -37,11 +37,9 @@ export class ReleaseAutomation {
     this.#commands = commands;
   }
 
-  /** Validate the release tag against the manifest, checkout, and main. */
-  async validateRelease(
-    request: ValidateReleaseTagRequest,
-  ): Promise<ValidateReleaseTagResult> {
-    return validateReleaseTag(request, this.#commands);
+  /** Plan publication only when main contains a new plugin version. */
+  async planRelease(request: PlanReleaseRequest): Promise<PlanReleaseResult> {
+    return planRelease(request, this.#commands);
   }
 
   /** Package the generated coverage report for artifact promotion. */

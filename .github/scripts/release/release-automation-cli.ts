@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { ReleaseAutomation } from "./release-automation.ts";
 
 export const ReleaseAutomationCommand = Object.freeze({
-  ValidateTag: "validate-tag",
+  PlanRelease: "plan-release",
   PackageCoverage: "package-coverage",
   PackagePlugin: "package-plugin",
   GenerateChecksums: "generate-checksums",
@@ -35,7 +35,7 @@ export interface ReleaseAutomationCLIOptions {
 
 type ReleaseOperations = Pick<
   ReleaseAutomation,
-  | "validateRelease"
+  | "planRelease"
   | "packageCoverage"
   | "packagePlugin"
   | "generateChecksums"
@@ -130,7 +130,7 @@ export class ReleaseAutomationCLI {
   ): Promise<ReleaseAutomationExitCode> {
     if (!isReleaseAutomationCommand(command)) {
       stderr(
-        "Usage: release-automation-cli.ts <validate-tag|package-coverage|package-plugin|generate-checksums|publish-release> [options]",
+        "Usage: release-automation-cli.ts <plan-release|package-coverage|package-plugin|generate-checksums|publish-release> [options]",
       );
       return ReleaseAutomationExitCode.Usage;
     }
@@ -153,22 +153,28 @@ export class ReleaseAutomationCLI {
     stdout: WriteOutputLine,
   ): Promise<void> {
     switch (command) {
-      case ReleaseAutomationCommand.ValidateTag: {
+      case ReleaseAutomationCommand.PlanRelease: {
         const selected = selectOptions(options, [
           "repository-root",
-          "tag",
+          "repository",
+          "expected-commit",
           "github-output",
         ]);
-        const result = await this.#automation.validateRelease({
+        const result = await this.#automation.planRelease({
           repositoryRoot: option(selected, "repository-root"),
-          tag: option(selected, "tag"),
+          repository: option(selected, "repository"),
+          expectedCommit: option(selected, "expected-commit"),
         });
         await appendFile(
           option(selected, "github-output"),
-          `release_commit=${result.releaseCommit}\n`,
+          `release_commit=${result.releaseCommit}\nrelease_required=${result.releaseRequired}\nrelease_tag=${result.tag}\n`,
           "utf8",
         );
-        stdout(`Validated release tag at commit ${result.releaseCommit}.`);
+        stdout(
+          result.releaseRequired
+            ? `Planned ${result.tag} at commit ${result.releaseCommit}.`
+            : `${result.tag} is already released; no publication is required.`,
+        );
         return;
       }
       case ReleaseAutomationCommand.PackageCoverage: {
@@ -213,12 +219,14 @@ export class ReleaseAutomationCLI {
           "tag",
           "expected-commit",
           "assets-directory",
+          "approval-environment",
         ]);
         const result = await this.#automation.publishRelease({
           repository: option(selected, "repository"),
           tag: option(selected, "tag"),
           expectedCommit: option(selected, "expected-commit"),
           assetsDirectory: option(selected, "assets-directory"),
+          approvalEnvironment: option(selected, "approval-environment"),
         });
         stdout(
           `Published and verified ${result.tag} with ${result.assetPaths.length} assets.`,

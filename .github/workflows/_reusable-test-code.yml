@@ -3,6 +3,16 @@ name: Test code
 on:
   workflow_call:
     inputs:
+      checkout-ref:
+        description: Commit or ref to test.
+        required: false
+        type: string
+        default: ""
+      artifact-tag:
+        description: Release tag used to name promoted coverage.
+        required: false
+        type: string
+        default: ""
       upload-coverage:
         description: Package and upload coverage for release promotion.
         required: false
@@ -35,7 +45,7 @@ jobs:
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
-          ref: ${{ github.sha }}
+          ref: ${{ inputs.checkout-ref || github.sha }}
       - name: Set up Node.js and dependencies
         uses: ./.github/actions/set-up-node
       - name: Run tests with coverage
@@ -46,13 +56,14 @@ jobs:
           node --experimental-strip-types
           .github/scripts/release/release-automation-cli.ts package-coverage
           --repository-root "$GITHUB_WORKSPACE" --output-directory
-          "$GITHUB_WORKSPACE/release-assets" --tag "$GITHUB_REF_NAME"
+          "$GITHUB_WORKSPACE/release-assets" --tag "${{ inputs.artifact-tag }}"
       - name: Upload coverage artifact
         if: inputs.upload-coverage
         id: upload_coverage
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          path: release-assets/test-coverage-${{ github.ref_name }}.tar.gz
+          path:
+            release-assets/test-coverage-${{ inputs.artifact-tag }}.tar.gz
           if-no-files-found: error
           retention-days: 14
           archive: false
