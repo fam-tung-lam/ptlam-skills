@@ -9,6 +9,8 @@
     "plugin:compile": "tsx tools/plugin-compiler/plugin-compiler-cli.ts generate",
     "plugin:validate": "tsx tools/plugin-compiler/plugin-compiler-cli.ts validate",
     "plugin:verify": "npm run plugin:validate && npm run plugin:check",
+    "visualization:scaffold": "node --experimental-strip-types plugin/skills/ptlam-visualization-with-html/scripts/scaffolding/scaffold-html.ts",
+    "visualization:validate": "node --experimental-strip-types plugin/skills/ptlam-visualization-with-html/scripts/validation/validate-html.ts",
     "code:check": "biome check .",
     "code:format": "biome check --write .",
     "code:typecheck": "tsc --project tsconfig.json",
@@ -22,7 +24,7 @@
     "test:watch": "vitest"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=22.6.0"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.7",

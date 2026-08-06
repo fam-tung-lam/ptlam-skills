@@ -19,4 +19,6 @@ Use the nearest linked context for the code under test.
   [`decisions/2026-08-06-project-wide-typescript-validation.md`](decisions/2026-08-06-project-wide-typescript-validation.md)
 - Current compatibility research:
   [`research/2026-08-05-typescript-toolchain.md`](research/2026-08-05-typescript-toolchain.md)
+- Native TypeScript runtime research:
+  [`research/2026-08-06-node-typescript-runtime.md`](research/2026-08-06-node-typescript-runtime.md)
 - Active preferences: [`preferences.md`](preferences.md)

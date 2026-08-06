@@ -9,9 +9,11 @@ updated_at: 2026-08-06
 
 ## Decision
 
-Apply the root TypeScript, Biome, Vitest, and CI configuration to the whole
-repository rather than enumerating the current plugin compiler paths. Keep
-plugin validation as its own plugin-specific gate.
+Apply the root TypeScript, Biome, Vitest, and CI configuration to all canonical
+TypeScript sources. Coverage includes the `plugin/` and `tools/` source roots
+and excludes compiler-generated `skills/` copies; plugin verification proves
+that generated content matches its tested source. Keep plugin validation as its
+own plugin-specific gate.
 
 CI runs on every pull request and every push to `main`, in this order:
 
@@ -21,6 +23,7 @@ CI runs on every pull request and every push to `main`, in this order:
 
 ## Rationale
 
-The repository is becoming fully TypeScript. Root-wide discovery makes new
-project code and tests enter validation automatically and prevents path lists
-from silently drifting as capabilities are added.
+The repository is becoming fully TypeScript. Root-wide type checking, linting,
+and test discovery make new project code and tests enter validation
+automatically. Coverage names the two canonical source roots so generated
+publication copies are not counted as an untested second implementation.
