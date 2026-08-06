@@ -86,8 +86,14 @@ installations later with:
 npx skills@latest update
 ```
 
-## Development
+## Project documentation
 
-The [plugin compiler guide](tools/plugin-compiler/README.md) owns the authored
-and generated layout, commands, architecture, maintenance workflows, schema
-contract, development dependencies, and verification instructions.
+- [Contribution guide](CONTRIBUTION.md): ways to contribute, pull request
+  expectations, and the contributor workflow.
+- [Development guide](docs/DEVELOPMENT.md): local setup, source and generated
+  files, commands, maintenance workflows, and quality gates.
+- [Plugin compiler](tools/plugin-compiler/README.md): compiler architecture,
+  guarantees, and result contracts.
+- [Release runbook](docs/RELEASE_PLUGIN_FLOW.md): versioning, publication, and
+  release verification.
+- [License](LICENSE): terms for using and contributing to this project.

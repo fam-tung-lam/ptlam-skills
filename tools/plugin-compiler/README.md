@@ -9,49 +9,11 @@ The compiler does not install skills, resolve external versions, publish a
 release, or maintain installation state. Agent and plugin ecosystems own those
 responsibilities.
 
-## Commands
-
-Run commands from the repository root:
-
-| Command                   | Purpose                                                  | Writes |
-| ------------------------- | -------------------------------------------------------- | ------ |
-| `npm run plugin:validate` | Validate the manifest, graph, and authored skill sources | No     |
-| `npm run plugin:compile`  | Validate and replace stale compiler-owned outputs        | Yes    |
-| `npm run plugin:check`    | Validate and report generated-output drift               | No     |
-
-`generate` is the only command that may replace compiler-owned outputs. Run it
-after changing authored catalog data, then review and commit the generated diff.
-
-See the [plugin manifest v1 guide](docs/plugin-manifest-v1.md) for the authored
-data contract. The JSON Schema is the machine-readable source of truth.
-
-## Authored and generated layout
-
-```text
-plugin/
-├── plugin.yml
-└── skills/
-    └── <skill-id>/
-        ├── SKILL.md
-        └── {agents,assets,references,scripts}/
-
-.claude-plugin/
-├── plugin.json
-└── marketplace.json
-
-README.md                              # compiler-owned catalog region
-skills/
-└── <public-skill-id>/
-    ├── SKILL.md
-    └── references/required-skills/
-```
-
-`plugin/plugin.yml` and `plugin/skills/` are authored sources. The compiler owns
-the host manifests, the marked catalog region in the root `README.md`, and the
-whole root `skills/` tree. Do not edit those generated surfaces manually.
-
-Both authored and generated skill directories are flat. `category_id` is
-metadata, not a path segment.
+See the [development guide](../../docs/DEVELOPMENT.md) for setup, authored and
+generated file ownership, commands, maintenance workflows, dependencies, and
+verification. The [plugin manifest v1 guide](docs/plugin-manifest-v1.md) defines
+the authored data contract; its JSON Schema is the machine-readable source of
+truth.
 
 ## Architecture
 
@@ -155,82 +117,3 @@ replaced, rerun generation after resolving the filesystem error.
 Returned result objects and their array values are frozen at runtime. Validation
 failures throw `PluginValidationError`, whose `errors` array contains the
 deduplicated source violations.
-
-## Maintainer workflows
-
-### Add or move a skill
-
-1. Create or move `plugin/skills/<skill-id>/`.
-2. Add one body-only `SKILL.md` with exactly one required-skills marker.
-3. Add or update the matching entry in `plugin/plugin.yml`.
-4. Run `npm run plugin:compile` and review every generated change.
-5. Run `npm run plugin:validate`, `npm run plugin:check`,
-   `npm run code:typecheck`, `npm run code:check`, `npm run markdown:check`, and
-   `npm run test:coverage`, in that order.
-
-### Change the plugin version
-
-1. Update the quoted top-level `version` in `plugin/plugin.yml`.
-2. Keep `schema_version` unchanged unless the manifest shape becomes
-   incompatible.
-3. Generate, review, and verify all committed outputs before release.
-
-### Evolve the schema
-
-Update `validation/schemas/plugin-manifest-v1.schema.json`, the models,
-validation operations, fixtures, and
-[manifest guide](docs/plugin-manifest-v1.md) together. Never accept an unknown
-schema version silently.
-
-### Add a generated target
-
-Start with a pure renderer. Add its bytes and directory expectations to the
-publication plan so check and generate continue to share one definition of
-current output. Add a generic provider seam only after two real providers expose
-a stable shared contract.
-
-## Development dependencies
-
-`package.json` cannot contain comments because it is strict JSON. The table
-below documents why every direct development dependency exists in this private
-repository. Packages used by the compiler at runtime remain development
-dependencies because the compiler is repository tooling and is not published as
-a standalone package.
-
-| Dependency            | Usage in this project                                                                                             |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `@biomejs/biome`      | Formats, lints, and organizes imports in the plugin compiler, its tests, and the Vitest configuration.            |
-| `@types/node`         | Supplies TypeScript declarations for the Node.js APIs used by the compiler and tests.                             |
-| `@vitest/coverage-v8` | Collects V8 coverage for compiler source files and enforces the configured coverage thresholds.                   |
-| `ajv`                 | Validates `plugin/plugin.yml` data against the plugin manifest JSON Schema using JSON Schema 2020-12.             |
-| `markdownlint-cli2`   | Enforces Markdown structure and style rules that are outside Prettier's formatting responsibility.                |
-| `prettier`            | Formats authored Markdown plus compiler-generated README content and YAML frontmatter.                            |
-| `string-width`        | Measures Unicode display width so generated Markdown catalog tables remain visually aligned.                      |
-| `tsx`                 | Executes the TypeScript plugin-compiler CLI directly for plugin validation, generation, and drift checks.         |
-| `typescript`          | Runs strict, no-emit static analysis over the compiler, tests, and Vitest configuration.                          |
-| `vite`                | Provides the pinned transformation and configuration engine used internally by Vitest.                            |
-| `vitest`              | Runs unit and integration tests and provides assertions, mocks, suites, parameterized tests, and lifecycle hooks. |
-| `yaml`                | Parses source YAML with location-aware nodes and serializes generated skill frontmatter.                          |
-
-## Markdown quality
-
-Install the pinned development tools:
-
-```bash
-npm ci
-```
-
-Format all project Markdown, including skill files:
-
-```bash
-npm run markdown:format
-```
-
-Run the same formatting and lint checks used in continuous integration:
-
-```bash
-npm run markdown:check
-```
-
-The ignored `local/` directory contains reference material and is intentionally
-outside the project-wide formatting scope.
