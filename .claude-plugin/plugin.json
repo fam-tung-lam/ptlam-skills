@@ -19,6 +19,7 @@
   "skills": [
     "./skills/ptlam-git",
     "./skills/ptlam-testing",
+    "./skills/ptlam-testing-typescript",
     "./skills/ptlam-creating-skill",
     "./skills/ptlam-grilling",
     "./skills/ptlam-creating-atomic-note",

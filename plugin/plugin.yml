@@ -77,6 +77,30 @@ skills:
     visibility: public
     status: active
     required_skills: []
+  - id: ptlam-testing-typescript
+    description:
+      Design, write, update, run, audit, and diagnose tests for framework-free,
+      browser-free TypeScript libraries, Node.js code, CLIs, and tooling with
+      Vite, Vitest, and Vitest V8 coverage. Use when such a project needs test
+      implementation, Vitest configuration, coverage, mocking, Node
+      environments, type tests, or stack-specific testing review. Apply
+      ptlam-testing first for testing scope, level, behavior, placement, test
+      doubles, TDD, and audit authority. Do not use this specialization for web
+      frameworks, DOM code, or browser-runtime testing.
+    category_id: engineering
+    visibility: public
+    status: active
+    required_skills:
+      - skill_id: ptlam-testing
+        reason: Provides the universal testing workflow and mandatory rules.
+        instructions: >-
+          Read and apply ptlam-testing first. Let it own the testing mode,
+          primary test level, public seam, behavior rules, test doubles, TDD
+          activation, audit authority, and verification depth. Use this
+          specialization's explicit source-adjacent file placement instead of
+          the foundation's generic test-root placement. Apply this skill only to
+          framework-free, browser-free TypeScript, Vite, Vitest, and coverage
+          mechanics that the foundation leaves open.
   - id: ptlam-creating-skill
     description:
       Create, review, or refactor predictable agent skills through explicit
