@@ -11,7 +11,8 @@ updated_at: 2026-08-06
   GitHub automation under `.github/scripts/`.
 - Runtime: Node.js 22.6 or newer, ESM package. The visualization skill's
   portable TypeScript tools use Node's native type stripping, introduced in
-  Node.js 22.6.
+  Node.js 22.6. GitHub release scripts use the same strip-only runtime and must
+  contain only erasable TypeScript syntax.
 - Package manager: npm with the committed root lockfile.
 - Framework: Vitest for tests, lifecycle, spies, and mocks.
 - Test root: `tests/`; use `unit-tests/` for one public unit and

@@ -6,19 +6,25 @@ import { fileURLToPath } from "node:url";
 
 import { ReleaseAutomation } from "./release-automation.ts";
 
-export enum ReleaseAutomationCommand {
-  ValidateTag = "validate-tag",
-  PackageCoverage = "package-coverage",
-  PackagePlugin = "package-plugin",
-  GenerateChecksums = "generate-checksums",
-  PublishRelease = "publish-release",
-}
+export const ReleaseAutomationCommand = Object.freeze({
+  ValidateTag: "validate-tag",
+  PackageCoverage: "package-coverage",
+  PackagePlugin: "package-plugin",
+  GenerateChecksums: "generate-checksums",
+  PublishRelease: "publish-release",
+} as const);
 
-export enum ReleaseAutomationExitCode {
-  Success = 0,
-  Failure = 1,
-  Usage = 2,
-}
+export type ReleaseAutomationCommand =
+  (typeof ReleaseAutomationCommand)[keyof typeof ReleaseAutomationCommand];
+
+export const ReleaseAutomationExitCode = Object.freeze({
+  Success: 0,
+  Failure: 1,
+  Usage: 2,
+} as const);
+
+export type ReleaseAutomationExitCode =
+  (typeof ReleaseAutomationExitCode)[keyof typeof ReleaseAutomationExitCode];
 
 type WriteOutputLine = (message: string) => void;
 

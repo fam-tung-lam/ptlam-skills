@@ -1,4 +1,4 @@
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -19,6 +19,26 @@ function archiveEntries(archivePath: string): readonly string[] {
 }
 
 describe("release automation repository workflow", () => {
+  test("starts through Node's strip-only TypeScript runtime", () => {
+    // GIVEN: The exact native Node invocation used by GitHub Actions.
+    const cliPath = path.resolve(
+      import.meta.dirname,
+      "../../../../../.github/scripts/release/release-automation-cli.ts",
+    );
+
+    // WHEN: Node loads the complete CLI module graph in strip-only mode.
+    const result = spawnSync(
+      process.execPath,
+      ["--experimental-strip-types", cliPath, "unknown"],
+      { encoding: "utf8" },
+    );
+
+    // THEN: The CLI reaches its public usage contract instead of a syntax error.
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain("Usage: release-automation-cli.ts");
+    expect(result.stderr).not.toContain("ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX");
+  });
+
   test("packages the complete coverage directory", async () => {
     // GIVEN: A generated HTML and JSON coverage report.
     const repositoryRoot = await createTemporaryDirectory("coverage-source-");
