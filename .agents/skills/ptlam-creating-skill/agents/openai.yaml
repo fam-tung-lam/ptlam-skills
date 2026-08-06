@@ -1,0 +1,6 @@
+interface:
+  display_name: "PTLam Creating Skills"
+  short_description: "Create and refactor predictable agent skills"
+  default_prompt:
+    "Use $ptlam-creating-skill to turn this workflow into a predictable,
+    well-structured agent skill."

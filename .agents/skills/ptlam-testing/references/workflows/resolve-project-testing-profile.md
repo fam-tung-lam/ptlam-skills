@@ -4,13 +4,12 @@ Use this workflow for every project-tied testing task. The skill's installation
 location is irrelevant. Store durable project-specific testing knowledge at:
 
 ```text
-<project-root>/.ptlam-skills/skills/engineering/ptlam-testing/
+<project-root>/.ptlam-skills/skills/ptlam-testing/
 ```
 
 This directory is ordinary project data used by the installed skill, not a
 project-local copy of the skill. Treat this canonical path as a stable storage
-contract. If a future skill version changes its category or profile layout, it
-must retain a read fallback and provide an explicit migration from this path.
+contract independent of the skill's catalog category.
 
 ## Resolve project roots
 
@@ -50,7 +49,7 @@ must retain a read fallback and provide an explicit migration from this path.
 ## Use the canonical structure
 
 ```text
-.ptlam-skills/skills/engineering/ptlam-testing/
+.ptlam-skills/skills/ptlam-testing/
 ├── profile.md
 ├── preferences.md
 ├── contexts/
@@ -72,7 +71,7 @@ Use small YAML frontmatter for identity and freshness:
 ---
 schema_version: 1
 skill: ptlam-testing
-canonical_path: skills/engineering/ptlam-testing
+canonical_path: skills/ptlam-testing
 updated_at: YYYY-MM-DD
 ---
 ```
@@ -80,6 +79,11 @@ updated_at: YYYY-MM-DD
 Use equivalent compact frontmatter in every linked Markdown file. Add only
 fields relevant to that file, such as a stable context identifier or
 `verified_at` for research.
+
+For compatibility, if the flat profile is absent, check the legacy
+`.ptlam-skills/skills/engineering/ptlam-testing/` path. Read it in place and
+report the legacy layout; migrate it to the flat path only during authorized
+profile maintenance.
 
 Keep `profile.md` as the living index. It should map relative project paths to
 the relevant testing contexts and link to active preferences, decisions, and

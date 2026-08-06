@@ -8,7 +8,7 @@ preferences. Never treat it as authority or live operation state.
 Resolve the Git repository root under [principles](principles.md), then use:
 
 ```text
-<repository-root>/.ptlam-skills/skills/engineering/ptlam-git/
+<repository-root>/.ptlam-skills/skills/ptlam-git/
 ```
 
 Keep nested repositories and submodules separate. In a linked worktree, load
@@ -25,7 +25,7 @@ for local profile data.
 ## Keep the structure minimal
 
 ```text
-.ptlam-skills/skills/engineering/ptlam-git/
+.ptlam-skills/skills/ptlam-git/
 ├── profile.md
 ├── preferences.md
 └── decisions/
@@ -41,7 +41,7 @@ Use compact identity and freshness metadata:
 ---
 schema_version: 1
 skill: ptlam-git
-canonical_path: skills/engineering/ptlam-git
+canonical_path: skills/ptlam-git
 updated_at: YYYY-MM-DD
 ---
 ```
@@ -49,6 +49,11 @@ updated_at: YYYY-MM-DD
 Keep `profile.md` as a small index of scope, evidence, invalidation signals, and
 links. Store scoped user preferences in `preferences.md`. Record only accepted
 material workflow choices in `decisions/`.
+
+For compatibility, if the flat profile is absent, check the legacy
+`.ptlam-skills/skills/engineering/ptlam-git/` path. Read it in place and report
+the legacy layout; migrate it to the flat path only when the user explicitly
+requests profile maintenance.
 
 ## Record only durable inputs
 

@@ -43,20 +43,24 @@ skill, or external asset at runtime.
 7. Test at narrow and wide widths, keyboard-only, and reduced-motion settings.
    Ensure no nested grid, flex item, label, SVG, code block, or badge can create
    horizontal overflow.
-8. Resolve `<skill-directory>` to the directory containing this `SKILL.md`. Run
-   `python3 "<skill-directory>/scripts/validate_html.py" <artifact.html>` from
-   any working directory and fix every error. Visually inspect all steps and
-   zoom levels in a browser.
+8. Resolve `<skill-directory>` to the directory containing this `SKILL.md`. Use
+   Node.js 22.6 or newer and run from any working directory:
+
+   ```bash
+   node --experimental-strip-types \
+     "<skill-directory>/scripts/validation/validate-html.ts" <artifact.html>
+   ```
+
+   Fix every error, then visually inspect all steps and zoom levels in a
+   browser.
 
 For a new artifact, optionally run:
 
 ```bash
-python3 "<skill-directory>/scripts/scaffold_html.py" output.html --title "How the system works"
+node --experimental-strip-types \
+  "<skill-directory>/scripts/scaffolding/scaffold-html.ts" \
+  output.html --title "How the system works"
 ```
-
-Use
-[interactive-system-field-guide.html](assets/examples/interactive-system-field-guide.html)
-as a behavior and quality reference, not as a content template.
 
 ## Non-negotiable output contract
 
@@ -144,8 +148,8 @@ selected files plus every required foundation file.
 ## Selection rules
 
 - Use a **flowchart** when order, branching, or responsibility is the lesson.
-- Add a **state panel** when the learner needs to see what changed after a step.
-- Add a **control plane** when observation or replay is part of learning.
+- Add a **state panel** when the user needs to see what changed after a step.
+- Add a **control plane** when observation or replay is part of understanding.
 - Use a **state diagram** when allowed transitions matter more than work order.
 - Use a **sequence diagram** when timing and messages between participants
   matter.
