@@ -1,5 +1,5 @@
 ---
-name: ptlam-explain-with-analogy
+name: ptlam-explaining-with-analogy
 description:
   Explain an unfamiliar, abstract, or complex concept through one coherent
   real-life analogy, a stable mapping table, a short story, and explicit
@@ -9,7 +9,7 @@ description:
   explicitly request an analogy.
 ---
 
-# PTLam Explain with Analogy
+# PTLam Explaining with Analogy
 
 Explain a concept through one vivid, structurally faithful real-life analogy.
 Keep this skill concerned with explanation semantics, not rendering tools or

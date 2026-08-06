@@ -90,7 +90,7 @@ skills:
     visibility: public
     status: active
     required_skills: []
-  - id: ptlam-explain-with-analogy
+  - id: ptlam-explaining-with-analogy
     description:
       Explain an unfamiliar, abstract, or complex concept through one coherent
       real-life analogy, a stable mapping table, a short story, and explicit

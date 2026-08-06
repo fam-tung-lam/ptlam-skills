@@ -1,11 +1,11 @@
 {
   "version": 1,
   "skills": {
-    "ptlam-explain-with-analogy": {
+    "ptlam-explaining-with-analogy": {
       "source": "fam-tung-lam/ptlam-skills",
       "sourceType": "github",
-      "skillPath": "skills/ptlam-explain-with-analogy/SKILL.md",
-      "computedHash": "1d8e50059ef525ca77ac2b721020095c2bf85af4767ee89dc1e8844a26d8c304"
+      "skillPath": "skills/ptlam-explaining-with-analogy/SKILL.md",
+      "computedHash": "41f3fd44a57baff13ff3ea3d01e50fe84c77f08d2b44756032c258a4eb32429c"
     },
     "ptlam-git": {
       "source": "fam-tung-lam/ptlam-skills",

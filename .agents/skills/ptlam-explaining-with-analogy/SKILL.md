@@ -1,5 +1,5 @@
 ---
-name: ptlam-explain-with-analogy
+name: ptlam-explaining-with-analogy
 description:
   Teach an unfamiliar, abstract, or complex topic through one coherent real-life
   analogy with stable concept mappings, connected context, progressive visual
@@ -10,7 +10,7 @@ description:
   Use even for one concept when its role depends on surrounding components.
 ---
 
-# PTLam Explain with Analogy
+# PTLam Explaining with Analogy
 
 Build one familiar world that preserves the structure of the real topic. Make
 the visual experience primary, keep exact facts literal, and finish by returning

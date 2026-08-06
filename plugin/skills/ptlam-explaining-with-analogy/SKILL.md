@@ -1,4 +1,4 @@
-# PTLam Explain with Analogy
+# PTLam Explaining with Analogy
 
 Explain a concept through one vivid, structurally faithful real-life analogy.
 Keep this skill concerned with explanation semantics, not rendering tools or
