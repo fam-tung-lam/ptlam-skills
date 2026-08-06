@@ -93,7 +93,8 @@ their caller.
 ### Publication
 
 - Check and generate use the same expected bytes and explicit directory set.
-- Missing directories differ from existing empty directories.
+- Missing and unexpected directories, including empty nested directories,
+  produce drift.
 - Expected content is normalized to bytes once and ordered with a
   locale-independent comparator.
 - Standalone files use temporary siblings and atomic replacement.

@@ -30,6 +30,10 @@ export function validateMarkdownLinks({
         errors.push(
           `${skillPath}/${markdownPath}: unsupported link scheme in "${target}"; only https links are allowed externally`,
         );
+      } else if (!isValidHttpsUrl(target)) {
+        errors.push(
+          `${skillPath}/${markdownPath}: invalid HTTPS link "${target}"`,
+        );
       }
       continue;
     }
@@ -67,6 +71,15 @@ export function validateMarkdownLinks({
     }
   }
   return errors;
+}
+
+function isValidHttpsUrl(target: string): boolean {
+  try {
+    const url = new URL(target);
+    return url.protocol === "https:" && url.hostname !== "";
+  } catch {
+    return false;
+  }
 }
 
 function linkTargets(source: string): string[] {

@@ -52,6 +52,25 @@ async function normalizeComposedEntry(
   return [entry.path, Buffer.from(content)] as const;
 }
 
+function collectPublicationDirectories(
+  filePaths: Iterable<string>,
+): ReadonlySet<string> {
+  const directories = new Set<string>(["skills"]);
+  for (const filePath of filePaths) {
+    if (!filePath.startsWith("skills/")) continue;
+    let directory = filePath.slice(0, filePath.lastIndexOf("/"));
+    while (directory.startsWith("skills/")) {
+      directories.add(directory);
+      directory = directory.slice(0, directory.lastIndexOf("/"));
+    }
+  }
+  return new Set(
+    [...directories].sort((left, right) =>
+      left < right ? -1 : left > right ? 1 : 0,
+    ),
+  );
+}
+
 /** Build the canonical bytes and required directories for one publication. */
 export async function createExpectedPublication({
   plugin,
@@ -81,7 +100,7 @@ export async function createExpectedPublication({
 
   return {
     files,
-    directories: new Set(["skills"]),
+    directories: collectPublicationDirectories(files.keys()),
   };
 }
 

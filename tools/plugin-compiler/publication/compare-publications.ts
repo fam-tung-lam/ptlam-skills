@@ -10,6 +10,7 @@ export interface CurrentPublication {
 
 export enum PluginPublicationDriftReason {
   UnexpectedFile = "unexpected file",
+  UnexpectedDirectory = "unexpected directory",
   MissingFile = "file is missing",
   MissingDirectory = "directory is missing",
   ContentDiffers = "content differs",
@@ -53,6 +54,16 @@ export function comparePublications(
       drift.push({
         path: publicationPath,
         reason: PluginPublicationDriftReason.MissingDirectory,
+      });
+      continue;
+    }
+    if (
+      current.directories.has(publicationPath) &&
+      !expected.directories.has(publicationPath)
+    ) {
+      drift.push({
+        path: publicationPath,
+        reason: PluginPublicationDriftReason.UnexpectedDirectory,
       });
       continue;
     }

@@ -200,7 +200,8 @@ reference definitions discovered by the Markdown parser.
 
 Syntax inside fenced code, inline code, escaped Markdown, and comments is not a
 link. External URI schemes are recognized case-insensitively, so forms such as
-`HTTPS://example.com` are external rather than local filesystem paths.
+`HTTPS://example.com` are external rather than local filesystem paths. External
+links must be absolute, valid HTTPS URLs with a host.
 
 ## Changing the manifest contract
 

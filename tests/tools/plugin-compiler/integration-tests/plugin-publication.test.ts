@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import {
   chmod,
+  mkdir,
   mkdtemp,
   readdir,
   readFile,
@@ -10,7 +11,7 @@ import {
 } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { describe, onTestFinished, test } from "vitest";
+import { describe, it, onTestFinished } from "vitest";
 import {
   SkillStatus,
   SkillVisibility,
@@ -30,7 +31,7 @@ import {
 } from "./test-fixtures/output-repository-fixture.ts";
 
 describe("plugin publication", () => {
-  test("generation writes changed outputs and becomes idempotent", async () => {
+  it("generation writes changed outputs and becomes idempotent", async () => {
     // GIVEN: A stale output repository and one validated plugin snapshot exist.
     const rootDir = await createOutputRoot();
     const plugin = makeUnsafeMutablePluginSnapshotForPublicationTest();
@@ -52,7 +53,7 @@ describe("plugin publication", () => {
     assert.equal(generatedSkills["README.md"], undefined);
   });
 
-  test("check reports deterministic drift without repairing files", async () => {
+  it("check reports deterministic drift without repairing files", async () => {
     // GIVEN: A stale output repository is snapshotted before checking.
     const rootDir = await createOutputRoot();
     const plugin = makeUnsafeMutablePluginSnapshotForPublicationTest();
@@ -78,6 +79,10 @@ describe("plugin publication", () => {
         reason: PluginPublicationDriftReason.ContentDiffers,
       },
       {
+        path: "skills/review-code-change",
+        reason: PluginPublicationDriftReason.MissingDirectory,
+      },
+      {
         path: "skills/review-code-change/SKILL.md",
         reason: PluginPublicationDriftReason.MissingFile,
       },
@@ -85,7 +90,7 @@ describe("plugin publication", () => {
     assert.deepEqual(await readManagedState(rootDir), before);
   });
 
-  test("check is current after generation", async () => {
+  it("check is current after generation", async () => {
     // GIVEN: Publication outputs were generated from a validated snapshot.
     const rootDir = await createOutputRoot();
     const plugin = makeUnsafeMutablePluginSnapshotForPublicationTest();
@@ -100,7 +105,7 @@ describe("plugin publication", () => {
     assert.deepEqual(await readManagedState(rootDir), before);
   });
 
-  test("check reports missing, stale, and unexpected outputs together", async () => {
+  it("check reports missing, stale, and unexpected outputs together", async () => {
     // GIVEN: Generated outputs acquire three independent forms of drift.
     const rootDir = await createOutputRoot();
     const plugin = makeUnsafeMutablePluginSnapshotForPublicationTest();
@@ -142,7 +147,7 @@ describe("plugin publication", () => {
     await assert.rejects(readFile(staleSkillPath), { code: "ENOENT" });
   });
 
-  test("missing README or rendering failure writes nothing", async () => {
+  it("missing README or rendering failure writes nothing", async () => {
     // GIVEN: One repository lacks README and another lacks managed markers.
     const missingRoot = await createOutputRoot({ missingRootReadme: true });
     const missingBefore = await readManagedState(missingRoot);
@@ -166,7 +171,7 @@ describe("plugin publication", () => {
     assert.deepEqual(await readManagedState(invalidRoot), invalidBefore);
   });
 
-  test("unsafe output parent and repository-root links are rejected", async () => {
+  it("unsafe output parent and repository-root links are rejected", async () => {
     // GIVEN: One output parent and one repository root are symbolic links.
     const rootDir = await createOutputRoot();
     const externalRoot = await mkdtemp(
@@ -200,7 +205,7 @@ describe("plugin publication", () => {
     assert.deepEqual(await readManagedState(realRoot), linkedBefore);
   });
 
-  test("generation atomically replaces a stale regular output", async () => {
+  it("generation atomically replaces a stale regular output", async () => {
     // GIVEN: A generated JSON output becomes stale.
     const rootDir = await createOutputRoot();
     const plugin = makeUnsafeMutablePluginSnapshotForPublicationTest();
@@ -225,7 +230,7 @@ describe("plugin publication", () => {
     );
   });
 
-  test("a skills staging failure leaves every managed output unchanged", async () => {
+  it("a skills staging failure leaves every managed output unchanged", async () => {
     // GIVEN: A later publication contains an unstorable resource path.
     const rootDir = await createOutputRoot();
     const plugin = makeUnsafeMutablePluginSnapshotForPublicationTest();
@@ -255,7 +260,7 @@ describe("plugin publication", () => {
     );
   });
 
-  test("generation preserves dependency context and validates generated links", async () => {
+  it("generation preserves dependency context and validates generated links", async () => {
     // GIVEN: One dependency has multiline instructions and a valid resource link.
     const rootDir = await createOutputRoot();
     const plugin = makeUnsafeMutablePluginSnapshotForPublicationTest();
@@ -304,7 +309,7 @@ describe("plugin publication", () => {
     assert.deepEqual(await readManagedState(rootDir), beforeBroken);
   });
 
-  test("check detects a missing empty skills directory", async () => {
+  it("check detects a missing empty skills directory", async () => {
     // GIVEN: A current publication has no public roots, then its empty skills directory is removed.
     const rootDir = await createOutputRoot();
     const plugin = makeUnsafeMutablePluginSnapshotForPublicationTest();
@@ -329,7 +334,34 @@ describe("plugin publication", () => {
     assert.deepEqual(await readdir(path.join(rootDir, "skills")), []);
   });
 
-  test("a failed staged-tree install restores the prior managed tree", async () => {
+  it("check detects and generation removes unexpected empty directories", async () => {
+    // GIVEN: A current publication gains an empty directory in its managed tree.
+    const rootDir = await createOutputRoot();
+    const plugin = makeUnsafeMutablePluginSnapshotForPublicationTest();
+    await generatePluginPublication({ rootDir, plugin });
+    const unexpectedPath = path.join(rootDir, "skills", "unexpected", "empty");
+    await mkdir(unexpectedPath, { recursive: true });
+
+    // WHEN: Publication freshness is checked and then repaired.
+    const checked = await checkPluginPublication({ rootDir, plugin });
+    const generated = await generatePluginPublication({ rootDir, plugin });
+
+    // THEN: Empty unmanaged structure creates drift and is removed with the tree.
+    assert.deepEqual(checked.drift, [
+      {
+        path: "skills/unexpected",
+        reason: PluginPublicationDriftReason.UnexpectedDirectory,
+      },
+      {
+        path: "skills/unexpected/empty",
+        reason: PluginPublicationDriftReason.UnexpectedDirectory,
+      },
+    ]);
+    assert.deepEqual(generated.changedPaths, ["skills"]);
+    await assert.rejects(readdir(unexpectedPath), { code: "ENOENT" });
+  });
+
+  it("a failed staged-tree install restores the prior managed tree", async () => {
     // GIVEN: The managed tree has prior bytes and the staged tree vanished before install.
     const rootDir = await createOutputRoot();
     const priorPath = path.join(rootDir, "skills", "prior.txt");
@@ -351,7 +383,7 @@ describe("plugin publication", () => {
     );
   });
 
-  test.skipIf(process.platform === "win32")(
+  it.skipIf(process.platform === "win32")(
     "backup cleanup failure remains observable and preserves the prior tree",
     async () => {
       // GIVEN: A current skills tree cannot be recursively removed after replacement.

@@ -23,8 +23,8 @@ import {
 } from "./publication-plan.ts";
 
 interface DirectorySnapshot {
-  readonly exists: boolean;
   readonly files: ReadonlyMap<string, Buffer>;
+  readonly directories: ReadonlySet<string>;
 }
 
 function compareCodePoints(left: string, right: string): number {
@@ -123,7 +123,7 @@ async function snapshotDirectory(
     rootStats = await lstat(absoluteDirectory);
   } catch (error) {
     if (isErrnoException(error) && error.code === "ENOENT") {
-      return { exists: false, files: new Map() };
+      return { files: new Map(), directories: new Set() };
     }
     throw error;
   }
@@ -134,6 +134,7 @@ async function snapshotDirectory(
   }
 
   const files = new Map<string, Buffer>();
+  const directories = new Set<string>([relativeDirectory]);
   async function visit(directory: string, prefix: string): Promise<void> {
     const entries = await readdir(directory, { withFileTypes: true });
     entries.sort((left, right) => compareCodePoints(left.name, right.name));
@@ -146,6 +147,7 @@ async function snapshotDirectory(
         );
       }
       if (entry.isDirectory()) {
+        directories.add(`${relativeDirectory}/${relativePath}`);
         await visit(absolutePath, relativePath);
       } else if (entry.isFile()) {
         files.set(
@@ -160,7 +162,7 @@ async function snapshotDirectory(
     }
   }
   await visit(absoluteDirectory, "");
-  return { exists: true, files };
+  return { files, directories };
 }
 
 /** Snapshot all managed output bytes and the existence of managed directories. */
@@ -184,7 +186,7 @@ export async function readCurrentPublication(
   }
   return {
     files,
-    directories: skills.exists ? new Set(["skills"]) : new Set(),
+    directories: skills.directories,
   };
 }
 

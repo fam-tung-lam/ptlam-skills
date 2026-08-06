@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
-import { describe, test } from "vitest";
+import { describe, it } from "vitest";
 
 import { validateMarkdownLinks } from "../../../../../tools/plugin-compiler/validation/validate-markdown-links.ts";
 
 describe("validateMarkdownLinks", () => {
-  test("accepts actual secure external, fragment, image, inline, and reference destinations", () => {
+  it("accepts actual secure external, fragment, image, inline, and reference destinations", () => {
     // GIVEN: A Markdown source references existing local files and allowed remote targets.
     const source = [
       "[rules](references/rules.md#scope)",
@@ -33,7 +33,7 @@ describe("validateMarkdownLinks", () => {
     assert.deepEqual(errors, []);
   });
 
-  test("ignores link examples in code escaped syntax and comments", () => {
+  it("ignores link examples in code escaped syntax and comments", () => {
     // GIVEN: Non-link Markdown constructs contain missing-looking destinations.
     const source = [
       "```markdown",
@@ -56,12 +56,13 @@ describe("validateMarkdownLinks", () => {
     assert.deepEqual(errors, []);
   });
 
-  test("reports unsafe, malformed, escaping, and missing link targets in source order", () => {
+  it("reports unsafe, malformed, escaping, and missing link targets in source order", () => {
     // GIVEN:
     // - A nested Markdown source contains each unsupported local-link failure mode.
     // - The isolated skill file set contains none of the referenced targets.
     const source = [
       "[insecure](http://example.test/docs)",
+      "[invalid-secure](https://)",
       "[malformed](%ZZ)",
       "[absolute](/tmp/rules.md)",
       "[home](~/rules.md)",
@@ -80,6 +81,7 @@ describe("validateMarkdownLinks", () => {
     // THEN: One precise diagnostic is returned for every invalid target.
     assert.deepEqual(errors, [
       'plugin/skills/example/references/topic.md: unsupported link scheme in "http://example.test/docs"; only https links are allowed externally',
+      'plugin/skills/example/references/topic.md: invalid HTTPS link "https://"',
       'plugin/skills/example/references/topic.md: invalid encoded link "%ZZ"',
       'plugin/skills/example/references/topic.md: local link must be skill-relative: "/tmp/rules.md"',
       'plugin/skills/example/references/topic.md: local link must be skill-relative: "~/rules.md"',
