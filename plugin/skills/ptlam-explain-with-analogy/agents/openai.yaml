@@ -1,6 +1,6 @@
 interface:
   display_name: "PTLam Explain with Analogy"
-  short_description: "Teach through one visual real-life analogy"
+  short_description: "Explain concepts through one faithful analogy"
   default_prompt:
-    "Use $ptlam-explain-with-analogy to teach this topic through one coherent
-    visual real-life analogy."
+    "Use $ptlam-explain-with-analogy to explain this concept through one
+    coherent real-life analogy."

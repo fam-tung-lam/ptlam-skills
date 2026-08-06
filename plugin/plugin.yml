@@ -83,21 +83,21 @@ skills:
       interviewed deeply before action, or wants to expose hidden assumptions,
       dependencies, contradictions, risks, and trade-offs. Research discoverable
       facts independently, recommend an answer for every decision, wait after
-      each question, and do not act until shared understanding is confirmed.
+      each question, persist a resumable project-local decision record, resume
+      prior grilling sessions when requested, and do not act until shared
+      understanding is confirmed.
     category_id: productivity
     visibility: public
     status: active
     required_skills: []
   - id: ptlam-explain-with-analogy
     description:
-      Teach an unfamiliar, abstract, or complex topic through one coherent
-      real-life analogy with stable concept mappings, connected context,
-      progressive visual scenes, and meaningful interaction. Use when the user
-      asks how something works, wants a simple or intuitive visual explanation,
-      asks for an analogy or metaphor, or needs to understand architecture,
-      relationships, workflow, structure, lifecycle, ownership, cardinality,
-      comparison, or cause and effect. Use even for one concept when its role
-      depends on surrounding components.
+      Explain an unfamiliar, abstract, or complex concept through one coherent
+      real-life analogy, a stable mapping table, a short story, and explicit
+      caveats. Use whenever the user wants to understand a concept, including
+      requests such as explain, what is, how does it work, ELI5, break this
+      down, help me understand, or give me an analogy. Use even when the user
+      does not explicitly request an analogy.
     category_id: productivity
     visibility: public
     status: active
