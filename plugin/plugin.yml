@@ -76,6 +76,20 @@ skills:
     visibility: public
     status: active
     required_skills: []
+  - id: ptlam-creating-skill
+    description:
+      Create, review, or refactor predictable agent skills through explicit
+      invocation, distinct branches, information hierarchy, completion criteria,
+      context pointers, and single-source package design. Use when the user asks
+      to turn a workflow or reference set into a new skill, revise an existing
+      SKILL.md, or audit a skill without editing it. Resolve target-specific
+      authored and generated boundaries and verify the package statically.
+      Tests, evals, benchmarks, grading, comparisons, and trigger optimization
+      remain outside this skill's scope.
+    category_id: engineering
+    visibility: public
+    status: active
+    required_skills: []
   - id: ptlam-grilling
     description:
       Stress-test a plan, decision, or idea through one user-owned decision at a
