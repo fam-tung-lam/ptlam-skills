@@ -9,7 +9,7 @@ of languages, frameworks, SDKs, or testing packages in this skill.
 
 ## Discover the project context
 
-1. Load the relevant context linked by the project testing profile, when one
+1. Load the relevant section of the project's `CONTEXT.md`, when the file
    exists. Treat it as starting evidence, not authority; explicit current
    repository evidence can invalidate it.
 2. Read repository instructions, manifests, lockfiles, build configuration, CI
@@ -75,14 +75,15 @@ of languages, frameworks, SDKs, or testing packages in this skill.
   test levels, determinism, and test-double placement.
 - Map a tool's own taxonomy to the risk-based unit, integration, or end-to-end
   level used by this skill; do not let labels alone choose the level.
-- In write, fix, or explicit TDD mode, persist material durable environment,
-  tool, command, test-root, research, and decision facts according to the
-  project-testing-profile workflow. In audit mode, only report suggested profile
-  changes.
+- In write, fix, or explicit TDD mode, update `CONTEXT.md` only with current
+  durable environment, tool, command, test-root, and preference facts according
+  to the project-testing-context workflow. Keep research notes, alternatives,
+  and decision history in the task report rather than project storage. In audit
+  mode, only report suggested context changes.
 
 ## Report the resolution
 
 Report the selected environment and tools, the evidence and sources used, why
 the choice fits the testing approach, versions or constraints applied, exact
 commands, rejected alternatives that had material trade-offs, and anything not
-fully verified. Also report whether the project profile was loaded or changed.
+fully verified. Also report whether `CONTEXT.md` was loaded or changed.

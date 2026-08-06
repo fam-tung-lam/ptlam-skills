@@ -11,8 +11,8 @@ test level, pattern, or workflow.
 1. Resolve every project root in scope from explicit task and repository
    evidence. Do not assume that the skill installation directory or current
    working directory is the project root.
-2. Choose the mode, then follow the project-testing-profile workflow to load the
-   relevant project context. Initialize or update the profile only after durable
+2. Choose the mode, then follow the project-testing-context workflow to load the
+   relevant project context. Create or update `CONTEXT.md` only after durable
    facts have been established and only in a writable mode:
    - **Write or fix**: create or change tests and make only authorized
      production changes.
@@ -22,7 +22,7 @@ test level, pattern, or workflow.
      test-first development, TDD, or Red-Green-Refactor.
 3. Read repository instructions, relevant context documents and ADRs, manifests,
    test configuration, neighboring production code, and existing tests. Verify
-   loaded profile facts against this repository evidence.
+   loaded context facts against this repository evidence.
 4. Identify the requested scope, execution environment, existing test tools, and
    test level. Choose the smallest sufficient level unless the user explicitly
    requests one.
@@ -55,9 +55,9 @@ test level, pattern, or workflow.
 ## Load only relevant references
 
 - For every project-tied task, read
-  [resolve project testing profile](references/workflows/resolve-project-testing-profile.md)
-  to locate and load the relevant project context, preserve mode semantics, and
-  decide whether durable findings should be recorded.
+  [resolve project testing context](references/workflows/resolve-project-testing-context.md)
+  to locate and load `CONTEXT.md`, preserve mode semantics, and decide whether
+  durable findings should be recorded.
 - Select exactly one primary test level: [unit](references/test-levels/unit.md),
   [integration](references/test-levels/integration.md), or
   [end-to-end](references/test-levels/e2e.md). Load multiple levels only when
@@ -141,8 +141,8 @@ test level, pattern, or workflow.
 ## Audit existing tests
 
 Treat a request to check, audit, or review tests as read-only unless the user
-explicitly requests fixes. This includes the project testing profile: report
-suggested profile changes without creating or updating its files.
+explicitly requests fixes. This includes the project testing context: report
+suggested `CONTEXT.md` changes without creating or updating the file.
 
 1. Define the reviewed scope and load every applicable reference.
 2. Inspect corresponding production code when needed to judge behavior, seams,
@@ -181,7 +181,7 @@ suggested profile changes without creating or updating its files.
 ## Report the result
 
 Lead with the outcome. State the selected level, detected execution environment,
-chosen tools, relevant project-profile context and its status, and the evidence
+chosen tools, relevant `CONTEXT.md` information and its status, and the evidence
 supporting those choices; summarize changed behavior and files; list
 verification evidence; then disclose remaining risks, migrations, conflicts,
-stale or provisional profile facts, and checks not run.
+stale or provisional context facts, and checks not run.

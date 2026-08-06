@@ -2,5 +2,5 @@ interface:
   display_name: "PTLam Testing"
   short_description: "Design, write, and audit automated tests"
   default_prompt:
-    "Use $ptlam-testing to design, write, or audit tests and preserve durable
-    project testing context."
+    "Use $ptlam-testing to design, write, or audit tests and keep durable project
+    testing context in one CONTEXT.md file."

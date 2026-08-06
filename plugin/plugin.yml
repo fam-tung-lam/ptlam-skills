@@ -67,8 +67,8 @@ skills:
       Design, write, update, run, review, and diagnose automated tests at unit,
       integration, and end-to-end levels. Use when an agent needs to select a
       test level, add or repair tests, improve testability, assess test quality,
-      audit test code for compliance, maintain or refresh a project-local
-      testing profile, resolve a project's testing environment, select or
+      audit test code for compliance, maintain or refresh project-local testing
+      context, resolve a project's testing environment, select or
       recommend compatible test tools, or follow an explicitly requested
       test-first or Red-Green-Refactor workflow. Do not infer TDD merely from a
       request for tests or integration testing.
