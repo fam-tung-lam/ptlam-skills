@@ -6,6 +6,7 @@
     ".ptlam/**",
     "local/**",
     "node_modules/**",
+    "skills/**",
     "tests/**/integration-tests/results/**",
   ],
   "config": {

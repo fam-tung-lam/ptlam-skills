@@ -12,7 +12,8 @@
       "**/*.schema.json",
       "biome.json",
       "package.json",
-      "tsconfig.json"
+      "tsconfig.json",
+      "!!skills"
     ]
   },
   "formatter": {
