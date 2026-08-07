@@ -1,5 +1,5 @@
 interface:
   display_name: "PTLam Git"
-  short_description: "Run adaptable, safe Git workflows"
+  short_description: "Apply Git preferences and project context"
   default_prompt:
-    "Use $ptlam-git to plan and complete this Git workflow safely."
+    "Use $ptlam-git to apply current Git preferences to this workflow."

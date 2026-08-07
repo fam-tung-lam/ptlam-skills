@@ -1,50 +1,41 @@
 ---
 name: ptlam-git
 description:
-  Plan, inspect, execute, review, diagnose, or recover Git workflows safely
-  across repositories and collaboration models. Use for status and diffs;
-  staging and commits; branches, worktrees, and refs; fetch, pull, merge,
-  rebase, cherry-pick, revert, and history editing; pushes and deletions; tags;
-  pull or merge request lifecycle work; conflicts, interrupted operations;
-  recovery; and maintenance of project-local Git context and workflow
-  preferences. Resolve repository policy, authority, custody, targets, and proof
-  before mutation instead of assuming a topology or convention.
+  Apply PTLam's commit-message preferences and maintain project-local Git
+  context. Use for repository-tied Git work that should load current facts or
+  preferences from CONTEXT.md; for recording, refreshing, or consolidating
+  durable Git context; and for creating or changing a commit message. Apply
+  current user, repository, and CONTEXT.md preferences before the portable
+  defaults.
 ---
 
-# PTLam Git
+# PTLam Git preferences
 
-Route Git work through the stable decision kernel and load only the capability
-patterns needed for the outcome.
+Apply only project-local Git context and commit-message preferences. Assume the
+agent already knows general Git workflow mechanics.
 
-## Load the governing references
+## Load the relevant reference
 
-1. Read [principles](references/principles.md) for every task. It owns the
-   vocabulary, invariants, decision kernel, recovery rules, and proof envelope.
-2. For every repository-tied task, read
+1. For repository-tied Git work, read
    [project Git context](references/project-git-context.md). It owns the
-   project-local `CONTEXT.md` path, durable Git facts and preferences, automatic
-   maintenance boundaries, and freshness rules.
-3. Read only the relevant capability sections in
-   [patterns](references/patterns.md). They own operation-specific decisions and
-   completion criteria.
+   `CONTEXT.md` location, contents, maintenance rules, and reporting contract.
+2. When creating or changing a commit message, read
+   [commit message preferences](references/commit-message-preferences.md). It
+   owns preference precedence and the portable defaults for subjects, bodies,
+   and issue references.
 
-Patterns may specialize the principles but never weaken them.
+Complete this step when the task has loaded every reference its branch needs
+and no unrelated Git workflow instructions.
 
-## Run the workflow
+## Apply the preferences
 
-1. Apply the operation kernel in `principles.md` to resolve context, policy,
-   mode, scope, custody, impact, recovery, and required proof.
-2. Load and verify the project Git context. In an authorized state-changing
-   mode, persist material durable findings under its maintenance rules; keep
-   inspect work read-only unless the user explicitly requests context
-   maintenance.
-3. Select patterns by capability and compose only those needed for the outcome.
-4. Re-observe every controlling fact immediately before mutation; stop and
-   re-plan if it changed.
-5. Verify with the proof envelope and report the outcome, project Git context
-   status, evidence, recovery state, risks, blockers, and gaps.
+1. Treat current user instructions and repository policy as sources of truth.
+2. Apply verified task-relevant facts and preferences from `CONTEXT.md`.
+3. For commit-message choices still unconstrained, apply the portable defaults.
+4. Maintain `CONTEXT.md` only under its write and scope rules.
+5. Report the context status, preferences that affected the task, and any
+   stale, conflicting, or unavailable information.
 
-Keep exact command syntax at the execution edge. Assume no branch, remote,
-commit format, merge method, wrapper, hosting surface, or project path. Use
-available mechanisms without installing tools, and never expose credentials or
-secret-bearing remote URLs.
+Complete the workflow when current preferences have been applied, any
+authorized context maintenance is verified, and the report accounts for the
+`CONTEXT.md` state.
