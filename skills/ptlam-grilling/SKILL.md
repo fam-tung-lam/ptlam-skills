@@ -22,7 +22,11 @@ in control of consequential choices.
 Resolve the project root before the first substantive question. Prefer the
 repository root that owns the subject; otherwise use the task's workspace root.
 Ask only when multiple plausible roots would place the session in different
-projects. Store every grilling session at:
+projects. Read and follow
+[project grilling context](references/project-grilling-context.md) to load or
+maintain durable project-specific facts, recurring constraints, and grilling
+preferences without mixing them into a session record. Store every grilling
+session at:
 
 ```text
 <project-root>/.ptlam-skills/skills/ptlam-grilling/sessions/<YYYY-MM-DD>_<title>.md
@@ -55,6 +59,10 @@ evidence changes the map, before yielding with the next substantive question,
 before a summary or handoff, and when the session becomes confirmed, deferred,
 blocked, or complete. If persistence fails, report the failed path and reason
 instead of silently claiming the session is resumable.
+
+Keep durable context current under its own workflow when the session establishes
+material reusable knowledge. Never copy session status, current questions, or
+decision history into `CONTEXT.md`.
 
 ## Establish the decision map
 
