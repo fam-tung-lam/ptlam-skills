@@ -18,7 +18,7 @@ Create, review, split, or merge durable notes that each express one reusable
 idea. Keep the skill concerned with note semantics; let the user's knowledge
 system own storage, metadata, filenames, and link syntax.
 
-## 1. Resolve the operation and local contract
+## 1. Resolve the operation, local contract, and note role
 
 Identify whether the user wants to:
 
@@ -32,19 +32,50 @@ nearby notes and configuration needed to learn its conventions. Follow verified
 local rules for filenames, frontmatter, headings, tags, links, and source
 citations.
 
-When the note role is ambiguous or no verified output shape exists, read
-[note roles and fallback shapes](references/note-shapes.md). It owns role
-selection, the portable Markdown fallback, connection presentation, and the
-filename fallback. Local conventions always take precedence.
+Use these roles to resolve how the result participates in the knowledge system:
+
+| Role | Purpose | Treatment |
+| --- | --- | --- |
+| Fleeting capture | Preserve a thought before it disappears | Keep visibly provisional; process or discard later. |
+| Literature note | Record what a source contributes | Paraphrase faithfully and retain source context. |
+| Permanent note | Add one reusable idea to the user's knowledge network | Make it atomic, self-contained, and meaningfully connected. |
+
+Unless the user requests another role, treat an atomic-note request as a draft
+permanent note. “Permanent” means designed for durable use, not frozen forever.
+
+When no verified local shape exists, use this portable fallback:
+
+```markdown
+# <Declarative claim or precise concept>
+
+> <One-sentence canonical claim.>
+
+<Enough explanation, mechanism, evidence, or boundary to make the claim
+self-contained.>
+
+## Suggested connections
+
+- <Note title> — <why this relationship matters>.
+
+## Source
+
+- <Source or attribution, when one exists.>
+```
+
+Omit empty sections. Keep connection suggestions as plain titles until both the
+target note and local link syntax are verified. Then use `Connections` and
+render each target with the verified local syntax. If the user requests a file
+and no naming convention exists, derive a short lowercase hyphenated slug from
+the claim and use `.md`; do not invent a folder taxonomy or metadata schema.
 
 Ask only when a missing choice would materially change the knowledge captured
 or the destination. Otherwise, make reversible presentation choices and
 continue. Return a Markdown draft in the response unless the user explicitly
 asks to create or update files.
 
-Complete this step when the operation and requested output are known, every
-applicable destination and local convention is resolved, and file authority is
-unambiguous.
+Complete this step when the operation, note role, and requested output are known,
+every applicable destination and local convention is resolved, and file
+authority is unambiguous.
 
 ## 2. Distill and test each idea
 
@@ -61,12 +92,19 @@ diagnostic, not the definition. Apply three tests:
 A title containing `and` or `with` is a warning, not proof of two ideas. A
 single relational claim can legitimately name two concepts.
 
+Split when two claims can stand alone and develop different connection
+profiles. Keep a coherent idea together when splitting would only make it
+shorter. Merge only when notes state the same claim or maintain redundant
+connections; topic overlap alone is insufficient.
+
+### Write for future understanding
+
 1. Separate the user's idea from source wording, examples, supporting evidence,
    and adjacent claims.
-2. Preserve known attribution and express the idea in fresh language the user
-   can understand. Mark and attribute a quotation when its exact wording
-   matters. Distinguish the source's position, the user's interpretation, and
-   established fact when that distinction affects meaning.
+2. Preserve attribution and citations separately from the paraphrased claim,
+   and express the idea in language the user understands. Distinguish the
+   source's position, the user's interpretation, and established fact when that
+   distinction affects meaning.
 3. State the idea as one sharp declarative title or precise concept.
 4. Apply all three tests. If the input contains several claims, produce separate
    drafts when plural notes are authorized; otherwise present the proposed
@@ -74,19 +112,53 @@ single relational claim can legitimately name two concepts.
 5. Write enough context for the note to make sense without the conversation or
    source, prefer a concrete mechanism, implication, or boundary over generic
    summary, and remove material that belongs to another claim.
-6. Add links only to verified existing notes and use the verified local syntax.
-   Explain the relationship beside every link. Present unverified connection
-   ideas as syntax-neutral suggestions rather than implying that a target file
-   exists.
+
+Use a deliberate quotation only when its exact wording matters. Mark and
+attribute it, retain its source, and explain the idea in fresh words as well.
+
+### Use precise titles
+
+Prefer titles such as:
+
+- `Spaced retrieval strengthens long-term recall by interrupting forgetting`
+- `Annotated links preserve why two notes are connected`
+
+Avoid topic buckets and vague process labels such as:
+
+- `Spaced repetition`
+- `Thoughts about links`
+- `Notes from the book`
+
+The title should let another note link to this claim with clear intent.
+
+### Connect notes with meaning
+
+Search the user's available note collection before claiming that a target
+exists. Add links only to verified notes, use the verified local syntax, and
+annotate why every relationship matters. For example:
+
+```markdown
+- <verified local link to "Retrieval practice strengthens recall"> — supplies
+  the active-recall mechanism used by this scheduling strategy.
+```
+
+When no collection is available, use `Suggested connections`, keep targets as
+plain titles, and do not imply that they are real files. Aim to give each
+permanent note at least one meaningful connection. If none can be verified,
+offer one or two annotated suggestions. An honest orphan draft remains valid;
+do not invent a target to satisfy a quota.
 
 Use an analogy, diagram, category hierarchy, or fixed length only when it
 clarifies the idea or matches the user's established system. Prefer meaningful
-connections over decorative links; an honest orphan draft is acceptable when
-no useful connection is known.
+connections over decorative links.
+
+Produce synthesized knowledge rather than copied highlights, broad topic
+buckets, bare links, premature fragments, or metadata work that replaces
+thinking about the idea.
 
 Complete this step when every proposed note passes the three tests, makes its
 source status clear, contains enough context to stand alone, and distinguishes
-verified links from suggestions.
+verified links from suggestions with an annotated relationship.
 
 ## 3. Complete the selected operation
 
