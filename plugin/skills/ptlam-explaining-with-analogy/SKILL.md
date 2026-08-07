@@ -1,9 +1,11 @@
 # PTLam Explaining with Analogy
 
 Explain a concept through one vivid, structurally faithful real-life analogy.
-Keep this skill concerned with explanation semantics, not rendering tools or
-delivery mechanics. Return the explanation to the calling agent so it can
-choose how to present or transform it.
+Own the explanation semantics: a concise summary, stable mappings, a story that
+demonstrates the mechanism, and every material limitation. When another agent
+calls this skill, return those content components and let the caller choose the
+rendering. When answering the learner directly, use the compact Markdown
+fallback below.
 
 <!-- PLUGIN-COMPILER:REQUIRED-SKILLS -->
 
@@ -14,11 +16,16 @@ Identify:
 - the concept to explain;
 - the learner's background and existing knowledge;
 - the part that is confusing; and
-- the requested depth, language, or output constraints.
+- any analogy domain the learner supplies, requires, or rules out; and
+- the requested depth, language, or other output constraints.
 
 If the concept is missing or too vague to explain accurately, ask what the
 learner wants explained. Otherwise, infer ordinary presentation choices and
 continue.
+
+Complete this step when the concept, learner goal, confusing mechanism, depth,
+language, analogy-domain constraints, and output constraints are known or
+safely inferred.
 
 ## Establish the literal model
 
@@ -34,9 +41,18 @@ explain the concept accurately:
 Cover only the core mechanism needed for the learner's goal. Verify claims when
 the request or risk requires it. Do not invent details to make an analogy fit.
 
-## Present three analogy candidates
+Complete this step when every material relationship and rule within the chosen
+depth is captured and uncertain claims are verified or excluded.
 
-Generate exactly three candidates. Each candidate must:
+## Select a validated analogy
+
+Treat a learner-supplied analogy domain as the first candidate and validate it
+against the complete mapping gate below. Use it when it passes. When it fails,
+name the material mismatch and offer passing alternatives instead of silently
+substituting another domain.
+
+Generate several candidate domains internally after the literal model is
+stable when no learner-supplied domain has passed. Prefer candidates that:
 
 - mirror the concept's relationships and behavior, not merely its appearance;
 - use an everyday domain the learner can picture immediately;
@@ -58,27 +74,48 @@ Prefer familiar starting points when they preserve the structure:
 
 Derive a better domain when these examples do not fit.
 
-Present the candidates as a numbered list. For each candidate, include:
+For each candidate, build an internal mapping ledger:
 
-1. a short domain name; and
-2. one sentence explaining the structural similarity.
+```text
+literal concept -> analogy counterpart -> preserved behavior -> known limit
+```
 
-Mark the strongest candidate with **(Recommended)**, then ask:
+Apply the complete mapping gate before presenting or using a candidate:
 
-> Which analogy would you like me to use? You can also say “surprise me,” and
-> I'll use the recommended one.
+1. Map every essential literal concept to one stable analogy counterpart.
+2. Preserve ownership, direction, order, state, cardinality, lifetime, and
+   causality wherever they matter.
+3. Reuse no analogy element for unrelated concepts.
+4. Keep exact facts and constraints literal rather than bending the analogy.
+5. Reject a candidate when a material rule needs a misleading mapping, an
+   unexplained exception, or a second metaphor.
 
-Stop after this question. Do not compose the explanation until the learner
-chooses a candidate. If the learner says “surprise me,” use the recommended
-candidate.
+Choose the passing candidate with the strongest fidelity, coverage,
+familiarity, and lowest explanation cost. Use it without adding a selection
+turn unless the learner explicitly asks to choose, rejects the current analogy,
+or the passing candidates expose meaningfully different teaching trade-offs.
+
+When selection is useful, present up to three passing candidates as a numbered
+list. Give each a short domain name, one sentence describing the structural
+similarity, and any material teaching trade-off. Mark the strongest candidate
+**(Recommended)**, ask which one to use, and stop until the learner chooses.
+Never offer a candidate that failed the mapping gate.
+
+If no coherent candidate passes, ask the learner to narrow the goal instead of
+forcing a weak analogy. Complete this step when one passing analogy is selected,
+with every learner-supplied domain either honored or rejected for a named
+material mismatch, or when the learner has received the one scope question
+needed to find a passing analogy.
 
 ## Compose the explanation
 
 Lock the chosen analogy domain and use it throughout. Calibrate vocabulary and
 depth to the learner. Be vivid and playful without weakening precision.
 
-Return exactly these four sections, in this order, with no extra introduction
-or conclusion:
+Produce these four semantic components in order. A calling agent may transform
+their presentation while preserving their meaning. When answering directly in
+Markdown, use the headings and table below without an extra introduction or
+conclusion.
 
 ### In a sentence
 
@@ -100,13 +137,17 @@ stable and non-colliding.
 
 Tell a short story entirely within the analogy domain, in second person. Never
 name the real concept inside the story. Use an ordered list when sequence or
-causality matters; otherwise use an unordered list. Start each single-beat item
-with a relevant emoji.
+causality matters; otherwise use concise prose or an unordered list.
 
 ### Where it breaks
 
-Give one or two unordered-list bullets naming specific ways the analogy
-misleads, omits behavior, or oversimplifies the real concept.
+Name every material way the analogy misleads, omits behavior, or oversimplifies
+the real concept. Keep the list concise; one or two limitations will usually be
+enough. If the explanation needs many caveats, reject the analogy and select a
+stronger candidate.
+
+Complete this step when all four components are present, the depth and language
+fit the learner, and every material limitation is disclosed.
 
 ## Check the explanation
 
@@ -121,15 +162,23 @@ Before returning it, confirm that:
 - the learner can recover the real concept from the map without relying on the
   story alone.
 
-Reject the analogy and choose another candidate if a material rule requires a
-misleading mapping, an unexplained exception, or a second metaphor.
+If drafting reveals a failed mapping, do not return the explanation. For an
+automatically selected analogy, use the next strongest passing candidate. For a
+learner-selected analogy, explain the newly discovered limitation and offer
+fresh passing candidates instead of silently overriding the learner's choice.
+
+Complete this step when the explanation passes every check and is ready for the
+caller to render or for direct delivery.
 
 ## Handle follow-ups
 
 | Learner asks for | Response |
 | --- | --- |
-| A different analogy | Present three fresh candidates, excluding the analogy just used. |
-| More depth | Extend the same world to cover the requested advanced mechanism. |
-| A simpler version | Re-run candidate selection with more everyday domains and beginner vocabulary. |
+| A different analogy | Present up to three fresh passing candidates, excluding the analogy just used. |
+| More depth | Expand the literal model, then revalidate the same analogy against the new scope. Keep it only if it still passes; otherwise name its boundary and offer fresh passing candidates. |
+| A simpler version | Rebuild the learning goal at the simpler depth, then select from more everyday candidates that pass the complete gate. |
 | A related concept | Start again for the new concept and link back only where it helps. |
 | A challenge to the analogy | Name the limitation, explain the structural reason for the choice, and offer fresh candidates when needed. |
+
+Complete a follow-up when its updated scope has passed the same literal-model,
+mapping, composition, and final checks as the original explanation.

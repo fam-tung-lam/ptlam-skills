@@ -23,6 +23,9 @@ tag, not the private tooling version in `package.json`.
   direct reference routing, conditional analogy ownership, one canonical
   scaffold baseline, responsive overflow guidance, and classic/module script
   validation.
+- Changed `ptlam-explaining-with-analogy` to auto-select a fully validated
+  analogy, revalidate deeper follow-ups, preserve explicit learner choices, and
+  separate explanation semantics from rendering.
 
 ## [0.1.0-alpha.2] - 2026-08-07
 
