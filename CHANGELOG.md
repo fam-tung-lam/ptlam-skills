@@ -12,6 +12,8 @@ tag, not the private tooling version in `package.json`.
 
 ## [Unreleased]
 
+## [0.1.0-alpha.2] - 2026-08-07
+
 ### Added
 
 - Added `ptlam-testing-typescript`, a testing skill for framework-free,
@@ -43,6 +45,8 @@ tag, not the private tooling version in `package.json`.
   for other Agent Skills-compatible ecosystems.
 
 [unreleased]:
-  https://github.com/fam-tung-lam/ptlam-skills/compare/v0.1.0-alpha.1...HEAD
+  https://github.com/fam-tung-lam/ptlam-skills/compare/v0.1.0-alpha.2...HEAD
+[0.1.0-alpha.2]:
+  https://github.com/fam-tung-lam/ptlam-skills/compare/v0.1.0-alpha.1...v0.1.0-alpha.2
 [0.1.0-alpha.1]:
   https://github.com/fam-tung-lam/ptlam-skills/releases/tag/v0.1.0-alpha.1
