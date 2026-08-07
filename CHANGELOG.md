@@ -12,6 +12,11 @@ tag, not the private tooling version in `package.json`.
 
 ## [Unreleased]
 
+### Added
+
+- Added authored acknowledgements for the external Vitest API references and the
+  inspiration behind `ptlam-grilling`.
+
 ## [0.1.0-alpha.2] - 2026-08-07
 
 _Pre-release._

@@ -13,15 +13,11 @@ execution, component mounting, rendering, routing, or test utilities for web
 application frameworks. Use scope-specific testing guidance under the
 `ptlam-testing` foundation when code requires a browser or web framework.
 
-These preferences were derived from the repository's local Antfu Vitest skill
-snapshot at Git SHA `3f60d0893affbda989404555136fe20a6086d4e6`, generated
-on 2026-06-22 and describing Vitest 5.x beta. The selected Vitest references are
-bundled under `references/vitest/` and adapted to remove browser, DOM,
-framework, and benchmarking guidance. They remain available under the
-[Antfu skills MIT license](vitest/LICENSE.md). Treat the snapshot as design
-input rather than a version-agnostic API contract. Match syntax to the target
-project's installed Vitest major version and consult its matching official
-documentation when the versions differ.
+The bundled Vitest API references have external provenance documented in
+[Acknowledgements](../ACKNOWLEDGEMENTS.md). Treat the reference snapshot as
+versioned API context rather than a version-agnostic contract. Match syntax to
+the target project's installed Vitest major version and consult its matching
+official documentation when the versions differ.
 
 ## Stack defaults
 
