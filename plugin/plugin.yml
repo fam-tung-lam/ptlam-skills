@@ -148,10 +148,10 @@ skills:
     description:
       Explain an unfamiliar, abstract, or complex concept through one coherent
       real-life analogy, a stable mapping table, a short story, and explicit
-      caveats. Use whenever the user wants to understand a concept, including
-      requests such as explain, what is, how does it work, ELI5, break this
-      down, help me understand, or give me an analogy. Use even when the user
-      does not explicitly request an analogy.
+      caveats. Use only when the user explicitly asks for an analogy to help
+      them understand or learn a concept. Do not invoke for a general request
+      to explain, define, simplify, or break down a concept unless that same
+      request explicitly asks for an analogy.
     category_id: productivity
     visibility: public
     status: active
