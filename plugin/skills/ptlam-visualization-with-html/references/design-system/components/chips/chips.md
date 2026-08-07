@@ -4,6 +4,14 @@ Use chips for compact input, filters, selections, or actions. Match semantics to
 behavior: button for an action, checkbox for a filter, removable token for
 input.
 
+- Assist chips trigger a contextual or automated action.
+- Filter chips select tags or criteria and may replace a compact checkbox set.
+- Input chips represent entered values and expose removal explicitly.
+- Suggestion chips narrow intent from dynamically generated options.
+
+Use a small button group or ordinary controls when the options are primary,
+long, or need comparison; chips should stay compact and contextual.
+
 ```html
 <button class="chip" type="button" aria-pressed="true">Active paths</button>
 ```
@@ -23,4 +31,5 @@ input.
 }
 ```
 
-Source: [Material chips](https://m3.material.io/components/chips/overview).
+Source snapshot: Material 3 chips overview, captured with Firecrawl on
+2026-08-07.

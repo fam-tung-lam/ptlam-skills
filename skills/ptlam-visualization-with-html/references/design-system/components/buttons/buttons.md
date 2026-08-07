@@ -69,5 +69,10 @@ changes; never leave a button that appears usable but does nothing.
 M3 Expressive adds five semantic sizes from XS through XL. Keep a minimum 44 CSS
 pixel target in this portable-web adaptation, use stronger shape or type only
 for higher-emphasis actions, and never resize surrounding controls unexpectedly.
-See Material's
-[button overview](https://m3.material.io/components/buttons/overview).
+The Material baseline button is 40 pixels high with 20-pixel leading or trailing
+icons; this local CSS intentionally raises the interaction target to 44 pixels.
+Keep labels concise and sentence case. A toggle button exposes
+`aria-pressed`; ordinary action buttons do not.
+
+Source snapshot: Material 3 buttons overview, captured with Firecrawl on
+2026-08-07.

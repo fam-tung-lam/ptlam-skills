@@ -9,5 +9,9 @@ Use elevation to communicate layering or interaction, not to make every panel
 float. Keyboard focus combines its focus elevation with an outline; shadow alone
 is not a focus indicator.
 
-Source: Material's
-[elevation tokens](https://m3.material.io/styles/elevation/tokens).
+Treat elevation as relative distance between surfaces on the z-axis. A higher
+role communicates that one surface temporarily or persistently sits above
+another; it never replaces containment, DOM order, or a semantic relationship.
+
+Source snapshot: Material 3 elevation-token guidance, captured with Firecrawl
+on 2026-08-07.

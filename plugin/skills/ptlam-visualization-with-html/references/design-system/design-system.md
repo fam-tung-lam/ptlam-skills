@@ -29,15 +29,30 @@ containment. Use them to make key actions faster to find and related elements
 easier to group while preserving familiar interaction patterns and visible text
 labels.
 
+Apply those dimensions selectively:
+
+- use color contrast and scale to establish one clear priority;
+- group related information with containment, spacing, and headings;
+- use shape changes to communicate state or direct attention;
+- reserve pronounced motion and other hero moments for brief, important
+  interactions; and
+- adapt component size and layout to context without changing its meaning.
+
+The Material catalog groups components by action, containment, communication,
+navigation, selection, and text input. This skill intentionally selects only
+the families needed for focused learning artifacts. A component missing from
+this local catalog is outside the contract, even when Material documents it.
+
 ## Source freshness
 
-This local contract was reviewed on 2026-08-07 against the official
-[Material 3](https://m3.material.io/),
-[foundations](https://m3.material.io/foundations),
-[styles](https://m3.material.io/styles),
-[components](https://m3.material.io/components), and
-[Expressive design research](https://design.google/library/expressive-material-design-google-research).
-Revalidate the affected taxonomy and behavior before changing this design
-system, when a linked source disappears or contradicts the local contract, or
-when Material publishes a relevant component or guidance update. Record the new
-review date here only after that comparison.
+This local contract was reviewed on 2026-08-07 from Firecrawl snapshots of the
+official Material 3 home, foundations, styles, and components catalogs plus
+Google's Expressive design research. The research describes color, shape, size,
+motion, and containment as the main expressive dimensions and warns against
+breaking established interaction patterns.
+
+This file and its local references are the operational source for artifact
+creation; agents do not need to open the web pages. A maintainer changing or
+upgrading the design system must re-scrape the affected official source paths,
+compare their guidance with the local contract, and record a new review date
+only after resolving differences.

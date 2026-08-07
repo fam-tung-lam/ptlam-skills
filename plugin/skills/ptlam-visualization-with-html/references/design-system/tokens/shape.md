@@ -10,6 +10,13 @@ expansion, or progress when a non-motion cue remains visible.
 
 The expressive baseline uses the expanded shape library and shape morphing. Keep
 rest and active shapes semantically related and preserve the active end shape
-under reduced motion. See Material's
-[corner-radius scale](https://m3.material.io/styles/shape/corner-radius-scale)
-and [shape morph](https://m3.material.io/styles/shape/shape-morph).
+under reduced motion.
+
+The available semantic scale runs from no rounding through extra-small, small,
+medium, large, extra-large, increased, and fully rounded roles. Use directional
+top, start, or end roles only when the containment relationship requires them.
+For HTML, implement a morph as an ordinary CSS transition between semantic end
+shapes; Material's platform shape-morph API is not available on the web.
+
+Source snapshot: Material 3 corner-radius scale and shape-morph guidance,
+captured with Firecrawl on 2026-08-07.

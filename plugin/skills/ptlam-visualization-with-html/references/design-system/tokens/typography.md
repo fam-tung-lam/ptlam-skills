@@ -8,5 +8,11 @@ technical metadata.
 Use variable weight or width only when the selected font supports it. Preserve
 responsive text sizing, short paragraphs, and a readable measure. Let the
 visual carry structure; reserve prose for intent, caveats, and interpretation.
-See the official
-[type-scale tokens](https://m3.material.io/styles/typography/type-scale-tokens).
+
+Keep the hierarchy semantic: display for rare high-impact framing, headline for
+major sections, title for contained regions, body for explanation, and label
+for controls and compact metadata. Scale font size and line height together and
+verify every role at 200% text zoom.
+
+Source snapshot: Material 3 typography and type-scale-token guidance, captured
+with Firecrawl on 2026-08-07.

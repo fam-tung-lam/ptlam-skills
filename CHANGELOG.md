@@ -19,6 +19,9 @@ tag, not the private tooling version in `package.json`.
 
 ### Changed
 
+- Made the `ptlam-visualization-with-html` design-system references
+  self-contained so agents can apply the sourced guidance without loading
+  external pages.
 - Refined `ptlam-grilling` with explicit interactive invocation, one predictable
   workspace-local session record, checkable workflow completion, and a confirmed
   shared-understanding gate before action.

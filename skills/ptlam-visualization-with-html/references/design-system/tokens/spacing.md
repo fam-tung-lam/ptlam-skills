@@ -8,5 +8,10 @@ focus.
 Use the smallest spacing step that preserves grouping and touch-target size. Do
 not introduce one-off gaps or shrink targets to fit more content. Reflow first.
 
-Source: Material's
-[spacing tokens](https://m3.material.io/styles/spacing/tokens).
+Spacing measures the distance around and between component and layout elements.
+Apply the same token to equivalent relationships, not merely to places that
+happen to share a pixel value. A change in grouping or hierarchy justifies a
+different role; a different viewport alone does not.
+
+Source snapshot: Material 3 spacing-token guidance, captured with Firecrawl on
+2026-08-07.
