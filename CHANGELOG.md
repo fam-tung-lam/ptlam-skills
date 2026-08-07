@@ -19,6 +19,9 @@ tag, not the private tooling version in `package.json`.
 
 ### Changed
 
+- Refined `ptlam-grilling` with explicit interactive invocation, one predictable
+  workspace-local session record, checkable workflow completion, and a confirmed
+  shared-understanding gate before action.
 - Refined `ptlam-visualization-with-html` with explicit completion criteria,
   direct reference routing, conditional analogy ownership, one canonical
   scaffold baseline, responsive overflow guidance, and classic/module script

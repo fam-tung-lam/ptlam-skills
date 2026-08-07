@@ -16,5 +16,5 @@ The source served as design inspiration rather than copied skill text.
 `ptlam-grilling` is customized for Pham Tung Lam. It asks one consequential
 decision at a time instead of presenting the whole current frontier, researches
 discoverable facts independently, recommends an answer with its strongest
-alternative and trade-off, persists resumable session checkpoints and durable
-project context, and waits for confirmed shared understanding before action.
+alternative and trade-off, persists resumable session checkpoints, and waits
+for confirmed shared understanding before action.

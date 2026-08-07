@@ -1,4 +1,4 @@
 interface:
   display_name: "PTLam Grilling"
   short_description: "Stress-test one decision at a time"
-  default_prompt: "Use $ptlam-grilling to stress-test this plan one decision at a time."
+  default_prompt: "Use $ptlam-grilling to interview me about this plan one decision at a time."
