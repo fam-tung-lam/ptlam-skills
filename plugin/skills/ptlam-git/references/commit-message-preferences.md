@@ -1,10 +1,9 @@
 # Commit message preferences
 
-Resolve current commit preferences under the P2 authority order from the
-required principles reference. Apply current instructions, repository or
-collaboration policy, and verified project Git context before these defaults.
-Use the defaults only for choices those sources leave unconstrained. This lets
-`CONTEXT.md` replace them for one project without requiring a skill release.
+Apply current user instructions and repository or collaboration policy before
+verified project Git context. Use these defaults only for choices those sources
+leave unconstrained. This lets `CONTEXT.md` replace them for one project without
+requiring a skill release.
 
 - Use Conventional Commits with an outcome-focused subject:
   `<type>(<scope>): <description>`, omitting the scope only when it adds no

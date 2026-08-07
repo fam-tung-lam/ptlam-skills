@@ -22,8 +22,8 @@ tag, not the private tooling version in `package.json`.
 - Made the `ptlam-visualization-with-html` design-system references
   self-contained so agents can apply the sourced guidance without loading
   external pages.
-- Changed `ptlam-git` to provide portable default commit-message preferences
-  while retaining project-local `CONTEXT.md` overrides.
+- Reduced `ptlam-git` to portable commit-message preferences and project-local
+  `CONTEXT.md` management, relying on agents' existing Git workflow knowledge.
 - Refined `ptlam-grilling` with explicit interactive invocation, one predictable
   workspace-local session record, checkable workflow completion, and a confirmed
   shared-understanding gate before action.

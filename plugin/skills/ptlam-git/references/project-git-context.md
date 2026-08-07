@@ -1,60 +1,50 @@
-# Resolve Project Git Context
+# Manage Project Git Context
 
-Use this workflow for every repository-tied Git task. The skill's installation
-location is irrelevant. Store durable project-specific Git knowledge in one
-file:
+Use one project-local file for durable Git facts and preferences:
 
 ```text
 <repository-root>/.ptlam-skills/skills/engineering/ptlam-git/CONTEXT.md
 ```
 
-This file is ordinary project data used by the installed skill, not a
-project-local copy of the skill. It is a verified cache of durable Git facts and
-preferences, never authority or live operation state.
+The file is a verified cache of durable project knowledge. It does not grant
+permission or replace live repository evidence.
 
 ## Contents
 
-- [Resolve the repository and mode](#resolve-the-repository-and-mode)
+- [Resolve the repository and write authority](#resolve-the-repository-and-write-authority)
 - [Load or create the context](#load-or-create-the-context)
 - [Keep one file with three kinds of information](#keep-one-file-with-three-kinds-of-information)
 - [Handle earlier layouts](#handle-earlier-layouts)
-- [Verify freshness and preserve Git scope](#verify-freshness-and-preserve-git-scope)
-- [Feed the workflow and report](#feed-the-workflow-and-report)
+- [Verify freshness and preserve scope](#verify-freshness-and-preserve-scope)
+- [Apply the context and report](#apply-the-context-and-report)
 
-## Resolve the repository and mode
+## Resolve the repository and write authority
 
-1. Resolve each repository root under P1 in
-   [principles](principles.md). Prefer explicit task paths and repository
-   evidence; do not assume the current directory or skill installation path is
-   the project root.
-2. Keep nested repositories and submodules separate. Keep context for multiple
-   repositories separate even when one task spans them.
-3. In a linked worktree, use only the `CONTEXT.md` visible from the active
-   worktree. Do not search other worktrees for local context.
-4. Resolve the operation mode under P2 before maintaining context:
-   - **Inspect**: load context without changing it. An explicit request to
-     maintain Git context authorizes only the requested context-file change.
-   - **Prepare, Integrate, Publish, or Recover**: automatically create or update
-     context only when the authorized task establishes material durable Git
-     knowledge.
-5. If multiple repository roots remain plausible and the choice changes the
-   stored scope, ask the user which repository owns the context.
+1. Resolve the repository root from the explicit task path and repository
+   evidence. Keep nested repositories, submodules, and multiple repositories
+   separate.
+2. In a linked worktree, use only the `CONTEXT.md` visible from that worktree.
+   Do not search another worktree for local context.
+3. Loading context is read-only. Create or update it only when the user directly
+   requests context maintenance or an already-authorized state-changing Git
+   task establishes material durable knowledge.
+4. If several repository roots remain plausible and the choice changes the
+   stored scope, ask which repository owns the context.
 
-Complete this step when every repository in scope has one resolved root and
-mode, or one explicitly reported unresolved root.
+Complete this step when every repository in scope has one resolved root and the
+context operation is clearly read-only or writable.
 
 ## Load or create the context
 
 - Load canonical `CONTEXT.md` when it exists. Treat current user instructions,
   repository policy, Git configuration, hooks, hosting configuration, and
   collaboration surfaces as the sources of truth.
-- Continue without creating the file when it is absent and the task establishes
-  no material durable Git fact or preference.
-- Create or update it after a direct user request for Git workflow
-  customization or context maintenance.
-- In an authorized state-changing mode, create or update it automatically only
-  after current evidence establishes material new, changed, or stale durable
-  knowledge. A one-off choice is not a durable preference.
+- Continue without creating the file when it is absent and no material durable
+  fact or preference needs to be stored.
+- Create or update it after a direct context-maintenance request.
+- During other authorized state-changing Git work, update it only when current
+  evidence establishes material new, changed, or stale durable knowledge. A
+  one-off choice is not a durable preference.
 - Preserve unknown fields. Require an explicit migration before changing an
   unsupported schema.
 
@@ -71,8 +61,8 @@ updated_at: YYYY-MM-DD
 
 Change `updated_at` only when stored content changes.
 
-Complete this step when the current file state and operation mode permit one
-clear read-only, create, or update path.
+Complete this step when the current file state and write authority permit one
+clear load, create, or update path.
 
 ## Keep one file with three kinds of information
 
@@ -111,23 +101,23 @@ Record stable user or project preferences with their scope and evidence:
 - worktree, isolation, consolidation, and meaningful-unit preferences; and
 - integration, publication, pull-request, and recovery preferences.
 
-Record a user preference only when the user states it as a durable preference.
-Do not infer one from a single accepted command, branch, commit, or workflow.
-Do not repeat universal rules owned by this skill.
+Record a preference only when the user states it as durable. Do not infer one
+from a single accepted command, branch, commit, or workflow. Do not copy the
+skill's portable defaults into the project file.
 
 Keep `CONTEXT.md` concise and current. Update facts in place and remove stale
-facts when their replacements are verified. Keep task-specific research,
+facts when replacements are verified. Keep task-specific research,
 alternatives, rationale, and decision history in the task report.
 
 Never store:
 
 - current object IDs, ref positions, dirty state, conflicts, checks, approvals,
-  custody, handoffs, recovery points, or other live observations;
-- permission grants, including standing authority for shared, destructive, or
+  handoffs, recovery points, or other live observations;
+- permission grants or standing authority for shared, destructive, or
   identity-changing actions;
 - credentials, secret-bearing URLs, transient logs, or machine-specific
   absolute paths; or
-- preferences inferred only from agent behavior or a one-off user choice.
+- preferences inferred only from agent behavior or one-off user choices.
 
 Complete this step when every retained item is a current durable project fact,
 Git-flow fact, or explicitly supported scoped preference.
@@ -137,57 +127,52 @@ Git-flow fact, or explicitly supported scoped preference.
 When canonical `CONTEXT.md` is absent, check the earlier flat
 `.ptlam-skills/skills/ptlam-git/profile.md` layout and the categorized
 `.ptlam-skills/skills/engineering/ptlam-git/profile.md` layout. Load relevant
-profile, preference, context, and decision facts in place and report the earlier
-layout.
+profile, flow, and preference facts in place and report the earlier layout.
 
-During authorized writable context maintenance, consolidate only verified
-current profile, flow, and preference facts into canonical `CONTEXT.md`. Do not
-carry research, operation state, or decision history forward. Remove replaced
-files only when deletion is explicitly authorized; otherwise leave them
-untouched and report them as earlier-layout files.
+During authorized writable maintenance, consolidate only verified current
+profile, flow, and preference facts into canonical `CONTEXT.md`. Do not carry
+research, operation state, or decision history forward. Remove replaced files
+only when deletion is explicitly authorized; otherwise leave them untouched
+and report them.
 
 Complete this step when current information has one canonical destination and
 every retained earlier-layout file is reported.
 
-## Verify freshness and preserve Git scope
+## Verify freshness and preserve scope
 
-- Before relying on a context entry, compare it with current instructions, Git
-  configuration, repository evidence, and controlling shared state. Observe
-  every mutation target live even when context describes its role.
+- Compare each task-relevant entry with current instructions, configuration,
+  repository evidence, and shared state before relying on it.
 - Refresh only task-relevant knowledge. Recheck an entry when its evidence
   changes, a recorded command fails, or current policy contradicts it. Treat
   dates as freshness signals, not proof.
 - Use repository-relative paths and record evidence or invalidation signals for
   facts whose freshness is not self-evident.
-- If `CONTEXT.md` is tracked, update it as ordinary project state. If it is
-  ignored, keep it local. If it is untracked and not ignored, leave it untracked
-  and report that status.
-- Classify an automatic context-file change separately from the user's Git
-  change range. Never stage, commit, publish, or add it to `.gitignore` unless
-  the user explicitly includes that effect in the authorized Git scope.
-- Preserve foreign and unknown fields and files under P3.
+- If `CONTEXT.md` is tracked, update it as ordinary project state. If ignored,
+  keep it local. If untracked and not ignored, leave it untracked and report
+  that status.
+- Classify an automatic context change separately from the user's Git change.
+  Never stage, commit, publish, or add it to `.gitignore` unless the user
+  explicitly includes that effect in the authorized scope.
+- Preserve unrelated files and unknown fields.
 
-Complete this step when every used entry has current supporting evidence and
-any context mutation preserves repository policy, VCS treatment, and the
-authorized Git change range.
+Complete this step when every used entry has current support and context
+maintenance preserves repository policy, VCS treatment, and task scope.
 
-## Feed the workflow and report
+## Apply the context and report
 
-Use verified task-relevant context as starting evidence under P2. It may narrow
-or select otherwise unconstrained mechanics; it cannot override current
-evidence or policy, authorize an action, or replace live target observation.
+Use verified task-relevant entries as starting facts and preferences. They
+cannot override current instructions or repository policy, authorize an action,
+or replace live target observation.
 
-After an authorized state-changing task, persist only material durable facts
-and preferences established by that task. In inspect mode, report suggested
-changes without writing them unless the user explicitly requested context
+After authorized state-changing work, persist only material durable facts and
+preferences established by that task. During read-only work, report suggested
+context changes without writing them unless the user explicitly requested
 maintenance.
 
 Report whether `CONTEXT.md` was absent, loaded, created, updated, or left
-unchanged; which entries affected the workflow; stale or provisional entries;
-earlier-layout files; and relevant tracked, ignored, or untracked status. When
-automatic maintenance changed the file, name the durable knowledge updated and
-keep it outside unrelated staging and commits.
+unchanged; which entries affected the task; stale or provisional entries;
+earlier-layout files; and relevant tracked, ignored, or untracked status.
 
-Complete this workflow when the Git task has the verified project context it
-needs and the report accounts for the canonical file, freshness, any earlier
-layout, and every context-file side effect.
+Complete this workflow when the task has current project context and the report
+accounts for the canonical file, freshness, earlier layouts, and every context
+side effect.
