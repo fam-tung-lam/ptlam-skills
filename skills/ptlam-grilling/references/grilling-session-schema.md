@@ -10,7 +10,7 @@ placeholders with current session facts.
 - Status: <active | awaiting-user | confirmation-pending | deferred | blocked | complete>
 - Created: <timestamp>
 - Updated: <timestamp>
-- Project root: <absolute path>
+- Workspace root: <absolute initial workspace path>
 
 ## Outcome and scope
 
