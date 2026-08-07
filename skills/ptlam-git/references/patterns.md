@@ -93,8 +93,9 @@ revert units.
 ### Decide
 
 - Apply P4 to the staged patch and its dependency order.
-- Derive message, trailer, signing, and issue syntax from applicable policy and
-  verified profile preferences; the skill defines no format.
+- Resolve message, trailer, signing, and issue syntax under P2 from applicable
+  policy, current instructions, verified project Git context, and the default
+  commit message preferences loaded by `SKILL.md`.
 - Rewrite only a proven unpublished range under single custody; otherwise
   correct additively.
 

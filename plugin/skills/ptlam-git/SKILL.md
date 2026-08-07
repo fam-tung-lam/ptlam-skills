@@ -16,6 +16,10 @@ patterns needed for the outcome.
 3. Read only the relevant capability sections in
    [patterns](references/patterns.md). They own operation-specific decisions and
    completion criteria.
+4. When creating or changing a commit message, read
+   [commit message preferences](references/commit-message-preferences.md). It
+   owns preference precedence and the portable defaults for subjects, bodies,
+   and issue references.
 
 Patterns may specialize the principles but never weaken them.
 

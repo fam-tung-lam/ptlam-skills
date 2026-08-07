@@ -1,27 +1,5 @@
 interface:
   display_name: "PTLam Git"
   short_description: "Run adaptable, safe Git workflows"
-  default_prompt: |-
-    Apply $ptlam-git with the following default commit preferences. Treat them
-    as defaults only: load the repository's CONTEXT.md through the skill's
-    project Git context workflow, and apply any current user or project
-    preferences there according to the skill's authority rules.
-
-    - Use Conventional Commits with an outcome-focused subject:
-      `<type>(<scope>): <description>`, omitting the scope only when it adds no
-      useful context. Preferred types are `feat`, `fix`, `docs`, `style`,
-      `refactor`, `perf`, `test`, `chore`, and `ci`.
-    - Make the subject explain why the change exists: name the outcome or
-      capability, the broken behavior fixed, or the reason for a refactor—not
-      the implementation mechanics. Use imperative mood, capitalize the
-      description, omit the final period, aim for 50 characters, and never
-      exceed 72.
-    - Add a short, concrete body when the subject cannot carry enough context.
-      For features, show sample usage or explain the new capability. For fixes,
-      state the cause and how the change prevents the failure. Prefer why over a
-      step-by-step account of the implementation.
-    - When a commit resolves an issue, add `Fixes #<issue-number>` or
-      `Closes #<issue-number>` in the body. When it contributes to resolving an
-      issue but is not the final commit that closes it, add
-      `Relates #<issue-number>`. Use the full issue URL for an issue in another
-      repository.
+  default_prompt:
+    "Use $ptlam-git to apply current Git preferences to this workflow."
