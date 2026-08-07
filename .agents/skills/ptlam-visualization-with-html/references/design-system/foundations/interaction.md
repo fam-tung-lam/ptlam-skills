@@ -19,10 +19,15 @@ button:disabled {
 Never auto-play. Preserve the current step across viewport changes. Back must
 restore the exact previous state, and Reset must restore the first state.
 
+Support touch, keyboard, mouse, trackpad, and assistive input through the same
+state model. Every gesture-only operation needs a visible control or keyboard
+route. Respond immediately to pointer and touch input, keep text selectable,
+and use familiar browser behavior for scrolling, zoom, focus, and activation.
+
 Expressive feedback uses shape morph, spring-like motion, size, containment, or
 color emphasis according to the state. The state remains legible when motion is
-disabled. Follow Material's
-[gesture](https://m3.material.io/foundations/interaction/gestures),
-[input](https://m3.material.io/foundations/interaction/inputs), and
-[state](https://m3.material.io/foundations/interaction/states/overview)
-contracts.
+disabled. Maintain enabled, disabled, hovered, focused, pressed, dragged, and
+selected meanings consistently; combined states must remain distinguishable.
+
+Source snapshot: Material 3 gesture, input, and interaction-state guidance,
+captured with Firecrawl on 2026-08-07.

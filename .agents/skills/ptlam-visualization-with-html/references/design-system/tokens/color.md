@@ -1,50 +1,30 @@
 # Color tokens
 
-```css
-:root {
-  color-scheme: dark;
-  --color-canvas: #090e15;
-  --color-surface: #0f1622;
-  --color-surface-dim: #090e15;
-  --color-surface-bright: #253142;
-  --color-surface-container-low: #0c131d;
-  --color-surface-container: #151f2d;
-  --color-surface-container-high: #1b2838;
-  --color-surface-container-highest: #253142;
-  --color-surface-inverse: #e7edf5;
-  --color-on-surface-inverse: #17202c;
-  --color-outline: #2a3a4f;
-  --color-outline-variant: #3d4d63;
-  --color-outline-strong: #63748c;
-  --color-on-surface: #e7edf5;
-  --color-on-surface-variant: #9caabe;
-  --color-primary: #e8b84c;
-  --color-primary-container: #372d19;
-  --color-on-primary: #17130a;
-  --color-on-primary-container: #ffe2a2;
-  --color-secondary: #65c7d9;
-  --color-secondary-container: #15343a;
-  --color-on-secondary: #071416;
-  --color-on-secondary-container: #b9f4ff;
-  --color-tertiary: #a997e8;
-  --color-tertiary-container: #2b2544;
-  --color-on-tertiary: #140f27;
-  --color-on-tertiary-container: #e7ddff;
-  --color-success: #69c69a;
-  --color-warning: #e6874f;
-  --color-error: #ef6b69;
-  --color-error-container: #4b1f20;
-  --color-on-error: #1f0707;
-  --color-on-error-container: #ffdad7;
-  --color-focus: #65c7d9;
-  --color-scrim: rgba(0, 0, 0, 0.56);
-}
-```
+The scaffold owns the exact baseline values. Consume semantic roles instead of
+raw palette values: canvas and surface roles establish depth, `on-*` roles own
+readable foregrounds, outline roles separate regions, and primary, secondary,
+tertiary, success, warning, and error roles communicate meaning.
 
 Use `--color-primary` for the current learning step or primary action,
 `--color-secondary` for relationships, and `--color-error` only for failure. Use
-color together with label, outline, weight, or shape.
+color together with label, outline, weight, or shape. Keep body text at 4.5:1
+contrast or higher.
 
 These are system roles, not a fixed brand palette. Preserve all `on-*` pairings
-when substituting a dynamic or branded scheme. See Material's
-[color roles](https://m3.material.io/styles/color/roles).
+when substituting a dynamic or branded scheme.
+
+- Surface roles own large backgrounds and low-emphasis regions.
+- Primary, secondary, and tertiary roles own descending accent emphasis.
+- Container roles fill controls or foreground regions; paired `on-*` roles own
+  their text and icons.
+- Variant roles provide lower emphasis, outline roles define boundaries, and
+  inverse roles create deliberate contrast with surrounding content.
+- Fixed roles retain their tone across light and dark themes; use them only
+  when that stability is intentional.
+
+Keep each role pairing accessible in every theme. The Material source defines a
+3:1 minimum for paired color roles; this skill keeps the stricter 4.5:1 floor
+for body text.
+
+Source snapshot: Material 3 color-role guidance, captured with Firecrawl on
+2026-08-07.

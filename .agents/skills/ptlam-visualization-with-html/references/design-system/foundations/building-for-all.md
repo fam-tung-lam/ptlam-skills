@@ -6,6 +6,14 @@ important decisions with representative people when the artifact is used for a
 high-impact workflow.
 
 Do not equate one persona with all users. Preserve multiple input modes and a
-textual route through every visual lesson. Follow Material's guidance on
-[user needs](https://m3.material.io/foundations/building-for-all/user-needs) and
-[co-design](https://m3.material.io/foundations/building-for-all/co-design).
+textual route through every visual lesson.
+
+For a high-impact artifact, involve overlooked communities and relevant domain
+experts early enough for feedback to change feature priority, behavior, and
+language. Ask which additional groups might benefit, which needs the current
+model misses, what harm exclusion could cause, and how continued testing will
+include those groups. Treat co-design as ongoing participation, not one research
+session.
+
+Source snapshot: Material 3 Building for all, user-needs, and co-design
+guidance, captured with Firecrawl on 2026-08-07.

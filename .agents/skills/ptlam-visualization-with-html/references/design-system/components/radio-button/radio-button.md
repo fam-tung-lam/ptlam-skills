@@ -1,7 +1,9 @@
 # Radio button
 
 Use native radio buttons when exactly one option must be selected from a named
-set. Keep all options visible when comparison matters.
+set. Keep all options visible when comparison matters. Use short scannable
+labels and make the selected value more prominent through the native checked
+state plus text or container treatment when needed.
 
 ```html
 <fieldset>
@@ -18,5 +20,5 @@ input[type="radio"] {
 }
 ```
 
-Source:
-[Material radio button](https://m3.material.io/components/radio-button/overview).
+Source snapshot: Material 3 radio-button overview, captured with Firecrawl on
+2026-08-07.

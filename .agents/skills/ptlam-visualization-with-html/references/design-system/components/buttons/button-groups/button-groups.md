@@ -1,8 +1,9 @@
 # Button groups
 
 Group related actions when proximity and coordinated shape help people compare
-or invoke them. A group does not imply selection; use segmented buttons for a
-selected value.
+or invoke them. Use a standard group for independent actions and a connected
+group for a compact selected value. Implement independent selection with
+`aria-pressed` buttons and required single selection with native radios.
 
 ```html
 <div class="button-group" role="group" aria-label="Diagram actions">
@@ -22,5 +23,9 @@ selected value.
 ```
 
 Button groups react through coordinated expressive shape changes. Keep labels
-and target positions stable. Source:
-[Material button groups](https://m3.material.io/components/button-groups/overview).
+and target positions stable. The family supports XS through XL sizes, round or
+square resting shapes, and optional single-select, multi-select, or
+selection-required behavior; only add selection when the data model needs it.
+
+Source snapshot: Material 3 button-group overview, captured with Firecrawl on
+2026-08-07.

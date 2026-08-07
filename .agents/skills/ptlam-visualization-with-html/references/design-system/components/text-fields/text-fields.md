@@ -3,6 +3,11 @@
 Use a visible label, optional supporting text, and an error message tied with
 `aria-describedby`. Use native input types and autocomplete attributes.
 
+Use a filled field when a short form or dialog needs stronger emphasis and an
+outlined field when a long form benefits from a quieter surface. Keep blank,
+filled, focused, disabled, and error states distinguishable. Error text must be
+brief, specific, and actionable; preserve the user's entered value.
+
 ```html
 <label class="text-field" for="concept">Concept</label
 ><input id="concept" type="text" aria-describedby="concept-help" /><small
@@ -22,5 +27,5 @@ Use a visible label, optional supporting text, and an error message tied with
 }
 ```
 
-Source:
-[Material text fields](https://m3.material.io/components/text-fields/overview).
+Source snapshot: Material 3 text-field overview, captured with Firecrawl on
+2026-08-07.

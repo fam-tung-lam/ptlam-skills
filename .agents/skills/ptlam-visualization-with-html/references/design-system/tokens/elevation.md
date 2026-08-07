@@ -1,17 +1,17 @@
 # Elevation tokens
 
-```css
-:root {
-  --elevation-0: none;
-  --elevation-focus: 0 0 0 0.2rem rgba(101, 199, 217, 0.28);
-  --elevation-1: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.16);
-  --elevation-2: 0 1.25rem 4rem rgba(0, 0, 0, 0.2);
-  --elevation-3: 0 1.75rem 5rem rgba(0, 0, 0, 0.24);
-}
-```
+The scaffold owns the exact baseline values. Keep ordinary nested panels on
+flat surface colors. Use the first elevation role for an interactive element
+that must rise above its surface and the second only for an overlay or focused
+learning stage.
 
 Use elevation to communicate layering or interaction, not to make every panel
-float.
+float. Keyboard focus combines its focus elevation with an outline; shadow alone
+is not a focus indicator.
 
-Source: Material's
-[elevation tokens](https://m3.material.io/styles/elevation/tokens).
+Treat elevation as relative distance between surfaces on the z-axis. A higher
+role communicates that one surface temporarily or persistently sits above
+another; it never replaces containment, DOM order, or a semantic relationship.
+
+Source snapshot: Material 3 elevation-token guidance, captured with Firecrawl
+on 2026-08-07.

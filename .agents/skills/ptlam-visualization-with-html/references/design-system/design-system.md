@@ -1,23 +1,17 @@
 # HTML visualization design system
 
-Use this index as the entry point. The taxonomy follows the current Material 3
-separation of foundations, styles, and named component families, while retaining
-a separate token layer for portable HTML implementation and a pattern layer for
-learning-specific compositions. M3 Expressive is the only visual system: every
-output uses expressive color, flexible type, contrasting shape, motion physics,
-size, and containment with task-appropriate intensity.
+Use one Material 3 Expressive system for every artifact. Apply expressive color,
+flexible type, contrasting shape, purposeful size, motion, and containment with
+task-appropriate intensity. Preserve Material roles, anatomy, states,
+accessibility, and hierarchy while expressing the subject's visual identity.
 
-Read in this order:
+## Ownership
 
-1. [Foundations](foundations/foundations.md) define universal behavior and
-   accessibility rules.
-2. [Tokens](tokens/tokens.md) provide the semantic CSS custom properties.
-3. [Styles](styles/styles.md) explain how tokens become typography, color,
-   shape, elevation, and motion.
-4. [Components](components/components.md) define reusable UI primitives with
-   standard family and variant names.
-5. [Patterns](patterns/patterns.md) compose primitives into case-specific
-   interactive learning experiences.
+The scaffold renderer owns the exact baseline token values, document shell, and
+global CSS. Run the scaffolder for a new artifact; do not reconstruct that
+baseline from prose. Token references own semantic use and customization rules.
+Component references own reusable anatomy and states. Pattern references own
+learning-specific compositions.
 
 Do not name a base component after one artifact's workflow. Put a reusable UI
 primitive under `components/`; put a goal-specific assembly under `patterns/`.
@@ -33,6 +27,32 @@ capability adaptations of the same expressive system, not alternate themes.
 The governing expressive dimensions are color, shape, size, motion, and
 containment. Use them to make key actions faster to find and related elements
 easier to group while preserving familiar interaction patterns and visible text
-labels. Google's research across 46 studies with more than 18,000 participants
-also warns that expression must not disrupt core functionality. Follow the full
-[Expressive design research](https://design.google/library/expressive-material-design-google-research).
+labels.
+
+Apply those dimensions selectively:
+
+- use color contrast and scale to establish one clear priority;
+- group related information with containment, spacing, and headings;
+- use shape changes to communicate state or direct attention;
+- reserve pronounced motion and other hero moments for brief, important
+  interactions; and
+- adapt component size and layout to context without changing its meaning.
+
+The Material catalog groups components by action, containment, communication,
+navigation, selection, and text input. This skill intentionally selects only
+the families needed for focused learning artifacts. A component missing from
+this local catalog is outside the contract, even when Material documents it.
+
+## Source freshness
+
+This local contract was reviewed on 2026-08-07 from Firecrawl snapshots of the
+official Material 3 home, foundations, styles, and components catalogs plus
+Google's Expressive design research. The research describes color, shape, size,
+motion, and containment as the main expressive dimensions and warns against
+breaking established interaction patterns.
+
+This file and its local references are the operational source for artifact
+creation; agents do not need to open the web pages. A maintainer changing or
+upgrading the design system must re-scrape the affected official source paths,
+compare their guidance with the local contract, and record a new review date
+only after resolving differences.

@@ -5,7 +5,7 @@
       "source": "fam-tung-lam/ptlam-skills",
       "sourceType": "github",
       "skillPath": "skills/ptlam-creating-atomic-note/SKILL.md",
-      "computedHash": "35ca2c1ac3e87c79542c4ff96423bf0e0b23d59dc128f46fdd27264337b0ae16"
+      "computedHash": "93cc2a9fa44452b19d12ee51ccf0a0ec0af4c2bd8a69191831f747ccc414f1c0"
     },
     "ptlam-creating-skill": {
       "source": "fam-tung-lam/ptlam-skills",
@@ -17,19 +17,19 @@
       "source": "fam-tung-lam/ptlam-skills",
       "sourceType": "github",
       "skillPath": "skills/ptlam-explaining-with-analogy/SKILL.md",
-      "computedHash": "f687fc427861fd6d0057086433f36f164e15e63fccab7ba29bcc2919c927a487"
+      "computedHash": "006b911f214a8b520cf9251ef4d3cdf4889813af77ec2ba74392a263129dc8ef"
     },
     "ptlam-git": {
       "source": "fam-tung-lam/ptlam-skills",
       "sourceType": "github",
       "skillPath": "skills/ptlam-git/SKILL.md",
-      "computedHash": "6b9375d212431d947bc5cb09dde3d4e10001e0491ac9e55ffe6b762c05cde940"
+      "computedHash": "a0f522698770095e311a1e754e2fbf1f21768ef556ad7d8c2dd81539d724887e"
     },
     "ptlam-grilling": {
       "source": "fam-tung-lam/ptlam-skills",
       "sourceType": "github",
       "skillPath": "skills/ptlam-grilling/SKILL.md",
-      "computedHash": "63161e8624ab565c49ebfb65449a5d1f4db7e38a5e38d4946323a23258056800"
+      "computedHash": "2c55a04215c567dccbf2faed7eaef19f422db1aeef3d4fbdbf810877562aeb56"
     },
     "ptlam-testing": {
       "source": "fam-tung-lam/ptlam-skills",
@@ -41,13 +41,13 @@
       "source": "fam-tung-lam/ptlam-skills",
       "sourceType": "github",
       "skillPath": "skills/ptlam-testing-typescript/SKILL.md",
-      "computedHash": "d84b883b44f74799c389e8a06fc1c10a2c3ade2a7c92b0c8865966cefb3070c6"
+      "computedHash": "87b38a1e492af717b9c2ed5cbf4a170a541fbfd86dfdfe24d2c013d0ec3f1449"
     },
     "ptlam-visualization-with-html": {
       "source": "fam-tung-lam/ptlam-skills",
       "sourceType": "github",
       "skillPath": "skills/ptlam-visualization-with-html/SKILL.md",
-      "computedHash": "d3da73a56655ac35001775259a5dc92eb77e137959ee02e87fd4f2fbeb6e485b"
+      "computedHash": "7a5b53332b95cc301a64b64edcbc73607b0cf334701dc3ea5ee5110b1fefd7e4"
     }
   }
 }

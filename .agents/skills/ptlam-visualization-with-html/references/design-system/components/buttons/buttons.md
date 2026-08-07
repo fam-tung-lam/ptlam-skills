@@ -1,22 +1,9 @@
 # Buttons
 
 Buttons initiate actions. Choose the variant by emphasis, not by one artifact's
-workflow name:
-
-- [Elevated button](elevated-button.md)
-- [Filled button](filled-button.md)
-- [Filled tonal button](filled-tonal-button.md)
-- [Outlined button](outlined-button.md)
-- [Text button](text-button.md)
-- [Icon buttons](icon-buttons/icon-buttons.md)
-- [Floating action buttons](floating-action-buttons/floating-action-buttons.md)
-- [Button groups](button-groups/button-groups.md)
-- [Segmented buttons](segmented-buttons/segmented-buttons.md)
-- [Split buttons](split-buttons/split-buttons.md)
-
-The base contract below is shared by every labelled button variant. Keep
-variant-specific containers, colors, outlines, and elevation in the selected
-variant file.
+workflow name. Use filled for the single highest-emphasis action, tonal for an
+important quieter action, outlined for a bounded medium-emphasis action, text
+for the lowest emphasis, and elevated only when a busy surface needs separation.
 
 ```css
 .button {
@@ -57,6 +44,23 @@ variant file.
   opacity: 0.38;
   cursor: not-allowed;
 }
+.button--elevated {
+  background: var(--color-surface-container);
+  box-shadow: var(--elevation-1);
+}
+.button--filled {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+.button--tonal {
+  background: var(--color-primary-container);
+}
+.button--outlined {
+  border-color: var(--color-outline-strong);
+}
+.button--text {
+  color: var(--color-primary);
+}
 ```
 
 Disable an action that cannot succeed. Update its visible label when its meaning
@@ -65,5 +69,10 @@ changes; never leave a button that appears usable but does nothing.
 M3 Expressive adds five semantic sizes from XS through XL. Keep a minimum 44 CSS
 pixel target in this portable-web adaptation, use stronger shape or type only
 for higher-emphasis actions, and never resize surrounding controls unexpectedly.
-See Material's
-[button overview](https://m3.material.io/components/buttons/overview).
+The Material baseline button is 40 pixels high with 20-pixel leading or trailing
+icons; this local CSS intentionally raises the interaction target to 44 pixels.
+Keep labels concise and sentence case. A toggle button exposes
+`aria-pressed`; ordinary action buttons do not.
+
+Source snapshot: Material 3 buttons overview, captured with Firecrawl on
+2026-08-07.
