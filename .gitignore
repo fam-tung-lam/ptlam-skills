@@ -1,4 +1,7 @@
+.codex/
+.env
 .idea/
 coverage/
+justfile
 local/
 node_modules/
