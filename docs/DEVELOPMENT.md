@@ -11,17 +11,30 @@ standalone package.
 ## Prerequisites
 
 - Git.
-- Node.js 22.6.0 or newer.
-- npm, using the committed `package-lock.json`.
+- [Node Version Manager (NVM)](https://github.com/nvm-sh/nvm), or another Node
+  version manager that reads `.nvmrc`.
+- npm, which is bundled with Node.js and uses the committed `package-lock.json`.
 
-Install the exact development dependencies from the repository root:
+## Set up the development environment
+
+The repository pins Node.js 22.23.2 in `.nvmrc`. From the repository root,
+install and activate that version, verify it, and install the exact development
+dependencies:
 
 ```bash
+nvm install
+node --version
 npm ci
 ```
 
-Use `npm ci` after switching branches or pulling a lockfile change. Do not
-manually edit `node_modules/` or commit it.
+`nvm install` reads `.nvmrc`, installs the pinned version when necessary, and
+activates it. `node --version` must print `v22.23.2`. When returning to an
+existing checkout, run `nvm use` to reactivate the pin.
+
+The exact `.nvmrc` version keeps local development reproducible. The broader
+`>=22.6.0` declaration in `package.json` remains the runtime compatibility
+floor. Use `npm ci` after switching branches or pulling a lockfile change. Do
+not manually edit `node_modules/` or commit it.
 
 ## Authored and generated files
 
