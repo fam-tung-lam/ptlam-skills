@@ -14,6 +14,8 @@ tag, not the private tooling version in `package.json`.
 
 ## [0.1.0-alpha.2] - 2026-08-07
 
+_Pre-release._
+
 ### Added
 
 - Added `ptlam-testing-typescript`, a testing skill for framework-free,
@@ -34,6 +36,8 @@ tag, not the private tooling version in `package.json`.
   invalid external HTTPS links.
 
 ## [0.1.0-alpha.1] - 2026-08-06
+
+_Pre-release._
 
 ### Added
 
