@@ -12,6 +12,10 @@ tag, not the private tooling version in `package.json`.
 
 ## [Unreleased]
 
+## [0.1.0-alpha.3] - 2026-08-07
+
+_Pre-release._
+
 ### Added
 
 - Added authored acknowledgements for the external Vitest API references and the
@@ -19,6 +23,9 @@ tag, not the private tooling version in `package.json`.
 
 ### Changed
 
+- Required agents to hand protected release-environment approval to a human with
+  the exact GitHub Actions run URL before publication.
+- Pinned the contributor development runtime to Node.js 22.23.2.
 - Made the `ptlam-visualization-with-html` design-system references
   self-contained so agents can apply the sourced guidance without loading
   external pages.
@@ -34,9 +41,10 @@ tag, not the private tooling version in `package.json`.
   direct reference routing, conditional analogy ownership, one canonical
   scaffold baseline, responsive overflow guidance, and classic/module script
   validation.
-- Changed `ptlam-explaining-with-analogy` to auto-select a fully validated
-  analogy, revalidate deeper follow-ups, preserve explicit learner choices, and
-  separate explanation semantics from rendering.
+- Changed `ptlam-explaining-with-analogy` to activate only for explicit analogy
+  requests, auto-select a fully validated analogy, revalidate deeper follow-ups,
+  preserve explicit learner choices, and separate explanation semantics from
+  rendering.
 
 ## [0.1.0-alpha.2] - 2026-08-07
 
@@ -75,7 +83,9 @@ _Pre-release._
   for other Agent Skills-compatible ecosystems.
 
 [unreleased]:
-  https://github.com/fam-tung-lam/ptlam-skills/compare/v0.1.0-alpha.2...HEAD
+  https://github.com/fam-tung-lam/ptlam-skills/compare/v0.1.0-alpha.3...HEAD
+[0.1.0-alpha.3]:
+  https://github.com/fam-tung-lam/ptlam-skills/compare/v0.1.0-alpha.2...v0.1.0-alpha.3
 [0.1.0-alpha.2]:
   https://github.com/fam-tung-lam/ptlam-skills/compare/v0.1.0-alpha.1...v0.1.0-alpha.2
 [0.1.0-alpha.1]:
