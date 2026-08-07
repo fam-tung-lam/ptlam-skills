@@ -17,7 +17,7 @@
       "source": "fam-tung-lam/ptlam-skills",
       "sourceType": "github",
       "skillPath": "skills/ptlam-explaining-with-analogy/SKILL.md",
-      "computedHash": "c6cd8bce3de81827da2e6d9d7601a28a5033ad44b44eeea4da80789e66d209f3"
+      "computedHash": "f687fc427861fd6d0057086433f36f164e15e63fccab7ba29bcc2919c927a487"
     },
     "ptlam-git": {
       "source": "fam-tung-lam/ptlam-skills",
@@ -41,7 +41,7 @@
       "source": "fam-tung-lam/ptlam-skills",
       "sourceType": "github",
       "skillPath": "skills/ptlam-testing-typescript/SKILL.md",
-      "computedHash": "020d9fbeb9e6c3dd44223048178d72247ab6b1f1ed11c01bb43dcbbbf7fdb211"
+      "computedHash": "d84b883b44f74799c389e8a06fc1c10a2c3ade2a7c92b0c8865966cefb3070c6"
     },
     "ptlam-visualization-with-html": {
       "source": "fam-tung-lam/ptlam-skills",
