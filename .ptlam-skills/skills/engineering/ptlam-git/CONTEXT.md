@@ -2,7 +2,7 @@
 schema_version: 1
 skill: ptlam-git
 canonical_path: skills/engineering/ptlam-git
-updated_at: 2026-08-06
+updated_at: 2026-08-07
 ---
 
 # Project Git Context
@@ -13,7 +13,9 @@ updated_at: 2026-08-06
   generated file boundaries, compiler commands, and local quality gates.
 - [The contribution guide](../../../../CONTRIBUTION.md) owns branch,
   contribution, commit, and pull-request conventions.
-- Revalidate these entries when either governing document changes.
+- [The plugin release runbook](../../../../docs/RELEASE_PLUGIN_FLOW.md) owns
+  release preparation, automation, and the mandatory human-approval handoff.
+- Revalidate these entries when any governing document changes.
 
 ## Git flow
 

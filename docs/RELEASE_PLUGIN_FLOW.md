@@ -1,7 +1,7 @@
 # Release the plugin
 
 Releasing a plugin version normally requires three developer actions and one
-approval in GitHub. CI and CD perform the validation, testing, packaging,
+human approval in GitHub. CI and CD perform the validation, testing, packaging,
 attestation, tag creation, release creation, and verification.
 
 ## Release a new version
@@ -85,19 +85,47 @@ Plan release
   -> Test code and package coverage
   -> Build plugin
   -> Attest release assets
-  -> Wait for release approval
+  -> Wait for human release approval
 ```
 
-## Approve the release
+## Hand off the human approval
+
+Release approval is a human-owned decision. An agent must not approve or reject
+the pending deployment through the GitHub UI, API, CLI, browser automation, or
+maintainer credentials. A general request to prepare or release a version does
+not authorize an agent to cross this approval boundary.
+
+When the `Approve, publish, and verify GitHub Release` job reaches `Waiting`, an
+agent must:
+
+1. Identify the numeric CD run ID and construct its exact URL:
+
+   ```text
+   https://github.com/fam-tung-lam/ptlam-skills/actions/runs/<cd-run-id>
+   ```
+
+2. Give that URL to the user together with the version, release commit, derived
+   tag, and completed validation and build jobs.
+3. Ask the user to open the URL and perform the approval personally.
+4. Stop at the gate and wait for the user to confirm the decision. The agent may
+   inspect the run status while waiting, but must not approve, reject, bypass,
+   or impersonate the human reviewer.
+5. After the user confirms approval, resume read-only monitoring and verify the
+   resulting tag, release, assets, and commit identity.
+
+Always provide the exact run URL. Do not hand off only the generic Actions page.
+
+## Approve the release as the human reviewer
 
 After the automated jobs pass:
 
-1. Open **Actions > CD** in GitHub.
-2. Open the run for the prepared version.
-3. Review the commit, derived tag, test result, and generated artifacts.
-4. Click **Review deployments**.
-5. Select the `release` environment.
-6. Click **Approve and deploy**.
+1. Open the exact CD run URL supplied by the agent, or open **Actions > CD** in
+   GitHub and select the run for the prepared version.
+2. Review the commit, derived tag, test result, and generated artifacts.
+3. Click **Review deployments**.
+4. Select the `release` environment.
+5. Click **Approve and deploy**.
+6. Tell the agent that the approval is complete so it can verify publication.
 
 After approval, CD automatically:
 
