@@ -62,12 +62,6 @@ describe("validateHtmlDocument", () => {
       error: "missing visible-on-focus skip link",
     },
     {
-      name: "horizontal overflow guard",
-      mutate: (source: string) =>
-        source.replace("overflow-x: hidden", "overflow: hidden"),
-      error: "missing document-level horizontal overflow guard",
-    },
-    {
       name: "reduced motion",
       mutate: (source: string) =>
         source.replace("prefers-reduced-motion: reduce", "min-width: 1px"),
@@ -313,6 +307,53 @@ describe("validateHtmlDocument", () => {
     );
   });
 
+  it("accepts valid inline JavaScript modules", () => {
+    // GIVEN: A portable document scopes behavior in a native module script.
+    const source = validHtmlDocument().replace(
+      "</body>",
+      '<script type="module">export const ready = true;</script></body>',
+    );
+
+    // WHEN: Embedded JavaScript is syntax checked.
+    const result = validateHtmlDocument(source);
+
+    // THEN: Module grammar is accepted without weakening classic-script checks.
+    assert.deepEqual(result.errors, []);
+  });
+
+  it("reports invalid inline JavaScript modules with a stable block number", () => {
+    // GIVEN: A module script contains invalid module grammar.
+    const source = validHtmlDocument().replace(
+      "</body>",
+      '<script type="module">export const broken = ;</script></body>',
+    );
+
+    // WHEN: Embedded JavaScript is syntax checked.
+    const result = validateHtmlDocument(source);
+
+    // THEN: The module block and syntax failure are named.
+    assert.equal(
+      result.errors.includes(
+        "JavaScript module block 2 does not parse: Unexpected token ';'",
+      ),
+      true,
+    );
+  });
+
+  it("ignores non-JavaScript script data", () => {
+    // GIVEN: Structured data is embedded in a non-executable script element.
+    const source = validHtmlDocument().replace(
+      "</body>",
+      '<script type="application/json">{"label":"not JavaScript;"}</script></body>',
+    );
+
+    // WHEN: Embedded executable scripts are syntax checked.
+    const result = validateHtmlDocument(source);
+
+    // THEN: Data blocks are not parsed as classic JavaScript.
+    assert.deepEqual(result.errors, []);
+  });
+
   it("does not interpret comments or raw script text as document elements", () => {
     // GIVEN: Comments and JavaScript strings contain HTML-looking markup.
     const source = validHtmlDocument()
@@ -337,7 +378,6 @@ function validHtmlDocument(): string {
   <meta name="viewport" content="width=device-width">
   <title>Guide</title>
   <style>
-    html, body { overflow-x: hidden; }
     :focus-visible { outline: 2px solid; }
     @media (prefers-reduced-motion: reduce) { * { animation: none; } }
   </style>

@@ -125,9 +125,6 @@ function validateSvgAccessibility(
 
 function validateResponsiveCss(source: string, errors: string[]): void {
   const compact = source.toLowerCase().replace(/\s+/g, "");
-  if (!compact.includes("overflow-x:hidden")) {
-    errors.push("missing document-level horizontal overflow guard");
-  }
   if (!compact.includes("prefers-reduced-motion:reduce")) {
     errors.push("missing prefers-reduced-motion handling");
   }

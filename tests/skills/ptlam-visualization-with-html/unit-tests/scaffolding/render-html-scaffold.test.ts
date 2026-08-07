@@ -18,6 +18,7 @@ describe("renderHtmlScaffold", () => {
         ?.length,
       2,
     );
+    assert.equal(source.includes("overflow-x:hidden"), false);
     assert.deepEqual(validateHtmlDocument(source).errors, []);
   });
 

@@ -1,19 +1,12 @@
 # Motion tokens
 
-```css
-:root {
-  --motion-duration-short: 120ms;
-  --motion-duration-medium: 320ms;
-  --motion-duration-long: 520ms;
-  --motion-easing-effects: cubic-bezier(0.2, 0, 0, 1);
-  --motion-easing-spatial: cubic-bezier(0.2, 0, 0, 1.2);
-  --motion-easing-decelerate: cubic-bezier(0, 0, 0, 1);
-  --motion-easing-accelerate: cubic-bezier(0.3, 0, 1, 1);
-}
-```
+The scaffold owns the exact baseline values. Motion identifies the active
+relationship or transition; pair it with color, weight, shape, or a visible
+label. Use effects easing for visual properties and spatial easing for position,
+size, and shape continuity.
 
 These effect and spatial curves are portable CSS approximations of the M3
-Expressive motion system, not physical simulations. Use effects for visual
-property changes and spatial motion for position, size, and shape continuity.
-See Material's current
+Expressive motion system, not physical simulations. Never auto-play. Under
+reduced motion, render the same end state immediately or advance discretely.
+See Material's
 [motion guidance](https://m3.material.io/styles/motion/overview/how-it-works).

@@ -12,6 +12,13 @@ tag, not the private tooling version in `package.json`.
 
 ## [Unreleased]
 
+### Changed
+
+- Refined `ptlam-visualization-with-html` with explicit completion criteria,
+  direct reference routing, conditional analogy ownership, one canonical
+  scaffold baseline, responsive overflow guidance, and classic/module script
+  validation.
+
 ## [0.1.0-alpha.2] - 2026-08-07
 
 _Pre-release._

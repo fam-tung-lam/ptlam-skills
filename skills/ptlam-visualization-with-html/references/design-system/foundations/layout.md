@@ -6,23 +6,10 @@ not hide the primary learning sequence behind tabs.
 Apply `min-width: 0` to every nested grid and flex child. Use `minmax(0, 1fr)`
 rather than `1fr`. Wrap technical text deliberately.
 
+The scaffold owns global box sizing and responsive media defaults. Add
+layout-specific containment without hiding document overflow:
+
 ```css
-* {
-  box-sizing: border-box;
-}
-html,
-body {
-  overflow-x: hidden;
-}
-img,
-svg {
-  display: block;
-  max-width: 100%;
-}
-svg {
-  width: 100%;
-  height: auto;
-}
 .split {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);

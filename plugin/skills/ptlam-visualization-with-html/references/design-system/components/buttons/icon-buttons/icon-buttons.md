@@ -1,12 +1,9 @@
 # Icon buttons
 
 Icon buttons expose a single familiar action without a visible text label.
-Always provide an accessible name. Choose a standard variant by emphasis:
-
-- [Standard icon button](standard-icon-button.md)
-- [Filled icon button](filled-icon-button.md)
-- [Filled tonal icon button](filled-tonal-icon-button.md)
-- [Outlined icon button](outlined-icon-button.md)
+Always provide an accessible name. Use the standard variant for low emphasis,
+filled for the highest emphasis, tonal for a quiet container, and outlined when
+the action needs a visible boundary.
 
 ```css
 .icon-button {
@@ -37,6 +34,16 @@ Always provide an accessible name. Choose a standard variant by emphasis:
 }
 .icon-button--xl {
   --icon-button-size: 4.5rem;
+}
+.icon-button--filled {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+.icon-button--tonal {
+  background: var(--color-primary-container);
+}
+.icon-button--outlined {
+  border-color: var(--color-outline-strong);
 }
 ```
 

@@ -31,7 +31,6 @@ paragraph, primary visual, then at most one concise callout.
 }
 .visual-stage {
   min-width: 0;
-  overflow: hidden;
   border: 1px solid var(--color-outline);
   border-radius: var(--shape-large);
   background: var(--color-surface);

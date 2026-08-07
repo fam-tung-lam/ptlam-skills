@@ -56,6 +56,11 @@ export interface HtmlSvgInspection {
   readonly labelledBy: readonly string[];
 }
 
+export interface HtmlScriptInspection {
+  readonly source: string;
+  readonly type: string;
+}
+
 export interface HtmlDocumentInspection {
   readonly tags: Readonly<Record<string, number>>;
   readonly elements: readonly HtmlElementInspection[];
@@ -67,7 +72,7 @@ export interface HtmlDocumentInspection {
   readonly svg: readonly HtmlSvgInspection[];
   readonly documentTitleText: string;
   readonly h1Text: string;
-  readonly scripts: readonly string[];
+  readonly scripts: readonly HtmlScriptInspection[];
 }
 
 /** Inspect the HTML structures used by visualization policy checks. */
@@ -134,7 +139,12 @@ export function inspectHtmlDocument(source: string): HtmlDocumentInspection {
     scripts: Object.freeze(
       elementNodes
         .filter((element) => element.tagName === "script")
-        .map(textContent),
+        .map((element) =>
+          Object.freeze({
+            source: textContent(element),
+            type: element.attributes["type"]?.trim().toLowerCase() ?? "",
+          }),
+        ),
     ),
   });
 }

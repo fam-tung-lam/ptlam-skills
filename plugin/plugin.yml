@@ -158,15 +158,26 @@ skills:
     required_skills: []
   - id: ptlam-visualization-with-html
     description:
-      Create portable, polished, interactive HTML explainers and learning
-      artifacts with native HTML, CSS, JavaScript, SVG, and one Material 3
-      Expressive design system. Use when Codex needs to visualize architecture,
-      workflows, state changes, sequences, entity relationships, semantic zoom,
-      real-life analogy twins, or step-by-step system behavior in an HTML file;
-      when a learner should manipulate or observe a diagram rather than read
-      long prose; or when a top-to-bottom visual field guide, simulator, or
-      validation artifact is requested.
+      Create or revise portable, polished, interactive HTML explainers and
+      learning artifacts with native HTML, CSS, JavaScript, SVG, and one
+      Material 3 Expressive design system. Use when a user asks to visualize
+      architecture, workflows, state changes, sequences, entity relationships,
+      semantic zoom, or step-by-step behavior in an HTML file; when a learner
+      should manipulate or observe a diagram rather than read long prose; or
+      when a top-to-bottom visual field guide or simulator is requested. Apply
+      the analogy dependency first only when the user explicitly asks to create
+      an analogy. Use a general application or site workflow for ordinary pages,
+      dashboards, and app-shell UI.
     category_id: productivity
     visibility: public
     status: active
-    required_skills: []
+    required_skills:
+      - skill_id: ptlam-explaining-with-analogy
+        reason:
+          Owns analogy selection and explanation semantics before HTML rendering.
+        instructions: |-
+          Apply ptlam-explaining-with-analogy only when the user explicitly asks
+          to create an analogy and has not already supplied or chosen one.
+          Let it own the literal model, candidates, user choice, stable mapping,
+          story, and caveats. Resume this visualization skill after the choice
+          and let it own only the portable HTML rendering and visual interaction.

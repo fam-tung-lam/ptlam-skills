@@ -1,23 +1,17 @@
 # HTML visualization design system
 
-Use this index as the entry point. The taxonomy follows the current Material 3
-separation of foundations, styles, and named component families, while retaining
-a separate token layer for portable HTML implementation and a pattern layer for
-learning-specific compositions. M3 Expressive is the only visual system: every
-output uses expressive color, flexible type, contrasting shape, motion physics,
-size, and containment with task-appropriate intensity.
+Use one Material 3 Expressive system for every artifact. Apply expressive color,
+flexible type, contrasting shape, purposeful size, motion, and containment with
+task-appropriate intensity. Preserve Material roles, anatomy, states,
+accessibility, and hierarchy while expressing the subject's visual identity.
 
-Read in this order:
+## Ownership
 
-1. [Foundations](foundations/foundations.md) define universal behavior and
-   accessibility rules.
-2. [Tokens](tokens/tokens.md) provide the semantic CSS custom properties.
-3. [Styles](styles/styles.md) explain how tokens become typography, color,
-   shape, elevation, and motion.
-4. [Components](components/components.md) define reusable UI primitives with
-   standard family and variant names.
-5. [Patterns](patterns/patterns.md) compose primitives into case-specific
-   interactive learning experiences.
+The scaffold renderer owns the exact baseline token values, document shell, and
+global CSS. Run the scaffolder for a new artifact; do not reconstruct that
+baseline from prose. Token references own semantic use and customization rules.
+Component references own reusable anatomy and states. Pattern references own
+learning-specific compositions.
 
 Do not name a base component after one artifact's workflow. Put a reusable UI
 primitive under `components/`; put a goal-specific assembly under `patterns/`.
@@ -33,6 +27,17 @@ capability adaptations of the same expressive system, not alternate themes.
 The governing expressive dimensions are color, shape, size, motion, and
 containment. Use them to make key actions faster to find and related elements
 easier to group while preserving familiar interaction patterns and visible text
-labels. Google's research across 46 studies with more than 18,000 participants
-also warns that expression must not disrupt core functionality. Follow the full
+labels.
+
+## Source freshness
+
+This local contract was reviewed on 2026-08-07 against the official
+[Material 3](https://m3.material.io/),
+[foundations](https://m3.material.io/foundations),
+[styles](https://m3.material.io/styles),
+[components](https://m3.material.io/components), and
 [Expressive design research](https://design.google/library/expressive-material-design-google-research).
+Revalidate the affected taxonomy and behavior before changing this design
+system, when a linked source disappears or contradicts the local contract, or
+when Material publishes a relevant component or guidance update. Record the new
+review date here only after that comparison.
